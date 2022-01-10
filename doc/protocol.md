@@ -50,7 +50,7 @@ overview. The number of each step corresponds with the number in the outline.
  1. When the client sends a connection request to the server, a TCP connection
     is established between the two. Then, the client begins the process of
     authentication by sending something that can confirm its authenticity (see
-    [auth](/doc/auth.md)).
+    [auth](auth.md)).
 
  2. The server replies with a 2 characters string which can be either `OK` or
     `NO`. If it is `OK`, the authentication has successfully terminated and the
