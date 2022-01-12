@@ -98,6 +98,10 @@ Note that constant strings, which never change for a certain kind of packet, are
 double-quoted. Every non-quoted space-separated word works as a field whose
 content is not constant.
 
+Also note that, since some kinds of packets will be sent continuously, it is
+essential to optimize space. Therefore, the representation of these kinds of
+packets also has information about the size of single fields.
+
 ### Authentication packet
 
 (TODO)
@@ -122,7 +126,10 @@ or
 +-----------------------+
 ```
 
-Window IDs are numbers while window names are strings
+In the second case (`"OK"`), the content's end is marked using a string
+terminator `0x00`.
+
+Window IDs are numbers (represented as strings) while window names are strings.
 
 ### Client reply with a window ID
 
@@ -138,22 +145,31 @@ single window, `windowID` is 0.
 ### Server's window frame
 
 Lossless frame compression is one of the key features of this protocol, since it
-provides a fast way to send big amounts of data.
+provides a fast way to send big amounts of data. To make it even faster, it does
+not compress the whole image but instead it implements an algorithm to find the
+parts of that image that has changed.
 
 ```
-+------------------------+
-| compressedWindowPixels |
-+------------------------+
+size (bytes)  0   4   8      12       16               20                 n
+              +---+---+-------+--------+----------------+-----------------+
+              | x | y | width | height | compWindowSize | compWindowFrame |
+              +---+---+-------+--------+----------------+-----------------+
 ```
+
+The fields `x`, `y`, `width`, `height` and `compWindowSize` are stored as
+big-endian unsigned integers. The `compWindowSize` field represents the size in
+bytes of the `compWindowFrame` field. The `compWindowFrame` field represents
+the content of the compressed window frame.
 
 ### Client's input signal
 
-Since packets of this kind will be sent continuously, it essential to optimize
-space. Therefore, this packet's representation also has some information about
-the size of single fields.
+```
+size (bytes)  0        2
+              +--------+
+              | source |
+              +--------+
+```
 
-```
-+-----------------
-|
-+-----------------
-```
+The `source` field represents the source of input (like a key pressure on
+keyboard, a mouse click, etc...) as an enumeration. Since this field is 2 byte
+long, it is able to store up to 65535 possible sources.
