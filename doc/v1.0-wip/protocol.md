@@ -6,9 +6,9 @@ the client and the server.
 ## Overview
 
 As you may have noticed from the repo structure, Scrtp uses a client-server
-model. The computer which sends its own screen represents the server, while
-external computers which receive the screen and send peripheral signals (like a
-mouse click or a key press on the keyboard) act as clients.
+model. The computer which sends its own screen frames represents the server,
+while external computers which receive the screen frames and send peripheral
+signals (like a mouse click or a key press on the keyboard) act as clients.
 
 The following outline describes an overview of the messages sent. The client is
 represented using the letter `C` while the server is represented using the
@@ -18,13 +18,15 @@ direction.
 ```
  C      S
  |      |
- +--->>-+ (1) The client sends a connection request to the server.
+ +--->>-+ (1) The client sends a connection request to the server with some
+ |      |     info.
  |      |
  +-<<---+ (2) The server sends its public key.
  |      |
  +--->>-+ (3) The client sends the password.
  |      |
- +-<<---+ (4) The server replies with "OK" (and a list of windows) or "NO".
+ +-<<---+ (4) The server replies with "OK" (and a list of windows) or "NO" and
+ |      |     an error message.
  |      |
  +--->>-+ (5) The client chooses a window.
  |      |
@@ -53,12 +55,13 @@ overview. The number of each step corresponds with the number in the outline.
 
  1. When the client sends a connection request to the server, a TCP connection
     is established between the two. Then, the client sends its public key (see
-    [auth](auth.md)), its protocol version and the desired image quality.
+    [Authentication](#Authentication)), its protocol version and the desired
+    image quality.
 
- 2. The server sends its public key (see [auth](auth.md)).
+ 2. The server sends its public key (see [Authentication](#Authentication)).
 
  3. The client authenticates by sending its encrypted password (see
-    [auth](auth.md)).
+    [Authentication](#Authentication)).
 
  4. The server replies with a 2 characters string which can be either `OK` or
     `NO`. If it is `OK`, the authentication has successfully terminated and the
@@ -101,6 +104,21 @@ frames:         S->->->->->->-C
 input signals:  S-<-<-<-<-<-<-C
 ```
 
+## Authentication
+
+The authentication is done by checking a password sent through an asymmetrically
+encrypted connection. The cryptosystem used for such task is
+[RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem)).
+
+The length of the public key is 4096.
+
+Before the client sends the password, the client and the server exchange their
+RSA public keys. At this point, the client can send the password encrypted so
+that the server can verify its authenticity.
+
+Once the server has verified the client's authenticity, it can stop using the
+RSA cryptosystem.
+
 ## Encryption
 
 Most of packets are encrypted during their exchange. Their encryption is divided
@@ -111,6 +129,9 @@ The reason behind these choices are simple:
 
  - Asymmetric encryption is ideal for password checking.
  - Symmetric encryption is a good compromise between privacy and performance.
+
+The password used for symmetric encryption is the same as the one used for
+authentication.
 
 ## Structure of packets
 
@@ -132,9 +153,10 @@ packets also has information about the size of single fields.
 ### Server reply to authentication
 
 ```
-+------+
-| "NO" |
-+------+
++-------+
+| "NO"  |
+| issue |
++-------+
 ```
 
 or
@@ -148,6 +170,8 @@ or
 | ...                   |
 +-----------------------+
 ```
+
+In the first case (`"NO"`), `issue` contains the error message.
 
 In the second case (`"OK"`), the content's end is marked using a string
 terminator `0x00`.
