@@ -15,7 +15,7 @@ represented using the letter `C` while the server is represented using the
 letter `S`. Symbols like `>>` and `<<` are used to specify the message
 direction.
 
-```
+```TODO: REMOVE until "END REMOVE"
  C      S
  |      |
  +--->>-+ (1) The client sends a connection request to the server with some
@@ -45,10 +45,31 @@ direction.
  +--->>-+ (n) Eventually, the client closes the connection.
 ```
 
-Note that, if the server replies with "NO" in step `(2)`, the server will close
+Note that, if the server replies with "NO" in step `(4)`, the server will close
 the connection.
 
+TODO: END REMOVE
+
+The following steps require the client and the server to share a common AES key,
+which will be used for encryption during the whole connection, from the first
+packet to the last one. More about it on [Encryption](#Encryption).
+
+```
+C      S
+|      |
++--->>-+ (1) The client sends a connection request to the server with some info.
+|      |
++-<<---+ (2) The server replies with "OK" and a list of available windows or
+|      |     "NO" and an error message.
+|      |
++--->>-+ (3) The client chooses a window 
+```
+
+
+
 ## Steps
+
+(TODO: REWRITE until "END REWRITE")
 
 The following steps are meant to examine in depth the outline shown in the
 overview. The number of each step corresponds with the number in the outline.
@@ -88,6 +109,8 @@ and the connection will be encrypted through the password (see
 
 Eventually, the client closes the connection.
 
+TODO: END REWRITE
+
 ## Concurrency
 
 The sequential steps described above would be ideal if the window did not update
@@ -106,18 +129,9 @@ input signals:  S-<-<-<-<-<-<-C
 
 ## Authentication
 
-The authentication is done by checking a password sent through an asymmetrically
-encrypted connection. The cryptosystem used for such task is
-[RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem)).
-
-The length of the public key is 4096.
-
-Before the client sends the password, the client and the server exchange their
-RSA public keys. At this point, the client can send the password encrypted so
-that the server can verify its authenticity.
-
-Once the server has verified the client's authenticity, it can stop using the
-RSA cryptosystem.
+The authentication in Scrtp is a really simple process. It just requires an AES
+key. That key is personal for each combination of user and machine (see
+[files#AES-key](files.md#AES-key)).
 
 ## Encryption
 
