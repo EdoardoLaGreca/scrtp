@@ -8,7 +8,8 @@ be able to read and write in its directory, it may need root privileges.
 
 ## AES key
 
-The client AES key is stored in `$HOME/.config/scrtp/aes_key`.
+The client AES key is stored in `$HOME/.config/scrtp/aes_key` and it is 128 bit
+long.
 
 That key is personal and must be unique for each combination of user and
 computer.
