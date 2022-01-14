@@ -15,41 +15,6 @@ represented using the letter `C` while the server is represented using the
 letter `S`. Symbols like `>>` and `<<` are used to specify the message
 direction.
 
-```TODO: REMOVE until "END REMOVE"
- C      S
- |      |
- +--->>-+ (1) The client sends a connection request to the server with some
- |      |     info.
- |      |
- +-<<---+ (2) The server sends its public key.
- |      |
- +--->>-+ (3) The client sends the password.
- |      |
- +-<<---+ (4) The server replies with "OK" (and a list of windows) or "NO" and
- |      |     an error message.
- |      |
- +--->>-+ (5) The client chooses a window.
- |      |
- +-<<---+ (6) The server sends the current window frame.
- |      |
- +--->>-+ (7) The client sends an input signal.
- |      |
- +-<<---+ (8) The server sends another frame.
- |      |
- +--->>-+ (9) The client sends another input signal.
- |      |
- .      .
- .      .
- .      .
- |      |
- +--->>-+ (n) Eventually, the client closes the connection.
-```
-
-Note that, if the server replies with "NO" in step `(4)`, the server will close
-the connection.
-
-TODO: END REMOVE
-
 The following steps require the client and the server to share a common AES key,
 which will be used for encryption during the whole connection, from the first
 packet to the last one. More about it on [Encryption](#Encryption).
@@ -62,54 +27,58 @@ C      S
 +-<<---+ (2) The server replies with "OK" and a list of available windows or
 |      |     "NO" and an error message.
 |      |
-+--->>-+ (3) The client chooses a window 
++--->>-+ (3) The client chooses a window.
+|      |
++-<<---+ (4) The server sends the current window frame.
+|      |
++--->>-+ (5) The client sends an input signal.
+|      |
++-<<---+ (6) The server sends another frame.
+|      |
++--->>-+ (7) The client sends another input signal.
+|      |
+.      .
+.      .
+.      .
+|      |
++--->>-+ (n) Eventually, the client closes the connection.
 ```
 
-
+Note that, if the server replies with "NO" in step `(2)`, the server will close
+the connection.
 
 ## Steps
-
-(TODO: REWRITE until "END REWRITE")
 
 The following steps are meant to examine in depth the outline shown in the
 overview. The number of each step corresponds with the number in the outline.
 
  1. When the client sends a connection request to the server, a TCP connection
-    is established between the two. Then, the client sends its public key (see
-    [Authentication](#Authentication)), its protocol version and the desired
-    image quality.
+    is established between the two. Then, the client sends its key (see
+    [Authentication](#Authentication)), its MAC address, its protocol version
+    and the desired image quality.
 
- 2. The server sends its public key (see [Authentication](#Authentication)).
-
- 3. The client authenticates by sending its encrypted password (see
-    [Authentication](#Authentication)).
-
- 4. The server replies with a 2 characters string which can be either `OK` or
+ 2. The server replies with a 2 characters string which can be either `OK` or
     `NO`. If it is `OK`, the authentication has successfully terminated and the
     server also sends a list of windows currently open in the computer,
     separated by a newline character. Otherwise, in case the server replied with
-    `NO`, the connection will be closed by the server itself.
+    `NO`, an error message is sent and the connection will be closed by the
+    server itself.
 
- 5. The client now has to choose a window (or the whole desktop) and send the
-    chosen window's ID to the server.
+ 3. The client now has to choose a window (or the whole desktop) and send the
+    chosen window's ID to the server. In case it's the whole desktop, the window
+    ID is equal to 0.
 
- 6. The server sends the current frame of the window.
+ 4. The server sends the current frame of the window.
 
- 7. The client sends an input signal such as a mouse click or a key press on the
+ 5. The client sends an input signal such as a mouse click or a key press on the
     keyboard.
 
- 8. The server emulates the input signal on the window and sends the updated
+ 6. The server emulates the input signal on the window and sends the updated
     window frame.
 
-Steps `(7)` and `(8)` repeat for each input signal and each window frame.
-
-After step `(3)`, the client's and server's public key is no longer necessary
-and the connection will be encrypted through the password (see
-[Encryption](#Encryption)).
+Steps `(5)` and `(6)` repeat for each input signal and each window frame.
 
 Eventually, the client closes the connection.
-
-TODO: END REWRITE
 
 ## Concurrency
 
@@ -129,22 +98,13 @@ input signals:  S-<-<-<-<-<-<-C
 
 ## Authentication
 
-The authentication in Scrtp is a really simple process. It just requires an AES
-key. That key is personal for each combination of user and machine (see
-[files#AES-key](files.md#AES-key)).
+The authentication in Scrtp is a really simple process: it just requires an AES
+key. That key is personal and must be unique for each combination of user and
+machine (see [files#AES-key](files.md#AES-key)).
 
 ## Encryption
 
-Most of packets are encrypted during their exchange. Their encryption is divided
-into 2 separate parts: asymmetric encryption (for password checking) and
-symmetric encryption (for window frames and input signals).
-
-The reason behind these choices are simple:
-
- - Asymmetric encryption is ideal for password checking.
- - Symmetric encryption is a good compromise between privacy and performance.
-
-The password used for symmetric encryption is the same as the one used for
+All the packets are encrypted using an AES key, the same used for
 authentication.
 
 ## Structure of packets
@@ -152,17 +112,28 @@ authentication.
 Below there are visual representations of the packets sent by the client and by
 the server.
 
+Whenever the packet's fields are placed in different lines or there is no size
+specified for them, it means that they are separated by newlines and their end
+is marked using the string terminator `\0`.
+
 Note that constant strings, which never change for a certain kind of packet, are
 double-quoted. Every non-quoted space-separated word works as a field whose
 content is not constant.
 
-Also note that, since some kinds of packets will be sent continuously, it is
+Also notice that, since some kinds of packets will be sent continuously, it is
 essential to optimize space. Therefore, the representation of these kinds of
 packets also has information about the size of single fields.
 
 ### Authentication packet
 
-(TODO)
+```
++------------+
+| AESkey     |
+| MACaddr    |
+| protoVer   |
+| imgQuality |
++------------+
+```
 
 ### Server reply to authentication
 
@@ -186,9 +157,6 @@ or
 ```
 
 In the first case (`"NO"`), `issue` contains the error message.
-
-In the second case (`"OK"`), the content's end is marked using a string
-terminator `0x00`.
 
 Window IDs are numbers (represented as strings) while window names are strings.
 
