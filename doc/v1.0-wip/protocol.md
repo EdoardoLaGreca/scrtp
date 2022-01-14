@@ -102,6 +102,8 @@ The authentication in Scrtp is a really simple process: it just requires an AES
 key. That key is personal and must be unique for each combination of user and
 machine (see [files#AES-key](files.md#AES-key)).
 
+The length of the AES key is 128 bit.
+
 ## Encryption
 
 All the packets are encrypted using an AES key, the same used for
