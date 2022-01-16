@@ -189,7 +189,8 @@ size (bytes)  0   4   8      12       16                 n
 
 The fields `x`, `y`, `width` and `height` are stored as big-endian unsigned
 integers. The `compWindowFrame` field represents the content of the compressed
-window frame.
+window frame. The compression algorithm used to compress the window frame is
+[Zstandard](https://en.wikipedia.org/wiki/Zstandard).
 
 ### Client's input signal
 
