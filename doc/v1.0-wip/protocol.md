@@ -181,16 +181,15 @@ not compress the whole image but instead it implements an algorithm to find the
 parts of that image that has changed.
 
 ```
-size (bytes)  0   4   8      12       16               20                 n
-              +---+---+-------+--------+----------------+-----------------+
-              | x | y | width | height | compWindowSize | compWindowFrame |
-              +---+---+-------+--------+----------------+-----------------+
+size (bytes)  0   4   8      12       16                 n
+              +---+---+-------+--------+-----------------+
+              | x | y | width | height | compWindowFrame |
+              +---+---+-------+--------+-----------------+
 ```
 
-The fields `x`, `y`, `width`, `height` and `compWindowSize` are stored as
-big-endian unsigned integers. The `compWindowSize` field represents the size in
-bytes of the `compWindowFrame` field. The `compWindowFrame` field represents
-the content of the compressed window frame.
+The fields `x`, `y`, `width` and `height` are stored as big-endian unsigned
+integers. The `compWindowFrame` field represents the content of the compressed
+window frame.
 
 ### Client's input signal
 
