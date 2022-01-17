@@ -2,8 +2,17 @@ package client
 
 import (
 	"crypto/cipher"
+	"encoding/binary"
 	"net"
+
+	"github.com/DataDog/zstd"
 )
+
+type WindowFrame struct {
+	x, y uint
+	width, height uint
+	winFrame []byte
+}
 
 // send an encrypted byte slice to server
 func sendEnc(conn net.Conn, cipher cipher.Block, content []byte) error {
@@ -71,4 +80,28 @@ func buildAuthPkt(key []byte, MACaddr, protoVer, imgQuality string) []byte {
 	pkt = append(pkt, (string(key) + "\n" + MACaddr + "\n" + protoVer + "\n" + imgQuality + "\x00")...)
 	
 	return pkt
+}
+
+func receiveWinFrame(conn net.Conn, cipher cipher.Block) (WindowFrame, error) {
+	pkt, err := receiveAllDec(conn, cipher)
+
+	if err != nil {
+		return nil, err
+	}
+
+	winFrameDec, err := zstd.Decompress(nil, pkt[16:])
+
+	if err != nil {
+		return nil, err
+	}
+
+	wf := WindowFrame {
+		x: binary.BigEndian.Uint32(pkt[0:4]),
+		y: binary.BigEndian.Uint32(pkt[4:8]),
+		width: binary.BigEndian.Uint32(pkt[8:12]),
+		height: binary.BigEndian.Uint32(pkt[12:16]),
+		winFrame: winFrameDec
+	}
+
+	return wf, nil
 }
