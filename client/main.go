@@ -8,6 +8,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/go-gl/glfw/v3.3/glfw"
 )
 
 // key size is 128 bit
@@ -55,16 +57,16 @@ func getMACaddr(netname, address string) (string, error) {
 
 	// find the interface in use among all the others
 	for _, ifc := range ifs {
-	
+
 		if ifc.Flags & net.FlagLoopback == 0 && ifc.Flags & net.FlagUp != 0 {
 			addrs, err := ifc.Addrs()
 
 			if err != nil {
 				continue
 			}
-			
+
 			addrFound := false
-			
+
 			for _, addr := range addrs {
 				if addr.Network() == netname && addr.String() == address {
 					addrFound = true
@@ -134,7 +136,7 @@ func main() {
 	// step 2: read the reply
 	reply := make([]byte, 2)
 	var restOfPkt string
-	
+
 	if _, err := conn.Read(reply); err != nil {
 		log.Fatalln("An error occurred while trying to read the server's reply:", err)
 	}
@@ -142,7 +144,7 @@ func main() {
 	if string(reply) != "OK" && string(reply) != "NO" {
 		log.Fatalln("The remote server sent a malformed reply:", reply)
 	}
-	
+
 	// read the rest of the packet
 	bytes, err := receiveAllDec(conn, cipher)
 
@@ -180,6 +182,33 @@ func main() {
 		sendEnc(conn, cipher, []byte(windows[chosenWin]))
 	}
 
-	// step 4: get frames
-	// continue here
+	// step 4: get frames (concurrently)
+	window, err := createWindow()
+
+	if err != nil {
+		log.Fatalln("Cannot create a window:", err)
+	}
+
+	go func(conn net.Conn, cipher cipher.Block, window glfw.Window) {
+		for {
+			wf, err := receiveWinFrame(conn, cipher)
+
+			if err != nil {
+				log.Println("An error occurred while trying to receive a window frame:", err)
+			}
+
+			updateWindow(window, wf)
+		}
+	}(conn, cipher, window)
+
+	// step 5: send input signals (concurrently)
+	go func() {
+		
+	}()
+
+	for !window.ShouldClose() {
+
+		window.SwapBuffers()
+		glfw.PollEvents()
+	}
 }
