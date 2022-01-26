@@ -195,12 +195,25 @@ window frame. The compression algorithm used to compress the window frame is
 ### Client's input signal
 
 ```
-size (bytes)  0        2
-              +--------+
-              | source |
-              +--------+
+size (bytes)  0        1       5
+              +--------+-------+
+              | source | value |
+              +--------+-------+
 ```
 
-The `source` field represents the source of input (like a key pressure on
-keyboard, a mouse click, etc...) as an enumeration. Since this field is 2 byte
-long, it is able to store up to 65535 possible sources.
+The `source` field represents the source of input (e.g. keyboard, mouse, etc...)
+as an enumeration stored in a 8-bit-long integer. Since this field is 1 byte
+long, it is able to store up to 255 possible sources.
+
+The `value` field represents the value of the source of input (e.g. which
+keyboard key has been typed, which mouse button has been clicked and where,
+etc...). Since [TODO]
+
+#### Input signal enumeration
+
+The following table clarifies the possible enumeration values in the `source` field.
+
+<table>
+   <tr>
+      <th>
+[TODO]
