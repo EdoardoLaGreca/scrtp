@@ -1,12 +1,10 @@
 package client
 
 import (
-	"runtime"
-	
 	"github.com/go-gl/glfw/v3.3/glfw"
 )
 
-func createWindow(width, height int) (glfw.Window, error) {
+func createWindow(width, height int) (*glfw.Window, error) {
 	err := glfw.Init()
 
 	if err != nil {
@@ -23,9 +21,9 @@ func createWindow(width, height int) (glfw.Window, error) {
 
 	window.MakeContextCurrent()
 
-	return window
+	return window, nil
 }
 
 func updateWindow(window *glfw.Window, part WindowFrame) error {
-	
+
 }
