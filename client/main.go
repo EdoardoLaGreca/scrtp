@@ -16,6 +16,12 @@ import (
 // key size is 128 bit
 const keySize int = 128 / 8
 
+// enumerated input signal types
+const (
+	mouseClick = iota
+	keyboardKeyPress
+)
+
 // TODO: better organization of code
 func main() {
 	if len(os.Args) != 3 {
@@ -115,13 +121,13 @@ func main() {
 		sendEnc(conn, ciph, []byte(windows[chosenWin]))
 	}
 
-	// step 4: get frames (concurrently)
 	window, err := createWindow(500, 500)
 
 	if err != nil {
 		log.Fatalln("Cannot create a window:", err)
 	}
 
+	// step 4: get frames (concurrently)
 	go func(conn net.Conn, ciph cipher.Block, window *glfw.Window) {
 		for {
 			wf, err := receiveWinFrame(conn, ciph)
@@ -134,9 +140,19 @@ func main() {
 		}
 	}(conn, ciph, window)
 
+	// channels to get input
+	keyChan := make()
+
 	// step 5: send input signals (concurrently)
 	go func() {
+		stopSending := false
 
+		for !stopSending {
+			select {
+			case keyboardInput := <-keyChan:
+
+			}
+		}
 	}()
 
 	for !window.ShouldClose() {
