@@ -14,7 +14,7 @@ import (
 )
 
 // key size is 128 bit
-const keySize int = 128/8;
+const keySize int = 128 / 8
 
 // read the key or exit if an error occurred
 func readKey() ([]byte, error) {
@@ -59,7 +59,7 @@ func getMACaddr(netname, address string) (string, error) {
 	// find the interface in use among all the others
 	for _, ifc := range ifs {
 
-		if ifc.Flags & net.FlagLoopback == 0 && ifc.Flags & net.FlagUp != 0 {
+		if ifc.Flags&net.FlagLoopback == 0 && ifc.Flags&net.FlagUp != 0 {
 			addrs, err := ifc.Addrs()
 
 			if err != nil {
@@ -107,7 +107,7 @@ func main() {
 
 	log.Println("Creating a block cipher using the AES key...")
 
-	cipher, err := aes.NewCipher(key)
+	ciph, err := aes.NewCipher(key)
 
 	if err != nil {
 		log.Fatalln("An error occurred while creating the block cipher:", err)
@@ -115,11 +115,11 @@ func main() {
 
 	log.Println("Establishing a TCP connection...")
 
-	conn, err := net.DialTimeout("tcp", address, time.Second * 5)
+	conn, err := net.DialTimeout("tcp", address, time.Second*5)
 	defer conn.Close()
 
 	if err != nil {
-		log.Fatalln("An error occurred while trying to connect to", "\"" + address + "\":", err)
+		log.Fatalln("An error occurred while trying to connect to", "\""+address+"\":", err)
 	}
 
 	log.Println("Getting the current machine's MAC address...")
@@ -132,7 +132,7 @@ func main() {
 
 	// step 1: send auth packet
 	log.Println("Sending the authentication packet...")
-	sendEnc(conn, cipher, buildAuthPkt(key, MACaddr, "1.0", "0"))
+	sendEnc(conn, ciph, buildAuthPkt(key, MACaddr, "1.0", "0"))
 
 	// step 2: read the reply
 	reply := make([]byte, 2)
@@ -147,7 +147,7 @@ func main() {
 	}
 
 	// read the rest of the packet
-	bytes, err := receiveAllDec(conn, cipher)
+	bytes, err := receiveAllDec(conn, ciph)
 
 	if err != nil {
 		log.Fatalln("An error occurred while trying to read the server's reply:", err)
@@ -178,9 +178,9 @@ func main() {
 
 	// step 3: send the chosen window
 	if chosenWin == 0 {
-		sendEnc(conn, cipher, []byte("0"))
+		sendEnc(conn, ciph, []byte("0"))
 	} else {
-		sendEnc(conn, cipher, []byte(windows[chosenWin]))
+		sendEnc(conn, ciph, []byte(windows[chosenWin]))
 	}
 
 	// step 4: get frames (concurrently)
@@ -190,21 +190,21 @@ func main() {
 		log.Fatalln("Cannot create a window:", err)
 	}
 
-	go func(conn net.Conn, cipher cipher.Block, window glfw.Window) {
+	go func(conn net.Conn, ciph cipher.Block, window *glfw.Window) {
 		for {
-			wf, err := receiveWinFrame(conn, cipher)
+			wf, err := receiveWinFrame(conn, ciph)
 
 			if err != nil {
 				log.Println("An error occurred while trying to receive a window frame:", err)
 			}
 
-			updateWindow(window, wf)
+			updateWindow(window, *wf)
 		}
-	}(conn, cipher, window)
+	}(conn, ciph, window)
 
 	// step 5: send input signals (concurrently)
 	go func() {
-		
+
 	}()
 
 	for !window.ShouldClose() {
