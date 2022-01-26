@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	"runtime"
@@ -6,7 +6,7 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 )
 
-func createWindow(width, height uint) (glfw.Window, error) {
+func createWindow(width, height int) (glfw.Window, error) {
 	err := glfw.Init()
 
 	if err != nil {
@@ -26,6 +26,6 @@ func createWindow(width, height uint) (glfw.Window, error) {
 	return window
 }
 
-func updateWindow(window glfw.Window, part WindowFrame) error {
+func updateWindow(window *glfw.Window, part WindowFrame) error {
 	
 }
