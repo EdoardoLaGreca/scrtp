@@ -2,6 +2,7 @@ package client
 
 import (
 	"crypto/aes"
+	"crypto/cipher"
 	"fmt"
 	"log"
 	"net"
@@ -183,7 +184,7 @@ func main() {
 	}
 
 	// step 4: get frames (concurrently)
-	window, err := createWindow()
+	window, err := createWindow(500, 500)
 
 	if err != nil {
 		log.Fatalln("Cannot create a window:", err)
