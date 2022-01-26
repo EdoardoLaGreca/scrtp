@@ -9,9 +9,9 @@ import (
 )
 
 type WindowFrame struct {
-	x, y uint
+	x, y          uint
 	width, height uint
-	winFrame []byte
+	winFrame      []byte
 }
 
 // send an encrypted byte slice to server
@@ -76,9 +76,9 @@ func receiveNDec(conn net.Conn, cipher cipher.Block, n int) ([]byte, error) {
 func buildAuthPkt(key []byte, MACaddr, protoVer, imgQuality string) []byte {
 
 	var pkt []byte
-	
+
 	pkt = append(pkt, (string(key) + "\n" + MACaddr + "\n" + protoVer + "\n" + imgQuality + "\x00")...)
-	
+
 	return pkt
 }
 
@@ -95,13 +95,13 @@ func receiveWinFrame(conn net.Conn, cipher cipher.Block) (*WindowFrame, error) {
 		return nil, err
 	}
 
-	wf := WindowFrame {
-		x: uint(binary.BigEndian.Uint32(pkt[0:4])),
-		y: uint(binary.BigEndian.Uint32(pkt[4:8])),
-		width: uint(binary.BigEndian.Uint32(pkt[8:12])),
-		height: uint(binary.BigEndian.Uint32(pkt[12:16])),
+	wf := WindowFrame{
+		x:        uint(binary.BigEndian.Uint32(pkt[0:4])),
+		y:        uint(binary.BigEndian.Uint32(pkt[4:8])),
+		width:    uint(binary.BigEndian.Uint32(pkt[8:12])),
+		height:   uint(binary.BigEndian.Uint32(pkt[12:16])),
 		winFrame: winFrameDec,
 	}
 
-	return wf, nil
+	return &wf, nil
 }
