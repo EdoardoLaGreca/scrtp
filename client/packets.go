@@ -82,7 +82,7 @@ func buildAuthPkt(key []byte, MACaddr, protoVer, imgQuality string) []byte {
 	return pkt
 }
 
-func receiveWinFrame(conn net.Conn, cipher cipher.Block) (WindowFrame, error) {
+func receiveWinFrame(conn net.Conn, cipher cipher.Block) (*WindowFrame, error) {
 	pkt, err := receiveAllDec(conn, cipher)
 
 	if err != nil {
@@ -96,11 +96,11 @@ func receiveWinFrame(conn net.Conn, cipher cipher.Block) (WindowFrame, error) {
 	}
 
 	wf := WindowFrame {
-		x: binary.BigEndian.Uint32(pkt[0:4]),
-		y: binary.BigEndian.Uint32(pkt[4:8]),
-		width: binary.BigEndian.Uint32(pkt[8:12]),
-		height: binary.BigEndian.Uint32(pkt[12:16]),
-		winFrame: winFrameDec
+		x: uint(binary.BigEndian.Uint32(pkt[0:4])),
+		y: uint(binary.BigEndian.Uint32(pkt[4:8])),
+		width: uint(binary.BigEndian.Uint32(pkt[8:12])),
+		height: uint(binary.BigEndian.Uint32(pkt[12:16])),
+		winFrame: winFrameDec,
 	}
 
 	return wf, nil
