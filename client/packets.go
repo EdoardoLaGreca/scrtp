@@ -56,22 +56,6 @@ func receiveAllDec(conn net.Conn, cipher cipher.Block) ([]byte, error) {
 	return decContent, nil
 }
 
-// receive N bytes decrypted
-func receiveNDec(conn net.Conn, cipher cipher.Block, n int) ([]byte, error) {
-	content := make([]byte, n)
-
-	_, err := conn.Read(content)
-
-	if err != nil {
-		return nil, err
-	}
-
-	decContent := make([]byte, n)
-	cipher.Decrypt(content, decContent)
-
-	return decContent, nil
-}
-
 // build auth packet
 func buildAuthPkt(key []byte, MACaddr, protoVer, imgQuality string) []byte {
 
