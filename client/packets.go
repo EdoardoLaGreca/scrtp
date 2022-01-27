@@ -58,8 +58,7 @@ func receiveAllDec(conn net.Conn, cipher cipher.Block) ([]byte, error) {
 
 // build auth packet
 func buildAuthPkt(key []byte, MACaddr, protoVer, imgQuality string) []byte {
-
-	var pkt []byte
+	pkt := make([]byte, 0)
 
 	pkt = append(pkt, (string(key) + "\n" + MACaddr + "\n" + protoVer + "\n" + imgQuality + "\x00")...)
 
@@ -88,4 +87,24 @@ func receiveWinFrame(conn net.Conn, cipher cipher.Block) (*WindowFrame, error) {
 	}
 
 	return &wf, nil
+}
+
+// send input signal to server
+func sendInputSignal(conn net.Conn, cipher cipher.Block, t int8, val1, val2 int32) error {
+	pkt := make([]byte, 0)
+	tBytes := byte(t)
+	val1Bytes := make([]byte, 4)
+	val2Bytes := make([]byte, 4)
+
+	binary.BigEndian.PutUint32(val1Bytes, uint32(val1))
+	binary.BigEndian.PutUint32(val2Bytes, uint32(val2))
+
+	// fill packet
+	pkt = append(pkt, tBytes)
+	pkt = append(pkt, val1Bytes...)
+	pkt = append(pkt, val2Bytes...)
+
+	err := sendEnc(conn, cipher, pkt)
+
+	return err
 }
