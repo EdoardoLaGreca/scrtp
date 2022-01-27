@@ -195,25 +195,62 @@ window frame. The compression algorithm used to compress the window frame is
 ### Client's input signal
 
 ```
-size (bytes)  0        1       5
-              +--------+-------+
-              | source | value |
-              +--------+-------+
+size (bytes)  0      1        5        9
+              +------+--------+--------+
+              | type | value1 | value2 |
+              +------+--------+--------+
 ```
 
-The `source` field represents the source of input (e.g. keyboard, mouse, etc...)
-as an enumeration stored in a 8-bit-long integer. Since this field is 1 byte
-long, it is able to store up to 255 possible sources.
+The `type` field represents the type (or "source") of input (e.g. keyboard,
+mouse click, mouse movement, etc...) as an enumeration stored in a 8-bit-long
+integer.
 
-The `value` field represents the value of the source of input (e.g. which
-keyboard key has been typed, which mouse button has been clicked and where,
-etc...). Since [TODO]
+The fields `value1` and `value2` represent the values of the input source (e.g.
+which keyboard key has been pressed, which position the mouse was in when one of
+its buttons has been clicked, etc...) as enumerations stored in 32-bit-long
+integers.
+
+The meaning of the fields `value1` and `value2` differ basing on the value of
+`type`.
 
 #### Input signal enumeration
 
-The following table clarifies the possible enumeration values in the `source` field.
+The following table clarifies the possible enumeration values in the `type`
+field. The table also contains an explaination of the meaning of the fields
+`value1` and `value2` based on the value of `type`.
 
 <table>
    <tr>
-      <th>
-[TODO]
+      <th> type </th>
+      <th> meaning </th>
+      <th> meaning of value1 and value2 </th>
+   </tr>
+   <tr>
+      <td> 0 </td>
+      <td> keyboard key press </td>
+      <td rowspan="2">
+         the fields value1 and value2 are combined in order to form a UTF-8
+         character
+      </td>
+   </tr>
+   <tr>
+      <td> 1 </td>
+      <td> keyboard key release </td>
+   </tr>
+   <tr>
+      <td> 2 </td>
+      <td> mouse left click </td>
+      <td rowspan="3">
+         the fields value1 and value2 represent respectively the x-axis and
+         y-axis mouse coordinates
+      </td>
+   </tr>
+   <tr>
+      <td> 3 </td>
+      <td> mouse middle click </td>
+   </tr>
+   <tr>
+      <td> 4 </td>
+      <td> mouse right click </td>
+   </tr>
+</table>
