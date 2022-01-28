@@ -261,7 +261,7 @@ and `value2` based on the value of `type`.
 The following table maps the possible enumeration values with keyboard keys and
 it is used in case the pressed keys contain a modifier key. The missing keys are
 mapped in the same way as they are in the ASCII standard (e.g. alphanumeric
-characters).
+characters). The value 0 is reserved to mark the end of the combination.
 
 <table>
    <tr>
@@ -269,19 +269,19 @@ characters).
       <th> key </th>
    </tr>
    <tr>
-      <td> 0 </td>
+      <td> 1 </td>
       <td> SHIFT </td>
    </tr>
    <tr>
-      <td> 1 </td>
+      <td> 2 </td>
       <td> CTRL (Control) </td>
    </tr>
    <tr>
-      <td> 2 </td>
+      <td> 3 </td>
       <td> ALT </td>
    </tr>
    <tr>
-      <td> 3 </td>
+      <td> 4 </td>
       <td> SUPER </td>
    </tr>
    [TODO]
