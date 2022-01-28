@@ -16,11 +16,16 @@ import (
 // key size is 128 bit
 const keySize int = 128 / 8
 
-// enumerated input signal types
-const (
-	mouseClick = iota
-	keyboardKeyPress
-)
+// channels to get input
+var charChan chan rune = make(chan rune)
+
+func charCallback(w *glfw.Window, char rune) {
+	charChan <- char
+}
+
+func keyCallback(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
+
+}
 
 // TODO: better organization of code
 func main() {
@@ -123,6 +128,8 @@ func main() {
 
 	window, err := createWindow(500, 500)
 
+	window.SetCharCallback(charCallback)
+
 	if err != nil {
 		log.Fatalln("Cannot create a window:", err)
 	}
@@ -140,17 +147,14 @@ func main() {
 		}
 	}(conn, ciph, window)
 
-	// channels to get input
-	keyChan := make()
-
 	// step 5: send input signals (concurrently)
 	go func() {
 		stopSending := false
 
 		for !stopSending {
 			select {
-			case keyboardInput := <-keyChan:
-
+			case keyboardInput := <-charChan:
+				sendInputSignal(conn, ciph)
 			}
 		}
 	}()
