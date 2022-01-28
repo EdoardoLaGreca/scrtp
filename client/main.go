@@ -3,6 +3,7 @@ package client
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"encoding/binary"
 	"fmt"
 	"log"
 	"net"
@@ -13,18 +14,81 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 )
 
+type KeyboardInput struct {
+	isPress bool // true when press, false when release
+	isCombo bool // true when combination, false when character
+
+	// these fields are accessed if isCombo is true
+	mod int
+	key int
+
+	// these fields are accessed if isCombo is false
+	char rune
+}
+
 // key size is 128 bit
 const keySize int = 128 / 8
 
 // channels to get input
-var charChan chan rune = make(chan rune)
+var keyboardChan chan KeyboardInput = make(chan KeyboardInput)
 
 func charCallback(w *glfw.Window, char rune) {
-	charChan <- char
+	input := KeyboardInput{
+		isPress: true,
+		isCombo: false,
+		char:    char,
+	}
+
+	// simulate press and release
+	keyboardChan <- input
+	input.isPress = false
+	keyboardChan <- input
 }
 
 func keyCallback(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
+	input := KeyboardInput{
+		isCombo: true,
+		mod:     modToEnum(mods),
+		key:     keyToEnum(key),
+	}
 
+	if action == glfw.Press {
+		input.isPress = true
+	} else if action == glfw.Release {
+		input.isPress = false
+	} else { // action is glfw.Repeat
+		// simulate press and release
+		input.isPress = true
+		keyboardChan <- input
+		input.isPress = false
+		keyboardChan <- input
+	}
+
+	keyboardChan <- input
+}
+
+// map key to enum
+func keyToEnum(key glfw.Key) int {
+	// find a way
+
+	return 0
+}
+
+// map modifier to enum
+func modToEnum(mod glfw.ModifierKey) int {
+	switch mod {
+	case glfw.ModShift:
+		return 1
+	case glfw.ModControl:
+		return 2
+	case glfw.ModAlt:
+		return 3
+	case glfw.ModSuper:
+		return 4
+	}
+
+	// unrecognized
+	return 255
 }
 
 // TODO: better organization of code
@@ -152,10 +216,26 @@ func main() {
 		stopSending := false
 
 		for !stopSending {
-			select {
-			case keyboardInput := <-charChan:
-				sendInputSignal(conn, ciph)
+			kinput := <-keyboardChan
+
+			var t int
+			val1 := make([]byte, 4)
+			val2 := make([]byte, 4)
+
+			if kinput.isPress {
+				t = 1
+			} else {
+				t = 0
 			}
+
+			if kinput.isCombo {
+				val1[0] = byte(kinput.mod)
+				val1[1] = byte(kinput.key)
+			} else {
+				binary.BigEndian.PutUint32(val1, uint32(kinput.char))
+			}
+
+			sendInputSignal(conn, ciph, int8(t), val1, val2)
 		}
 	}()
 
