@@ -215,9 +215,9 @@ The meaning of the fields `value1` and `value2` differ basing on the value of
 
 #### Input signal enumeration
 
-The following table clarifies the possible enumeration values in the `type`
-field. The table also contains an explaination of the meaning of the fields
-`value1` and `value2` based on the value of `type`.
+The following table maps the possible enumeration values in the `type` field.
+The table also contains an explaination of the meaning of the fields `value1`
+and `value2` based on the value of `type`.
 
 <table>
    <tr>
@@ -229,8 +229,11 @@ field. The table also contains an explaination of the meaning of the fields
       <td> 0 </td>
       <td> keyboard key press </td>
       <td rowspan="2">
-         the fields value1 and value2 are combined in order to form a UTF-8
-         character
+         The field value1 is used to represent a UTF-8 character. In case there
+         is a modifier key (any key that does not provide any UTF-8 character by
+         itself, except for SHIFT) among the pressed keys, it is going to be
+         identified as a combination of keys and each byte of value1 and value2
+         will store a keyboard key, identified by an enumeration (see below).
       </td>
    </tr>
    <tr>
@@ -241,8 +244,8 @@ field. The table also contains an explaination of the meaning of the fields
       <td> 2 </td>
       <td> mouse left click </td>
       <td rowspan="3">
-         the fields value1 and value2 represent respectively the x-axis and
-         y-axis mouse coordinates
+         The fields value1 and value2 represent respectively the x-axis and
+         y-axis mouse coordinates.
       </td>
    </tr>
    <tr>
@@ -253,4 +256,33 @@ field. The table also contains an explaination of the meaning of the fields
       <td> 4 </td>
       <td> mouse right click </td>
    </tr>
+</table>
+
+The following table maps the possible enumeration values with keyboard keys and
+it is used in case the pressed keys contain a modifier key. The missing keys are
+mapped in the same way as they are in the ASCII standard (e.g. alphanumeric
+characters).
+
+<table>
+   <tr>
+      <th> value </th>
+      <th> key </th>
+   </tr>
+   <tr>
+      <td> 0 </td>
+      <td> SHIFT </td>
+   </tr>
+   <tr>
+      <td> 1 </td>
+      <td> CTRL (Control) </td>
+   </tr>
+   <tr>
+      <td> 2 </td>
+      <td> ALT </td>
+   </tr>
+   <tr>
+      <td> 3 </td>
+      <td> SUPER </td>
+   </tr>
+   [TODO]
 </table>
