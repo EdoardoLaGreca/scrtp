@@ -111,23 +111,18 @@ authentication.
 
 ## Structure of packets
 
-Below there are visual representations of the packets sent by the client and by
-the server.
+Below you can find visual/structural representations of the packets sent between
+the client and the server.
 
-Whenever the packet's fields are placed in different lines or there is no size
-specified for them, it means that they are separated by newlines and their end
-is marked using the string terminator `\0`.
-
-Note that constant strings, which never change for a certain kind of packet, are
-double-quoted. Every non-quoted space-separated word works as a field whose
-content is not constant.
-
-Also notice that, since some kinds of packets will be sent continuously, it is
-essential to optimize space. Therefore, the representation of these kinds of
-packets also has information about the size of single fields.
+The representations are made using the JSON format. However, the protocol does
+not use the JSON format. Instead, it uses [MessagePack](https://msgpack.org/),
+which is more lightweight and therefore more suitable.
 
 ### Authentication packet
 
+[TODO]
+
+<!--
 ```
 +------------+
 | AESkey     |
@@ -136,9 +131,13 @@ packets also has information about the size of single fields.
 | imgQuality |
 +------------+
 ```
+-->
 
 ### Server reply to authentication
 
+[TODO]
+
+<!--
 ```
 +-------+
 | "NO"  |
@@ -162,7 +161,13 @@ In the first case (`"NO"`), `issue` contains the error message.
 
 Window IDs are numbers (represented as strings) while window names are strings.
 
+-->
+
 ### Client reply with a window ID
+
+[TODO]
+
+<!--
 
 ```
 +----------+
@@ -173,7 +178,13 @@ Window IDs are numbers (represented as strings) while window names are strings.
 Note that, in case the client chooses to see the whole desktop instead of a
 single window, `windowID` is 0.
 
+-->
+
 ### Server's window frame
+
+[TODO]
+
+<!--
 
 Lossless frame compression is one of the key features of this protocol, since it
 provides a fast way to send big amounts of data. To make it even faster, it does
@@ -192,7 +203,13 @@ integers. The `compWindowFrame` field represents the content of the compressed
 window frame. The compression algorithm used to compress the window frame is
 [Zstandard](https://en.wikipedia.org/wiki/Zstandard).
 
+-->
+
 ### Client's input signal
+
+[TODO]
+
+<!--
 
 ```
 size (bytes)  0      1        5        9
@@ -286,3 +303,5 @@ characters). The value 0 is reserved to mark the end of the combination.
    </tr>
    [TODO]
 </table>
+
+-->
