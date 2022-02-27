@@ -5,10 +5,10 @@ the client and the server.
 
 ## Overview
 
-As you may have noticed from the repo structure, Scrtp uses a client-server
-model. The computer which sends its own screen frames represents the server,
-while external computers which receive the screen frames and send peripheral
-signals (like a mouse click or a key press on the keyboard) act as clients.
+Scrtp uses a client-server model. The computer which sends its own screen
+frames represents the server, while external computers which receive the screen
+frames and send peripheral signals (like a mouse click or a key press on the
+keyboard) act as clients.
 
 The following outline describes an overview of the messages sent. The client is
 represented using the letter `C` while the server is represented using the
@@ -65,10 +65,10 @@ overview. The number of each step corresponds with the number in the outline.
     server itself.
 
  3. The client now has to choose a window (or the whole desktop) and send the
-    chosen window's ID to the server. In case it's the whole desktop, the window
-    ID is equal to 0.
+    chosen window ID to the server. In case it's the whole desktop, the window
+    ID is 0.
 
- 4. The server sends the current frame of the window.
+ 4. The server sends the current window frame.
 
  5. The client sends an input signal such as a mouse click or a key press on the
     keyboard.
@@ -204,6 +204,8 @@ window frame. The compression algorithm used to compress the window frame is
 [Zstandard](https://en.wikipedia.org/wiki/Zstandard).
 
 -->
+
+The server's window frame is compressed through [H.264](https://en.wikipedia.org/wiki/Advanced_Video_Coding). 
 
 ### Client's input signal
 
