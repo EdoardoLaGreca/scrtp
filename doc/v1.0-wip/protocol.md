@@ -118,67 +118,104 @@ The representations are made using the JSON format. However, the protocol does
 not use the JSON format. Instead, it uses [MessagePack](https://msgpack.org/),
 which is more lightweight and therefore more suitable.
 
+Whenever the field's value or the number of items in an array may vary, it is
+written as `...`.
+
 ### Authentication packet
 
-[TODO]
+```
+{
+   "hpw": "...",
+   "ver": "..."
+}
+```
 
-<!--
-```
-+------------+
-| AESkey     |
-| MACaddr    |
-| protoVer   |
-| imgQuality |
-+------------+
-```
--->
+<table>
+   <tr>
+      <th> Field name </th>
+      <th> Description </th>
+      <th> Possible values </th>
+   </tr>
+      <td> hpw </td>
+      <td> The server's hashed password (using ?) </td>
+      <td> Any string that fits the hash function's output size </td>
+   <tr>
+   </tr>
+   <tr>
+      <td> ver </td>
+      <td> The client's protocol version </td>
+      <td> Any valid protocol version </td>
+   </tr>
+</table>
 
 ### Server reply to authentication
 
-[TODO]
-
-<!--
 ```
-+-------+
-| "NO"  |
-| issue |
-+-------+
-```
-
-or
-
-```
-+-----------------------+
-| "OK"                  |
-| WindowName1 window1ID |
-| WindowName2 window2ID |
-| WindowNameN windowNID |
-| ...                   |
-+-----------------------+
+{
+   "ok": ...,
+   "issue": "...",
+   "windows": [
+      {
+         "name": "...",
+         "id": ...,
+      },
+      {
+         "name": "...",
+         "id": ...,
+      },
+      ...
+   ]
+}
 ```
 
-In the first case (`"NO"`), `issue` contains the error message.
+<table>
+   <tr>
+      <th> Field name </th>
+      <th> Description </th>
+      <th> Possible values </th>
+   </tr>
+   <tr>
+      <td> ok </td>
+      <td> Can the client connect to the server? true = yes, false = no </td>
+      <td> true or false (boolean) </td>
+   </tr>
+   <tr>
+      <td> issue </td>
+      <td> Information about the issue, used if ok = false </td>
+      <td> Can either be a string (ok = false) or null (ok = true) </td>
+   </tr>
+   <tr>
+      <td> windows </td>
+      <td> Contains an array of currently open windows with their name and ID
+         (each ID is unique), used if ok = true </td>
+      <td> Strings for names, integers for IDs; if ok = false, the array is
+         empty </td>
+   </tr>
+</table>
 
-Window IDs are numbers (represented as strings) while window names are strings.
-
--->
+The entire desktop has ID = 0. Every other window has ID > 0 and IDs are unique
+for every window.
 
 ### Client reply with a window ID
 
-[TODO]
-
-<!--
-
 ```
-+----------+
-| windowID |
-+----------+
+{
+   "id": ...
+}
 ```
 
-Note that, in case the client chooses to see the whole desktop instead of a
-single window, `windowID` is 0.
-
--->
+<table>
+   <tr>
+      <th> Field name </th>
+      <th> Description </th>
+      <th> Possible values </th>
+   </tr>
+   <tr>
+      <td> id </td>
+      <td> The chosen window's ID </td>
+      <td> Integer with value greater or equal to 0 </td>
+   </tr>
+</table>
 
 ### Server's window frame
 
