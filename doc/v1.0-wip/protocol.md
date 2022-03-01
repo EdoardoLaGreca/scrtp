@@ -118,15 +118,15 @@ The representations are made using the JSON format. However, the protocol does
 not use the JSON format. Instead, it uses [MessagePack](https://msgpack.org/),
 which is more lightweight and therefore more suitable.
 
-Whenever the field's value or the number of items in an array may vary, it is
-written as `...`.
+Whenever the number of items in an array may vary, it is written as "...". Also,
+the values are replaced with their type surrounded by parentheses.
 
 ### Authentication packet
 
 ```
 {
-   "hpw": "...",
-   "ver": "..."
+   "hpw": (string),
+   "ver": (string)
 }
 ```
 
@@ -137,14 +137,16 @@ written as `...`.
       <th> Possible values </th>
    </tr>
       <td> hpw </td>
-      <td> The server's hashed password (using ?) </td>
-      <td> Any string that fits the hash function's output size </td>
+      <td> The server's hashed password (using
+         <a href="https://en.wikipedia.org/wiki/SHA-3">SHA3-256</a>) </td>
+      <td> Any string that fits the hash function's output size (256 bits = 32
+         bytes) </td>
    <tr>
    </tr>
    <tr>
       <td> ver </td>
       <td> The client's protocol version </td>
-      <td> Any valid protocol version </td>
+      <td> Any valid protocol version as a string </td>
    </tr>
 </table>
 
@@ -152,16 +154,16 @@ written as `...`.
 
 ```
 {
-   "ok": ...,
-   "issue": "...",
+   "ok": (boolean),
+   "issue": (string),
    "windows": [
       {
-         "name": "...",
-         "id": ...,
+         "name": (string),
+         "id": (integer),
       },
       {
-         "name": "...",
-         "id": ...,
+         "name": (string),
+         "id": (integer),
       },
       ...
    ]
@@ -200,7 +202,7 @@ for every window.
 
 ```
 {
-   "id": ...
+   "id": (integer)
 }
 ```
 
@@ -221,10 +223,10 @@ for every window.
 
 ```
 {
-   "width": ...,
-   "height": ...,
+   "width": (integer),
+   "height": (integer),
    "compfr": [
-      ...
+      (integer), (integer), ...
    ]
 }
 ```
@@ -256,17 +258,15 @@ The server's window frame is compressed through [H.264](https://en.wikipedia.org
 
 ### Client's input signal
 
-[TODO]
-
 ```
 {
-   "source": ...,
-   "mposx": ...,
-   "mposy": ...,
-   "iscomb": ...,
-   "character": "...",
-   "key1": ...,
-   "key2": ...
+   "source": (integer),
+   "ispress": (boolean),
+   "mposx": (integer),
+   "mposy": (integer),
+   "keys": [
+      (string), (string), (string), ...
+   ]
 }
 ```
 
@@ -282,130 +282,131 @@ The server's window frame is compressed through [H.264](https://en.wikipedia.org
       <td> Integer with value greater or equal to 0 </td>
    </tr>
    <tr>
+      <td> ispress </td>
+      <td> Has the key/mouse button been pressed or released? true = pressed,
+         false = released </td>
+      <td> true or false (boolean) </td>
+   </tr>
+   <tr>
       <td> mposx </td>
       <td> The mouse position on the X-axis </td>
-      <td> Integer with value greater than 0 </td>
+      <td> Integer with value greater than 0 or null </td>
    </tr>
    <tr>
       <td> mposy </td>
       <td> The mouse position on the Y-axis </td>
-      <td> Integer with value greater than 0 </td>
+      <td> Integer with value greater than 0 or null </td>
    </tr>
    <tr>
-      <td> iscomb </td>
-      <td> Is it a key combination? true = yes, false = no </td>
-      <td> true or false (boolean) </td>
-   </tr>
-   <tr>
-      <td> character </td>
-      <td>  </td>
-      <td>  </td>
-   </tr>
-   <tr>
-      <td> key1 </td>
-      <td>  </td>
-      <td>  </td>
-   </tr>
-   <tr>
-      <td> key2 </td>
-      <td>  </td>
-      <td>  </td>
+      <td> keys </td>
+      <td> An array of keys, modifier keys start with an underscore </td>
+      <td> An array of strings </td>
    </tr>
 </table>
 
-<!--
-
-```
-size (bytes)  0      1        5        9
-              +------+--------+--------+
-              | type | value1 | value2 |
-              +------+--------+--------+
-```
-
-The `type` field represents the type (or "source") of input (e.g. keyboard,
-mouse click, mouse movement, etc...) as an enumeration stored in a 8-bit-long
-integer.
-
-The fields `value1` and `value2` represent the values of the input source (e.g.
-which keyboard key has been pressed, which position the mouse was in when one of
-its buttons has been clicked, etc...) as enumerations stored in 32-bit-long
-integers.
-
-The meaning of the fields `value1` and `value2` differ basing on the value of
-`type`.
-
-#### Input signal enumeration
-
-The following table maps the possible enumeration values in the `type` field.
-The table also contains an explaination of the meaning of the fields `value1`
-and `value2` based on the value of `type`.
-
 <table>
    <tr>
-      <th> type </th>
-      <th> meaning </th>
-      <th> meaning of value1 and value2 </th>
+      <th> Value of source </th>
+      <th> Meaning </th>
    </tr>
    <tr>
       <td> 0 </td>
-      <td> keyboard key press </td>
-      <td rowspan="2">
-         The field value1 is used to represent a UTF-8 character. In case there
-         is a modifier key (any key that does not provide any UTF-8 character by
-         itself, except for SHIFT) among the pressed keys, it is going to be
-         identified as a combination of keys and each byte of value1 and value2
-         will store a keyboard key, identified by an enumeration (see below).
-      </td>
+      <td> Unknown or unsupported input source </td>
    </tr>
    <tr>
       <td> 1 </td>
-      <td> keyboard key release </td>
+      <td> Mouse </td>
    </tr>
    <tr>
       <td> 2 </td>
-      <td> mouse left click </td>
-      <td rowspan="3">
-         The fields value1 and value2 represent respectively the x-axis and
-         y-axis mouse coordinates.
-      </td>
-   </tr>
-   <tr>
-      <td> 3 </td>
-      <td> mouse middle click </td>
-   </tr>
-   <tr>
-      <td> 4 </td>
-      <td> mouse right click </td>
+      <td> Keyboard </td>
    </tr>
 </table>
 
-The following table maps the possible enumeration values with keyboard keys and
-it is used in case the pressed keys contain a modifier key. The missing keys are
-mapped in the same way as they are in the ASCII standard (e.g. alphanumeric
-characters). The value 0 is reserved to mark the end of the combination.
+The length of the `keys` array is equal to the number of keys pressed at the
+same time. The `keys` array has length 1 if the user just typed a character
+while it has length greater than 1 if the user pressed or released a key
+combination.
+
+The various types of keys are written into strings as follows:
+
+ - Character keys (tab key included) are usually written as they are. In case of
+   alphabetic characters, they are written in the case indicated by the Caps
+   Lock key (e.g. `F`, `k`, ...).
+ - Function keys are written as `Fx` where `x` is a number between 1 and 12
+   inclusive (e.g. `F4`, `F12`, ...).
+ - Modifier keys and system command keys are preceded by an underscore (e.g.
+   `_C`, `_A`, ...; see below).
+ - Mouse buttons (in case `source` refers to mouse) are represented as: `lc`
+   (left click), `mc` (middle click), `rc` (right click), `swf` (scroll wheel
+   forward) and `swb` (scroll wheel backward).
+
+Below there is a table that shows representations for modifier and system
+command keys.
 
 <table>
    <tr>
-      <th> value </th>
-      <th> key </th>
+      <th> Key </th>
+      <th> Representation </th>
    </tr>
    <tr>
-      <td> 1 </td>
-      <td> SHIFT </td>
+      <td> Control (Ctrl) </td>
+      <td> "_C" </td>
    </tr>
    <tr>
-      <td> 2 </td>
-      <td> CTRL (Control) </td>
+      <td> Alternate (Alt) </td>
+      <td> "_A" </td>
    </tr>
    <tr>
-      <td> 3 </td>
-      <td> ALT </td>
+      <td> Alternate Graphics (AltGr) </td>
+      <td> "_G" </td>
    </tr>
    <tr>
-      <td> 4 </td>
-      <td> SUPER </td>
+      <td> Shift </td>
+      <td> "_S" </td>
    </tr>
-   [TODO]
+   <tr>
+      <td> Super/Windows/Command </td>
+      <td> "_X" </td>
+   </tr>
+   <tr>
+      <td> Escape (Esc) </td>
+      <td> "_E" </td>
+   </tr>
+   <tr>
+      <td> Enter/Return </td>
+      <td> "_N" </td>
+   </tr>
+   <tr>
+      <td> Delete (Del) </td>
+      <td> "_D" </td>
+   </tr>
+   <tr>
+      <td> Insert (Ins) </td>
+      <td> "_I" </td>
+   </tr>
+   <tr>
+      <td> Print screen (Prt Sc) </td>
+      <td> "_P" </td>
+   </tr>
+   <tr>
+      <td> Backspace </td>
+      <td> "_B" </td>
+   </tr>
+   <tr>
+      <td> Left arrow </td>
+      <td> "_<" </td>
+   </tr>
+   <tr>
+      <td> Right arrow </td>
+      <td> "_>" </td>
+   </tr>
+   <tr>
+      <td> Up arrow </td>
+      <td> "_^" </td>
+   </tr>
+   <tr>
+      <td> Down arrow </td>
+      <td> "_V" </td>
+   </tr>
 </table>
-
--->
