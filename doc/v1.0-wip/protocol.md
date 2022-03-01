@@ -219,34 +219,99 @@ for every window.
 
 ### Server's window frame
 
-[TODO]
-
-<!--
-
-Lossless frame compression is one of the key features of this protocol, since it
-provides a fast way to send big amounts of data. To make it even faster, it does
-not compress the whole image but instead it implements an algorithm to find the
-parts of that image that has changed.
-
 ```
-size (bytes)  0   4   8      12       16                 n
-              +---+---+-------+--------+-----------------+
-              | x | y | width | height | compWindowFrame |
-              +---+---+-------+--------+-----------------+
+{
+   "width": ...,
+   "height": ...,
+   "compfr": [
+      ...
+   ]
+}
 ```
 
-The fields `x`, `y`, `width` and `height` are stored as big-endian unsigned
-integers. The `compWindowFrame` field represents the content of the compressed
-window frame. The compression algorithm used to compress the window frame is
-[Zstandard](https://en.wikipedia.org/wiki/Zstandard).
-
--->
+<table>
+   <tr>
+      <th> Field name </th>
+      <th> Description </th>
+      <th> Possible values </th>
+   </tr>
+   <tr>
+      <td> width </td>
+      <td> The frame width </td>
+      <td> Integer with value greater than 0 </td>
+   </tr>
+   <tr>
+      <td> height </td>
+      <td> The frame height </td>
+      <td> Integer with value greater than 0 </td>
+   </tr>
+    <tr>
+      <td> compfr </td>
+      <td> The compressed and encoded frame content </td>
+      <td> An array of bytes (as integers) </td>
+   </tr>
+</table>
 
 The server's window frame is compressed through [H.264](https://en.wikipedia.org/wiki/Advanced_Video_Coding). 
 
 ### Client's input signal
 
 [TODO]
+
+```
+{
+   "source": ...,
+   "mposx": ...,
+   "mposy": ...,
+   "iscomb": ...,
+   "character": "...",
+   "key1": ...,
+   "key2": ...
+}
+```
+
+<table>
+   <tr>
+      <th> Field name </th>
+      <th> Description </th>
+      <th> Possible values </th>
+   </tr>
+   <tr>
+      <td> source </td>
+      <td> The enumerated input source </td>
+      <td> Integer with value greater or equal to 0 </td>
+   </tr>
+   <tr>
+      <td> mposx </td>
+      <td> The mouse position on the X-axis </td>
+      <td> Integer with value greater than 0 </td>
+   </tr>
+   <tr>
+      <td> mposy </td>
+      <td> The mouse position on the Y-axis </td>
+      <td> Integer with value greater than 0 </td>
+   </tr>
+   <tr>
+      <td> iscomb </td>
+      <td> Is it a key combination? true = yes, false = no </td>
+      <td> true or false (boolean) </td>
+   </tr>
+   <tr>
+      <td> character </td>
+      <td>  </td>
+      <td>  </td>
+   </tr>
+   <tr>
+      <td> key1 </td>
+      <td>  </td>
+      <td>  </td>
+   </tr>
+   <tr>
+      <td> key2 </td>
+      <td>  </td>
+      <td>  </td>
+   </tr>
+</table>
 
 <!--
 
