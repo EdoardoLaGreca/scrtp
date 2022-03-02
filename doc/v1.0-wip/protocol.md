@@ -57,12 +57,11 @@ overview. The number of each step corresponds with the number in the outline.
     [Authentication](#Authentication)), its MAC address, its protocol version
     and the desired image quality.
 
- 2. The server replies with a 2 characters string which can be either `OK` or
-    `NO`. If it is `OK`, the authentication has successfully terminated and the
-    server also sends a list of windows currently open in the computer,
-    separated by a newline character. Otherwise, in case the server replied with
-    `NO`, an error message is sent and the connection will be closed by the
-    server itself.
+ 2. The server replies with a boolean value. If it is true, the authentication
+    has successfully terminated and the server also sends a list of windows
+    currently open in the computer, separated by a newline character. Otherwise,
+    in case the server replied with false, an error message is sent and the
+    connection will be closed by the server itself.
 
  3. The client now has to choose a window (or the whole desktop) and send the
     chosen window ID to the server. In case it's the whole desktop, the window
