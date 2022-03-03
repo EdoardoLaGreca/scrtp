@@ -1,2 +1,7 @@
+github.com/dave/jennifer v1.4.1 h1:XyqG6cn5RQsTj3qlWQTKlRGAyrTcsk1kUmWdZBzRjDw=
+github.com/dave/jennifer v1.4.1/go.mod h1:7jEdnm+qBcxl8PC0zyp7vxcpSRnzXSt9r39tpTVGlwA=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20211213063430-748e38ca8aec h1:3FLiRYO6PlQFDpUU7OEFlWgjGD1jnBIVSJ5SYRWk+9c=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20211213063430-748e38ca8aec/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
+github.com/shamaton/msgpack/v2 v2.1.0/go.mod h1:aTUEmh31ziGX1Ml7wMPLVY0f4vT3CRsCvZRoSCs+VGg=
+github.com/shamaton/msgpackgen v0.3.0 h1:q6o7prOEJFdF9BAPgkOtfzJbs55pQi7g44RUnEVUxtM=
+github.com/shamaton/msgpackgen v0.3.0/go.mod h1:fd99fDDuxuTiWzkHC59uEGzrt/WDu+ltGZTbEWwVXIc=
