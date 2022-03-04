@@ -7,4 +7,7 @@ require (
 	github.com/shamaton/msgpackgen v0.3.0
 )
 
-require github.com/dave/jennifer v1.4.1 // indirect
+require (
+	github.com/dave/jennifer v1.4.1 // indirect
+	github.com/shamaton/msgpack/v2 v2.1.0 // indirect
+)
