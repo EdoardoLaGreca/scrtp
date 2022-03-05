@@ -3,8 +3,13 @@ package main
 //go:generate msgpackgen
 
 import (
-	_ "github.com/shamaton/msgpackgen"
+	"net"
+
+	"github.com/shamaton/msgpackgen/msgpack"
 )
+
+// buffer size for receiving bytes
+const bufferSize int = 1024
 
 // auth packet
 type AuthPkt struct {
@@ -41,34 +46,81 @@ type ClientInputSigPkt struct {
 	keys    []string
 }
 
-/*
 // send a slice of bytes
-func sendBytes(b []byte) {
+func sendBytes(conn net.Conn, b []byte) {
+	n, err := conn.Write(b)
+	if err != nil {
+		panic(err)
+	}
 
+	if n < len(b) {
+		panic("could not send enough bytes")
+	}
 }
 
 // receive a slice of bytes, reading all the content
-func recvBytes() []byte {
-
+func recvBytes(conn net.Conn) []byte {
+	return recvNBytes(conn, bufferSize)
 }
 
-func sendAuthPkt(pkt AuthPkt) {
+func recvNBytes(conn net.Conn, n int) []byte {
+	buffer := make([]byte, n)
 
+	n, err := conn.Read(buffer)
+	if err != nil {
+		panic(err)
+	}
+
+	return buffer
 }
 
-func recvAuthRepPkt() AuthRepPkt {
+func sendAuthPkt(conn net.Conn, pkt AuthPkt) {
+	b, err := msgpack.Marshal(pkt)
+	if err != nil {
+		panic(err)
+	}
 
+	sendBytes(conn, b)
 }
 
-func sendWIDPkt(pkt WIDPkt) {
+func recvAuthRepPkt(conn net.Conn) AuthRepPkt {
+	b := recvBytes(conn)
+	var pkt AuthRepPkt
 
+	err := msgpack.Unmarshal(b, &pkt)
+	if err != nil {
+		panic(err)
+	}
+
+	return pkt
 }
 
-func recvServerWinFramePkt() ServerWinFramePkt {
+func sendWIDPkt(conn net.Conn, pkt WIDPkt) {
+	b, err := msgpack.Marshal(pkt)
+	if err != nil {
+		panic(err)
+	}
 
+	sendBytes(conn, b)
 }
 
-func sendClientInputSigPkt(pkg ClientInputSigPkt) {
+func recvServerWinFramePkt(conn net.Conn) ServerWinFramePkt {
+	b := recvBytes(conn)
+	var pkt ServerWinFramePkt
 
+	err := msgpack.Unmarshal(b, &pkt)
+	if err != nil {
+		panic(err)
+	}
+
+	return pkt
 }
-*/
+
+func sendClientInputSigPkt(conn net.Conn, pkt ClientInputSigPkt) {
+	b, err := msgpack.Marshal(pkt)
+	if err != nil {
+		panic(err)
+	}
+
+	sendBytes(conn, b)
+}
