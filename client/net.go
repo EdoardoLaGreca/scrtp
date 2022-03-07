@@ -4,12 +4,10 @@ package main
 
 import (
 	"net"
+	"time"
 
 	"github.com/shamaton/msgpackgen/msgpack"
 )
-
-// buffer size for receiving bytes
-const bufferSize int = 1024
 
 // auth packet
 type AuthPkt struct {
@@ -32,12 +30,14 @@ type WIDPkt struct {
 	id int
 }
 
+// server window frame
 type ServerWinFramePkt struct {
 	width  int
 	height int
 	compfr []int
 }
 
+// client input signal
 type ClientInputSigPkt struct {
 	source  int
 	ispress bool
@@ -45,6 +45,16 @@ type ClientInputSigPkt struct {
 	mposy   int
 	keys    []string
 }
+
+// buffer size for receiving bytes
+const bufferSize int = 1024
+
+// connection timeout
+const timeout time.Duration = 5 * time.Second
+
+// UDP connection for sending window frames and input signals
+// must be constant after handshake
+var udpConn *net.UDPConn
 
 // send a slice of bytes
 func sendBytes(conn net.Conn, b []byte) {

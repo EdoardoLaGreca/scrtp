@@ -6,7 +6,8 @@ import (
 	"github.com/go-gl/glfw/v3.3/glfw"
 )
 
-type PressedKey struct {
+// store both the key and its representation to reduce code complexity
+type pressedKey struct {
 	key glfw.Key
 
 	// representation, empty string if there isn't one
@@ -14,7 +15,7 @@ type PressedKey struct {
 }
 
 // currently pressed keys
-var pressedKeys = make([]PressedKey, 0)
+var pressedKeys = make([]pressedKey, 0)
 
 // last pressed key
 var lastKey glfw.Key
@@ -125,7 +126,7 @@ func keyCallback(_ *glfw.Window, key glfw.Key, _ int, action glfw.Action, _ glfw
 		}
 
 		// new pressed key
-		pk := PressedKey{key: key, repr: toStr}
+		pk := pressedKey{key: key, repr: toStr}
 
 		lastKey = key
 		pressedKeys = append(pressedKeys, pk)
@@ -137,8 +138,20 @@ func keyCallback(_ *glfw.Window, key glfw.Key, _ int, action glfw.Action, _ glfw
 				break
 			}
 		}
+
+		// packet
+		pkt := ClientInputSigPkt{source: 2, ispress: false, mposx: -1, mposy: -1}
+
+		// keys as strings
+		pkt.keys = make([]string, len(pressedKeys))
+		for i, k := range pressedKeys {
+			pkt.keys[i] = k.repr
+		}
+
+		// send only when the key is released because charCallback already sends it
+		// when the key is pressed
+		sendClientInputSigPkt(udpConn, pkt)
 	}
-	// send packet
 }
 
 func charCallback(_ *glfw.Window, r rune) {
@@ -153,5 +166,9 @@ func charCallback(_ *glfw.Window, r rune) {
 		}
 	}
 
+	// packet
+	pkt := ClientInputSigPkt{source: 2, mposx: -1, mposy: -1}
+
 	// send packet
+	sendClientInputSigPkt(udpConn, pkt)
 }
