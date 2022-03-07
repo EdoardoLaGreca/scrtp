@@ -24,8 +24,8 @@ C      S
 |      |
 +--->>-+ (1) The client sends a connection request to the server with some info.
 |      |
-+-<<---+ (2) The server replies with "OK" and a list of available windows or
-|      |     "NO" and an error message.
++-<<---+ (2) The server replies with a list of available windows or an error
+|      |     message.
 |      |
 +--->>-+ (3) The client chooses a window.
 |      |
@@ -289,12 +289,12 @@ The server's window frame is compressed through [H.264](https://en.wikipedia.org
    <tr>
       <td> mposx </td>
       <td> The mouse position on the X-axis </td>
-      <td> Integer with value greater than 0 or null </td>
+      <td> Integer with value greater or equal to -1 </td>
    </tr>
    <tr>
       <td> mposy </td>
       <td> The mouse position on the Y-axis </td>
-      <td> Integer with value greater than 0 or null </td>
+      <td> Integer with value greater or equal to -1 </td>
    </tr>
    <tr>
       <td> keys </td>
@@ -302,6 +302,8 @@ The server's window frame is compressed through [H.264](https://en.wikipedia.org
       <td> An array of strings </td>
    </tr>
 </table>
+
+If `mposx` and `mposy` have value -1, it means that the mouse position has not changed. This special case is mostly used when input is from keyboard.
 
 <table>
    <tr>
