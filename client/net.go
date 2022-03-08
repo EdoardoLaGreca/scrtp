@@ -76,7 +76,7 @@ func recvBytes(conn net.Conn) []byte {
 func recvNBytes(conn net.Conn, n int) []byte {
 	buffer := make([]byte, n)
 
-	n, err := conn.Read(buffer)
+	_, err := conn.Read(buffer)
 	if err != nil {
 		panic(err)
 	}
