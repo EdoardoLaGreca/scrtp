@@ -8,14 +8,43 @@ import (
 	"golang.org/x/term"
 )
 
+var CLIArgs struct {
+	address string
+	isHelp  bool
+	isDebug bool
+}
+
+func printUsage() {
+	fmt.Println(
+		`Usage: scrtp [-hD] <addr>:<port>
+
+Flags:
+-h    Print this page
+-D    Print debug info`)
+}
+
 // check if the arguments passed are ok
 func checkArgs() error {
 	var e error = nil
 
-	if len(os.Args) < 2 {
+	if len(os.Args) == 1 {
 		e = fmt.Errorf("not enough arguments")
-	} else if len(os.Args) > 2 {
-		e = fmt.Errorf("too many arguments, extra arguments will be ignored")
+	}
+
+	for _, arg := range os.Args {
+
+		switch arg {
+		case "-h":
+			CLIArgs.isHelp = true
+		case "-D":
+			CLIArgs.isDebug = true
+		}
+
+		if arg[0] == '-' {
+			return fmt.Errorf("unknown argument `" + arg + "'")
+		} else {
+			CLIArgs.address = arg
+		}
 	}
 
 	return e
@@ -30,4 +59,9 @@ func askPassword(remoteAddr net.Addr) string {
 	}
 
 	return string(pw)
+}
+
+// print content if debug is enabled
+func printDebug() {
+
 }
