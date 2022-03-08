@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"os"
 
@@ -61,7 +62,9 @@ func askPassword(remoteAddr net.Addr) string {
 	return string(pw)
 }
 
-// print content if debug is enabled
-func printDebug() {
-
+// log content if debug is enabled
+func printDebug(msg string) {
+	if CLIArgs.isDebug {
+		log.Println(msg)
+	}
 }
