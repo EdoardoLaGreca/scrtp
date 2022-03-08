@@ -32,7 +32,7 @@ func printWindowList(windows WindowList) {
 
 	// find max ID length
 	for _, w := range windows {
-		idCurrLen := len(string(w.id))
+		idCurrLen := len(fmt.Sprint(w.id))
 
 		if idCurrLen > idMaxLen {
 			idMaxLen = idCurrLen
@@ -43,7 +43,7 @@ func printWindowList(windows WindowList) {
 	for _, w := range windows {
 		fmt.Print(w.id)
 
-		for i := len(string(w.id)); i < idMaxLen+1; i++ {
+		for i := len(fmt.Sprint(w.id)); i < idMaxLen+1; i++ {
 			fmt.Print(" ")
 		}
 
