@@ -31,6 +31,9 @@ func initWin(width, height int, title string) *glfw.Window {
 		panic(err)
 	}
 
+	window.SetKeyCallback(keyCallback)
+	window.SetCharCallback(charCallback)
+
 	return window
 }
 
