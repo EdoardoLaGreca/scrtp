@@ -33,6 +33,7 @@ func initWin(width, height int, title string) *glfw.Window {
 
 	window.SetKeyCallback(keyCallback)
 	window.SetCharCallback(charCallback)
+	window.SetCursorPosCallback(mousePosCallback)
 
 	return window
 }
@@ -113,6 +114,12 @@ func mouseToString(m glfw.MouseButton) string {
 	}
 
 	return ""
+}
+
+func mousePosCallback(w *Window, xpos float64, ypos float64) {
+	pkt := ClientInputSigPkt{source: 1, ispress: false, mposx: int(xpos), mposy: int(ypos), keys: []string{}}
+
+	sendClientInputSigPkt(udpConn, pkt)
 }
 
 // handle modifier keys and system command keys
