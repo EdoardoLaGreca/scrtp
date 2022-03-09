@@ -2,6 +2,8 @@
 
 Screen teleport - low latency remote screen control.
 
+![fake parsec logo](/img/fake_parsec_logo.png)
+
 ## Development
 
 I chose to use Go to write both client and server because of the ease with which
