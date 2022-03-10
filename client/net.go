@@ -39,11 +39,10 @@ type ServerWinFramePkt struct {
 
 // client input signal
 type ClientInputSigPkt struct {
-	source  int
-	ispress bool
-	mposx   int
-	mposy   int
-	keys    []string
+	source int
+	mposx  int
+	mposy  int
+	keys   []string
 }
 
 // buffer size for receiving bytes
