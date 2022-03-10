@@ -260,7 +260,6 @@ The server's window frame is compressed through [H.264](https://en.wikipedia.org
 ```
 {
    "source": (integer),
-   "ispress": (boolean),
    "mposx": (integer),
    "mposy": (integer),
    "keys": [
@@ -281,12 +280,6 @@ The server's window frame is compressed through [H.264](https://en.wikipedia.org
       <td> Integer with value greater or equal to 0 </td>
    </tr>
    <tr>
-      <td> ispress </td>
-      <td> Has the key/mouse button been pressed or released? true = pressed,
-         false = released </td>
-      <td> true or false (boolean) </td>
-   </tr>
-   <tr>
       <td> mposx </td>
       <td> The mouse position on the X-axis </td>
       <td> Integer with value greater or equal to -1 </td>
@@ -298,12 +291,13 @@ The server's window frame is compressed through [H.264](https://en.wikipedia.org
    </tr>
    <tr>
       <td> keys </td>
-      <td> An array of keys, modifier keys start with an underscore </td>
+      <td> An array of currently pressed keys represented as strings </td>
       <td> An array of strings </td>
    </tr>
 </table>
 
-If `mposx` and `mposy` have value -1, it means that the mouse position has not changed. This special case is mostly used when input is from keyboard.
+If `mposx` and `mposy` have value -1, it means that the mouse position has not
+changed. This special case is mostly used when input is from keyboard.
 
 <table>
    <tr>
