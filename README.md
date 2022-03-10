@@ -28,6 +28,7 @@ You do not need the client to run the server and vice versa.
 git clone https://github.com/EdoardoLaGreca/scrtp
 cd scrtp/client
 go get -d
+go generate
 go build .
 ```
 
