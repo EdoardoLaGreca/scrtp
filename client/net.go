@@ -70,7 +70,20 @@ func sendBytes(conn net.Conn, b []byte) {
 
 // receive a slice of bytes, reading all the content
 func recvBytes(conn net.Conn) []byte {
-	return recvNBytes(conn, bufferSize)
+
+	total := make([]byte, 0)
+
+	for {
+		partial := recvNBytes(conn, bufferSize)
+
+		if len(partial) < bufferSize {
+			break
+		}
+
+		total = append(total, partial...)
+	}
+
+	return total
 }
 
 func recvNBytes(conn net.Conn, n int) []byte {
