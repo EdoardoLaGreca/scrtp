@@ -145,11 +145,11 @@ outer:
 	printDebug("first window frame received, creating window...")
 
 	window := initWin(wf.width, wf.height, "scrtp - "+selectedWindow.name)
+	//window := initWin(500, 500, "scrtp") //DEBUG
 	defer window.Destroy()
 
 	// window loop
 	for !window.ShouldClose() {
-		// Do OpenGL stuff.
 		window.SwapBuffers()
 		glfw.PollEvents()
 	}
