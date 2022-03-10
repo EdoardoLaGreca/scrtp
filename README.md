@@ -71,7 +71,8 @@ messages is preferable but not strictly required.
 
  - [x] Keyboard handling
  - [x] Mouse position handling
- - [ ] Mouse click handling
+ - [x] Mouse click handling
+ - [x] Mouse scroll handling
  - [ ] Networking
  - [ ] Video decompression
  - [ ] Window resize
@@ -82,6 +83,13 @@ messages is preferable but not strictly required.
  - [ ] Window buffer capturing (Windows and Linux)
  - [ ] Networking
  - [ ] Video compression
+ - [ ] Window resize
+
+
+#### Optional
+
+ - [ ] Support for more input methods (gamepad, etc...)
+ - [ ] Performance improvements by modifying the protocol
 
 ## License
 
