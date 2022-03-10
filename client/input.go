@@ -38,6 +38,7 @@ func initWin(width, height int, title string) *glfw.Window {
 	window.SetCharCallback(charCallback)
 	window.SetCursorPosCallback(cursorPosCallback)
 	window.SetMouseButtonCallback(mouseButtonCallback)
+	window.SetScrollCallback(scrollCallback)
 
 	return window
 }
@@ -106,7 +107,7 @@ func keyToString(k glfw.Key) (string, error) {
 	return "", fmt.Errorf("unknown key")
 }
 
-// maps mouse buttons to strings, missing scroll wheel
+// maps mouse buttons to strings, missing scroll
 func mouseToString(m glfw.MouseButton) string {
 	switch m {
 	case glfw.MouseButtonLeft:
@@ -118,6 +119,10 @@ func mouseToString(m glfw.MouseButton) string {
 	}
 
 	return ""
+}
+
+func scrollToString(xoff float64, yoff float64) string {
+	return fmt.Sprintf("scroll:%f:%f", xoff, yoff)
 }
 
 // get pressed keys as a string slice
@@ -180,10 +185,19 @@ func sendPressedKeys(conn net.Conn, pkt ClientInputSigPkt) {
 	sendClientInputSigPkt(conn, pkt)
 }
 
+func scrollCallback(_ *glfw.Window, xoff float64, yoff float64) {
+	pkt := ClientInputSigPkt{source: 1, mposx: -1, mposy: -1}
+	pkt.keys = append(pressedKeysAsStrings(), scrollToString(xoff, yoff))
+
+	//fmt.Println("scrolled! x-offset =", xoff, "y-offset =", yoff) //DEBUG
+
+	sendClientInputSigPkt(udpConn, pkt)
+}
+
 func mouseButtonCallback(_ *glfw.Window, button glfw.MouseButton, action glfw.Action, _ glfw.ModifierKey) {
 	pkt := ClientInputSigPkt{source: 1, mposx: -1, mposy: -1}
 
-	//fmt.Println("btn =", button, "action =", action, "mods =", mods) //DEBUG
+	//fmt.Println("mouse button clicked! btn =", button, "action =", action, "mods =", mods) //DEBUG
 
 	if action == glfw.Press {
 		addPressedKey(button, mouseToString(button))
