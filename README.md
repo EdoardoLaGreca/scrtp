@@ -50,9 +50,24 @@ messages is preferable but not strictly required.
 
 ### Implemented features
 
+- [x] = implemented, tested and working
+- [ ] = not implemented, not tested or not working
+
 #### Client
 
+ - [x] Keyboard handling
+ - [x] Mouse position handling
+ - [ ] Mouse click handling
+ - [ ] Networking
+ - [ ] Video decompression
+ - [ ] Window resize
+
 #### Server
+
+ - [ ] Input replication on real window
+ - [ ] Window buffer capturing (Windows and Linux)
+ - [ ] Networking
+ - [ ] Video compression
 
 ## License
 
