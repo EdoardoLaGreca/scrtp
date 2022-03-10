@@ -33,7 +33,7 @@ func initWin(width, height int, title string) *glfw.Window {
 
 	window.SetKeyCallback(keyCallback)
 	window.SetCharCallback(charCallback)
-	window.SetCursorPosCallback(mousePosCallback)
+	window.SetCursorPosCallback(cursorPosCallback)
 
 	return window
 }
@@ -116,16 +116,17 @@ func mouseToString(m glfw.MouseButton) string {
 	return ""
 }
 
-func mousePosCallback(w *glfw.Window, xpos float64, ypos float64) {
+func cursorPosCallback(w *glfw.Window, xpos float64, ypos float64) {
 	pkt := ClientInputSigPkt{source: 1, ispress: false, mposx: int(xpos), mposy: int(ypos), keys: []string{}}
+	//fmt.Println("mouse moved! x =", xpos, "y =", ypos) //DEBUG
 
 	sendClientInputSigPkt(udpConn, pkt)
 }
 
 // handle modifier keys and system command keys
 func keyCallback(_ *glfw.Window, key glfw.Key, _ int, action glfw.Action, _ glfw.ModifierKey) {
-	//fmt.Println("KEY") //DEBUG
-	//fmt.Println("key pressed:", key, ", action:", action) //DEBUG
+
+	//fmt.Println("key pressed!", key, ", action:", action) //DEBUG
 
 	// add to/remove from pressedKeys and send the modified combination of pressed keys
 	if action == glfw.Press {
@@ -178,6 +179,8 @@ func charCallback(_ *glfw.Window, r rune) {
 
 	// packet
 	pkt := ClientInputSigPkt{source: 2, mposx: -1, mposy: -1}
+
+	//fmt.Println("char typed!", r) //DEBUG
 
 	// send packet
 	sendClientInputSigPkt(udpConn, pkt)
