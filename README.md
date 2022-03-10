@@ -20,7 +20,10 @@ To compile, you need:
  - the **GLFW dependencies**
 ([here](https://github.com/go-gl/glfw#installation))
 
-You do not need the client to run the server and vice versa.
+The client and the server do not have a strict dependency on each other, you can
+build one or the other independently. However, since they use a client-server
+architecture, you need a client to connect to the server and you need a server
+to share one or more windows to clients.
 
 ### Client
 
@@ -31,6 +34,15 @@ go get -d
 go generate
 go build .
 ```
+
+If you see this error (or a similar one) after `go generate`
+
+```
+net.go:3: running "msgpackgen": exec: "msgpackgen": executable file not found in $PATH
+```
+
+make sure that your `PATH` environment variable also contains `/home/<user>/go`.
+In case it doesn't, add it and run the command again.
 
 ### Server
 
