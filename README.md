@@ -31,6 +31,7 @@ to share one or more windows to clients.
 git clone https://github.com/EdoardoLaGreca/scrtp
 cd scrtp/client
 go get -d
+go install github.com/shamaton/msgpackgen # maybe not required after `go get -d`
 go generate
 go build .
 ```
@@ -41,8 +42,8 @@ If you see this error (or a similar one) after `go generate`
 net.go:3: running "msgpackgen": exec: "msgpackgen": executable file not found in $PATH
 ```
 
-make sure that your `PATH` environment variable also contains `/home/<user>/go`.
-In case it doesn't, add it and run the command again.
+make sure that your `PATH` environment variable also contains
+`/home/<user>/go/bin`. In case it doesn't, add it and run the command again.
 
 ### Server
 
