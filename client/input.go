@@ -116,7 +116,7 @@ func mouseToString(m glfw.MouseButton) string {
 	return ""
 }
 
-func mousePosCallback(w *Window, xpos float64, ypos float64) {
+func mousePosCallback(w *glfw.Window, xpos float64, ypos float64) {
 	pkt := ClientInputSigPkt{source: 1, ispress: false, mposx: int(xpos), mposy: int(ypos), keys: []string{}}
 
 	sendClientInputSigPkt(udpConn, pkt)
