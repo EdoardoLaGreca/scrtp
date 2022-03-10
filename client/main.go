@@ -18,7 +18,8 @@ type WindowList []struct {
 	id   int
 }
 
-const version string = "1.0"
+// Protocol version
+const protoVersion string = "1.0"
 
 func getHashedPassword(remAddr net.Addr) string {
 	pw := askPassword(remAddr)
@@ -85,7 +86,7 @@ func main() {
 
 	printDebug("sending authentication packet...")
 
-	sendAuthPkt(conn, AuthPkt{hpw: pw, ver: version})
+	sendAuthPkt(conn, AuthPkt{hpw: pw, ver: protoVersion})
 
 	printDebug("authentication packet sent, waiting for a reply...")
 
