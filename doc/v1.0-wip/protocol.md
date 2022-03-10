@@ -95,6 +95,11 @@ frames:         S->->->->->->-C
 input signals:  S-<-<-<-<-<-<-C
 ```
 
+## Authentication and encryption
+
+[TODO]
+
+<!--
 ## Authentication
 
 The authentication in Scrtp is a really simple process: it just requires an AES
@@ -107,6 +112,7 @@ The length of the AES key is 128 bit.
 
 All the packets are encrypted using an AES key, the same used for
 authentication.
+-->
 
 ## Structure of packets
 
