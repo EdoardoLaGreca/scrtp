@@ -2,19 +2,21 @@ package main
 
 import (
 	"fmt"
+	"net"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
 )
 
-// store both the key and its representation to reduce code complexity
+// store both the key/mouse button and its representation to reduce code complexity
 type pressedKey struct {
-	key glfw.Key
+	// can be either a keyboard key (glfw.Key) or a mouse button (glfw.MouseButton)
+	key interface{}
 
 	// representation, empty string if there isn't one
 	repr string
 }
 
-// currently pressed keys
+// currently pressed keys and mouse buttons
 var pressedKeys = make([]pressedKey, 0)
 
 // last pressed key
@@ -31,9 +33,11 @@ func initWin(width, height int, title string) *glfw.Window {
 		panic(err)
 	}
 
+	// callbacks
 	window.SetKeyCallback(keyCallback)
 	window.SetCharCallback(charCallback)
 	window.SetCursorPosCallback(cursorPosCallback)
+	window.SetMouseButtonCallback(mouseButtonCallback)
 
 	return window
 }
@@ -116,17 +120,92 @@ func mouseToString(m glfw.MouseButton) string {
 	return ""
 }
 
-func cursorPosCallback(w *glfw.Window, xpos float64, ypos float64) {
-	pkt := ClientInputSigPkt{source: 1, ispress: false, mposx: int(xpos), mposy: int(ypos), keys: []string{}}
+// get pressed keys as a string slice
+func pressedKeysAsStrings() []string {
+	keys := make([]string, len(pressedKeys))
+
+	for i, k := range pressedKeys {
+		if k.repr == "" {
+			panic("representation does not exist")
+		}
+
+		keys[i] = k.repr
+	}
+
+	return keys
+}
+
+// check if key is either glfw.Key or glfw.MouseButton, otherwise panic
+func checkKey(key interface{}) {
+	switch key.(type) {
+	case glfw.Key:
+		return
+	case glfw.MouseButton:
+		return
+	default:
+		panic("invalid key type")
+	}
+}
+
+// add key/button to pressedKeys, do nothing if it is already present
+// can be optimized by not checking if the key is already present
+func addPressedKey(key interface{}, repr string) {
+	checkKey(key)
+
+	for _, k := range pressedKeys {
+		if k.key == key {
+			return
+		}
+	}
+
+	pressedKeys = append(pressedKeys, pressedKey{key: key, repr: repr})
+}
+
+// remove key from pressedKeys, do nothing if the key is not in pressedKeys
+func removePressedKey(key interface{}) {
+	checkKey(key)
+
+	// find key and remove it
+	for i := range pressedKeys {
+		if pressedKeys[i].key == key {
+			pressedKeys = append(pressedKeys[:i], pressedKeys[i:]...)
+			break
+		}
+	}
+}
+
+// add pressed keys and mouse buttons and send the packet
+func sendPressedKeys(conn net.Conn, pkt ClientInputSigPkt) {
+	pkt.keys = pressedKeysAsStrings()
+	sendClientInputSigPkt(conn, pkt)
+}
+
+func mouseButtonCallback(_ *glfw.Window, button glfw.MouseButton, action glfw.Action, _ glfw.ModifierKey) {
+	pkt := ClientInputSigPkt{source: 1, mposx: -1, mposy: -1}
+
+	//fmt.Println("btn =", button, "action =", action, "mods =", mods) //DEBUG
+
+	if action == glfw.Press {
+		addPressedKey(button, mouseToString(button))
+	} else if action == glfw.Release {
+		removePressedKey(button)
+	}
+
+	sendPressedKeys(udpConn, pkt)
+}
+
+func cursorPosCallback(_ *glfw.Window, xpos float64, ypos float64) {
+	pkt := ClientInputSigPkt{source: 1, mposx: int(xpos), mposy: int(ypos)}
+
 	//fmt.Println("mouse moved! x =", xpos, "y =", ypos) //DEBUG
 
-	sendClientInputSigPkt(udpConn, pkt)
+	sendPressedKeys(udpConn, pkt)
 }
 
 // handle modifier keys and system command keys
 func keyCallback(_ *glfw.Window, key glfw.Key, _ int, action glfw.Action, _ glfw.ModifierKey) {
 
-	//fmt.Println("key pressed!", key, ", action:", action) //DEBUG
+	//fmt.Println("key pressed!", key, "action =", action) //DEBUG
 
 	// add to/remove from pressedKeys and send the modified combination of pressed keys
 	if action == glfw.Press {
@@ -141,27 +220,14 @@ func keyCallback(_ *glfw.Window, key glfw.Key, _ int, action glfw.Action, _ glfw
 
 		lastKey = key
 		pressedKeys = append(pressedKeys, pk)
-	} else {
-		// find key and remove it
-		for i := range pressedKeys {
-			if pressedKeys[i].key == key {
-				pressedKeys = append(pressedKeys[:i], pressedKeys[i:]...)
-				break
-			}
-		}
+	} else if action == glfw.Release {
+		removePressedKey(key)
 
-		// packet
-		pkt := ClientInputSigPkt{source: 2, ispress: false, mposx: -1, mposy: -1}
-
-		// keys as strings
-		pkt.keys = make([]string, len(pressedKeys))
-		for i, k := range pressedKeys {
-			pkt.keys[i] = k.repr
-		}
+		pkt := ClientInputSigPkt{source: 2, mposx: -1, mposy: -1}
 
 		// send only when the key is released because charCallback already sends it
 		// when the key is pressed
-		sendClientInputSigPkt(udpConn, pkt)
+		sendPressedKeys(udpConn, pkt)
 	}
 }
 
@@ -183,5 +249,5 @@ func charCallback(_ *glfw.Window, r rune) {
 	//fmt.Println("char typed!", r) //DEBUG
 
 	// send packet
-	sendClientInputSigPkt(udpConn, pkt)
+	sendPressedKeys(udpConn, pkt)
 }
