@@ -12,6 +12,12 @@ type property struct {
 	value string
 }
 
+var settings struct {
+	listenOn string
+	isHelp   bool
+	isDebug  bool
+}
+
 func readConfig(path string) ([]property, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {

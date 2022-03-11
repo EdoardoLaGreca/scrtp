@@ -6,12 +6,6 @@ import (
 	"os"
 )
 
-var CLIArgs struct {
-	address string
-	isHelp  bool
-	isDebug bool
-}
-
 func printUsage() {
 	fmt.Println(`Usage: scrtp-server [-hD] <config_file>
 
@@ -35,15 +29,15 @@ func checkArgs() error {
 
 		switch arg {
 		case "-h":
-			CLIArgs.isHelp = true
+			settings.isHelp = true
 		case "-D":
-			CLIArgs.isDebug = true
+			settings.isDebug = true
 		}
 
 		if arg[0] == '-' {
 			return fmt.Errorf("unknown argument `" + arg + "'")
 		} else {
-			CLIArgs.address = arg
+			settings.listenOn = arg
 		}
 	}
 
@@ -52,7 +46,7 @@ func checkArgs() error {
 
 // log content if debug is enabled
 func printDebug(msg string) {
-	if CLIArgs.isDebug {
+	if settings.isDebug {
 		log.Println(msg)
 	}
 }
