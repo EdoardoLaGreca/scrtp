@@ -10,7 +10,6 @@ require (
 )
 
 require (
-	github.com/dave/jennifer v1.4.1 // indirect
 	github.com/shamaton/msgpack/v2 v2.1.0 // indirect
 	golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 // indirect
 )
