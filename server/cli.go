@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 )
 
@@ -47,4 +48,11 @@ func checkArgs() error {
 	}
 
 	return e
+}
+
+// log content if debug is enabled
+func printDebug(msg string) {
+	if CLIArgs.isDebug {
+		log.Println(msg)
+	}
 }
