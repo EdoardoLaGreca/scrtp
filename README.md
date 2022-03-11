@@ -31,7 +31,7 @@ to share one or more windows to clients.
 git clone https://github.com/EdoardoLaGreca/scrtp
 cd scrtp/client
 go get -d
-go install github.com/shamaton/msgpackgen # maybe not required after `go get -d`
+go install github.com/shamaton/msgpackgen
 go generate
 go build .
 ```
@@ -51,6 +51,8 @@ make sure that your `PATH` environment variable also contains
 git clone https://github.com/EdoardoLaGreca/scrtp
 cd scrtp/server
 go get -d
+go install github.com/shamaton/msgpackgen
+go generate
 go build .
 ```
 
