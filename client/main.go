@@ -60,6 +60,10 @@ func main() {
 		panic(err)
 	}
 
+	if CLIArgs.isHelp {
+		printUsage()
+	}
+
 	printDebug("arguments parsed")
 
 	// enables the usage of generated stuff
