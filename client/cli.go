@@ -20,8 +20,8 @@ func printUsage() {
 		`Usage: scrtp [-hD] <addr>:<port>
 
 Flags:
--h    Print this page
--D    Print debug info`)
+ -h    Print this page
+ -D    Print debug info`)
 }
 
 // check if the arguments passed are ok
