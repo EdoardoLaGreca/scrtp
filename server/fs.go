@@ -28,7 +28,7 @@ func readConfig() ([]property, error) {
 			key = strings.TrimSpace(key)
 
 			if strings.Contains(key, " ") {
-				return nil, fmt.Errorf("key \"%s\" contains one or more spaces")
+				return nil, fmt.Errorf("key contains one or more spaces")
 			}
 
 			if key != "" && value != "" {
