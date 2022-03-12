@@ -7,10 +7,7 @@ import (
 )
 
 func printUsage() {
-	fmt.Println(`Usage: scrtp-server [-hD] <config_file>
-
-<config_file> is the configuration file. By default, scrtp-server reads it from
-/etc/scrtp/config_server
+	fmt.Println(`Usage: scrtp-server [-hD]
 
 Flags:
  -h    Print this page
@@ -29,15 +26,15 @@ func checkArgs() error {
 
 		switch arg {
 		case "-h":
-			settings.isHelp = true
+			props.isHelp = true
 		case "-D":
-			settings.isDebug = true
+			props.isDebug = true
 		}
 
 		if arg[0] == '-' {
 			return fmt.Errorf("unknown argument `" + arg + "'")
 		} else {
-			settings.listenOn = arg
+			props.listenOn = arg
 		}
 	}
 
@@ -46,7 +43,7 @@ func checkArgs() error {
 
 // log content if debug is enabled
 func printDebug(msg string) {
-	if settings.isDebug {
+	if props.isDebug {
 		log.Println(msg)
 	}
 }
