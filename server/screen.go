@@ -11,11 +11,13 @@ type window struct {
 	id   int
 }
 
+// TODO: migrate most of these functions from using wmctrl to the X11 library
+
 // current open windows
 var openWindows = make([]window, 0)
 
 func updateWindowsList() error {
-	output, err := exec.Command("wmctrl", "-l").Output()
+	output, err := exec.Command("wmctrl", "-lG").Output()
 	if err != nil {
 		printDebug("could not get window list")
 	}
@@ -23,6 +25,8 @@ func updateWindowsList() error {
 	winListStr := strings.Split(string(output), "\n")
 
 	openWindows = make([]window, 0)
+
+	openWindows = append(openWindows, window{name: "Entire desktop", id: 0})
 
 	for _, s := range winListStr {
 		var winID int
@@ -57,4 +61,41 @@ func convertWinToAnonStruct() []struct {
 	}
 
 	return windows
+}
+
+// is window ID valid?
+func isWinIDValid(id int) bool {
+	updateWindowsList()
+
+	// find window by window ID
+	for _, w := range openWindows {
+		if w.id == id {
+			return true
+		}
+	}
+
+	return false
+}
+
+// id must be a valid window ID
+// activate window by switching to its desktop and raising it
+func activateWin(id int) {
+	hexID := fmt.Sprintf("0x%x", id)
+
+	err := exec.Command("wmctrl", "-i", "-a", hexID).Run()
+	if err != nil {
+		printDebug("could not activate window " + hexID)
+	}
+}
+
+// get window geometry (a.k.a. the x and y coordinates of the top-left corner
+// with width and height)
+func getWinGeom(id int) (x int, y int, width int, height int) {
+	hexID := fmt.Sprintf("0x%x", id)
+
+	output, err := exec.Command("wmctrl", "-lG").Output()
+	if err != nil {
+		printDebug("could not get window list")
+	}
+
 }
