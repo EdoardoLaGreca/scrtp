@@ -12,6 +12,13 @@ functioning.
 
 ## Compiling
 
+The client and the server do not have a strict dependency on each other, you can
+build one or the other independently. However, since they use a client-server
+architecture, you need a client to connect to the server and you need a server
+to share one or more windows to clients.
+
+### Client
+
 To compile, you need:
 
  - **Git** to clone the repo, otherwise you can download it through
@@ -19,13 +26,6 @@ To compile, you need:
  - **Go** ([here](https://go.dev/doc/install))
  - the **GLFW dependencies**
 ([here](https://github.com/go-gl/glfw#installation))
-
-The client and the server do not have a strict dependency on each other, you can
-build one or the other independently. However, since they use a client-server
-architecture, you need a client to connect to the server and you need a server
-to share one or more windows to clients.
-
-### Client
 
 ```sh
 git clone https://github.com/EdoardoLaGreca/scrtp
@@ -46,6 +46,13 @@ make sure that your `PATH` environment variable also contains
 `/home/<user>/go/bin`. In case it doesn't, add it and run the command again.
 
 ### Server
+
+To compile, you need:
+
+ - **Git** to clone the repo, otherwise you can download it through
+[this link](https://github.com/EdoardoLaGreca/scrtp/archive/refs/heads/main.zip)
+ - **Go** ([here](https://go.dev/doc/install))
+ - **wmctrl** ([here](https://en.wikipedia.org/wiki/Wmctrl))
 
 ```sh
 git clone https://github.com/EdoardoLaGreca/scrtp
