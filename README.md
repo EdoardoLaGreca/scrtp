@@ -17,6 +17,15 @@ build one or the other independently. However, since they use a client-server
 architecture, you need a client to connect to the server and you need a server
 to share one or more windows to clients.
 
+If you see this error (or a similar one) after `go generate`
+
+```
+net.go:3: running "msgpackgen": exec: "msgpackgen": executable file not found in $PATH
+```
+
+make sure that your `PATH` environment variable also contains
+`/home/<user>/go/bin`. In case it doesn't, add it and run the command again.
+
 ### Client
 
 To compile, you need:
@@ -35,15 +44,6 @@ go install github.com/shamaton/msgpackgen
 go generate
 go build .
 ```
-
-If you see this error (or a similar one) after `go generate`
-
-```
-net.go:3: running "msgpackgen": exec: "msgpackgen": executable file not found in $PATH
-```
-
-make sure that your `PATH` environment variable also contains
-`/home/<user>/go/bin`. In case it doesn't, add it and run the command again.
 
 ### Server
 
