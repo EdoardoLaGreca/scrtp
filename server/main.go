@@ -1,10 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"net"
 	"os"
-	"strings"
 )
 
 type property struct {
@@ -12,81 +11,109 @@ type property struct {
 	value string
 }
 
-var settings struct {
-	listenOn string
-	isHelp   bool
-	isDebug  bool
+// properties
+var props struct {
+	listenOn       string
+	isHelp         bool
+	isDebug        bool
+	hashedPassword string
 }
 
-func readConfig(path string) ([]property, error) {
-	b, err := os.ReadFile(path)
-	if err != nil {
-		panic(err)
-	}
+// check if the program has enough privilege to access the /etc directory
+func checkEtc() bool {
+	_, err := os.Open("/etc")
 
-	fileContent := string(b)
-	props := make([]property, 0)
-
-	var key, value string
-	isKey := true
-
-	for i := 0; i < len(fileContent); i++ {
-		switch fileContent[i] {
-		case '\n':
-			key = strings.TrimSpace(key)
-
-			if strings.Contains(key, " ") {
-				return nil, fmt.Errorf("key \"%s\" contains one or more spaces")
-			}
-
-			if key != "" && value != "" {
-				props = append(props, property{key: key, value: value})
-			}
-			key = ""
-			value = ""
-			isKey = true
-		case '=':
-			isKey = false
-		case ' ':
-			continue
-		case '#':
-			// skip to the next newline
-			for ; fileContent[i+1] != '\n'; i++ {
-				continue
-			}
-		default:
-			// add character to string
-			if isKey {
-				key = fmt.Sprintf("%s%c", key, fileContent[i])
-			} else {
-				value = fmt.Sprintf("%s%c", value, fileContent[i])
-			}
-		}
-	}
-
-	return props, nil
+	return err != nil
 }
 
 func handleConnection(conn net.Conn) {
-	//TODO
+	printDebug("!! new connection from " + conn.RemoteAddr().String() + ", waiting for an authentication packet...")
+
+	authPkt := recvAuthPkt(conn)
+
+	printDebug("authentication packet received")
+
+	var reply AuthRepPkt
+
+	if authPkt.hpw != props.hashedPassword {
+		printDebug("login from " + conn.RemoteAddr().String() + " failed becuse of wrong password")
+		reply = AuthRepPkt{
+			ok:    false,
+			issue: "wrong password",
+		}
+
+		conn.Close()
+		return
+	}
+
+	printDebug("login from " + conn.RemoteAddr().String() + " successful")
+
+	updateWindowsList()
+	reply = AuthRepPkt{
+		ok:      true,
+		issue:   "",
+		windows: convertWinToAnonStruct(),
+	}
+
+	sendAuthRepPkt(conn, reply)
+
+	printDebug("autentication reply sent, waiting for window ID")
+
+	wid := recvWIDPkt(conn).id
+
+	if !isWinIDValid(wid) {
+		// invalid window ID
+		conn.Close()
+		return
+	}
+
+	// while the window ID is valid (the window has not been closed)
+	for isWinIDValid(wid) {
+
+	}
+
 }
 
-func main() {
+// fill props global variable
+func fillProps() {
 	err := checkArgs()
 	if err != nil {
 		printUsage()
 		panic(err)
 	}
 
+	if !checkEtc() {
+		panic("cannot access /etc")
+	}
+
+	config, err := readConfig()
+	if err != nil {
+		log.Println("An error occurred while reading config file:", err)
+	}
+
+	// fill global variable props with values from config file
+	for _, prop := range config {
+		switch prop.key {
+		case "listen_on":
+			props.listenOn = prop.value
+		}
+	}
+
+	props.hashedPassword = getHashedPw()
+}
+
+func main() {
+	fillProps() // keep this as first call
+
 	// enables the usage of generated stuff
 	RegisterGeneratedResolver()
 
-	lis, err := net.Listen("tcp", settings.listenOn)
+	lis, err := net.Listen("tcp", props.listenOn)
 	if err != nil {
 		panic(err)
 	}
 
-	printDebug("listening on " + settings.listenOn + "...")
+	printDebug("listening on " + props.listenOn + " for new connections...")
 
 	for {
 		conn, err := lis.Accept()
@@ -96,5 +123,4 @@ func main() {
 
 		go handleConnection(conn)
 	}
-
 }
