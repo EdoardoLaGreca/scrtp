@@ -5,5 +5,7 @@ github.com/shamaton/msgpackgen v0.3.0 h1:q6o7prOEJFdF9BAPgkOtfzJbs55pQi7g44RUnEV
 github.com/shamaton/msgpackgen v0.3.0/go.mod h1:fd99fDDuxuTiWzkHC59uEGzrt/WDu+ltGZTbEWwVXIc=
 golang.org/x/crypto v0.0.0-20220312131142-6068a2e6cfdc h1:i6Z9eOQAdM7lvsbkT3fwFNtSAAC+A59TYilFj53HW+E=
 golang.org/x/crypto v0.0.0-20220312131142-6068a2e6cfdc/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
+golang.org/x/crypto v0.0.0-20220313003712-b769efc7c000 h1:SL+8VVnkqyshUSz5iNnXtrBQzvFF2SkROm6t5RczFAE=
+golang.org/x/crypto v0.0.0-20220313003712-b769efc7c000/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
 golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 h1:SrN+KX8Art/Sf4HNj6Zcz06G7VEz+7w9tdXTPOZ7+l4=
 golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
