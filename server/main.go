@@ -48,29 +48,7 @@ func handleConnection(conn net.Conn) {
 
 	printDebug("login from " + conn.RemoteAddr().String() + " successful")
 
-	updateWindowsList()
-	reply = AuthRepPkt{
-		ok:      true,
-		issue:   "",
-		windows: convertWinToAnonStruct(),
-	}
-
-	sendAuthRepPkt(conn, reply)
-
-	printDebug("autentication reply sent, waiting for window ID")
-
-	wid := recvWIDPkt(conn).id
-
-	if !isWinIDValid(wid) {
-		// invalid window ID
-		conn.Close()
-		return
-	}
-
-	// while the window ID is valid (the window has not been closed)
-	for isWinIDValid(wid) {
-
-	}
+	// ...
 
 }
 
@@ -102,9 +80,11 @@ func fillProps() {
 	props.hashedPassword = getHashedPw()
 }
 
-func main() {
-	fillProps() // keep this as first call
+func init() {
+	fillProps()
+}
 
+func main() {
 	// enables the usage of generated stuff
 	RegisterGeneratedResolver()
 
