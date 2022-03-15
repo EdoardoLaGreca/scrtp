@@ -1,4 +1,6 @@
 github.com/dave/jennifer v1.4.1/go.mod h1:7jEdnm+qBcxl8PC0zyp7vxcpSRnzXSt9r39tpTVGlwA=
+github.com/linuxdeepin/go-x11-client v0.0.0-20211221022052-94765319f76c h1:WiBOauFEX0UpXeC3YrCeQ58MDjv+XPTvtfI2kVwMOE0=
+github.com/linuxdeepin/go-x11-client v0.0.0-20211221022052-94765319f76c/go.mod h1:KwpmRZ47A/0a2l9V0V6aTlkuNaqy5j1fOqMFJONuIMY=
 github.com/shamaton/msgpack/v2 v2.1.0 h1:9jJ2eGZw2Wa9KExPX3KaDDckVjgr4zhXGFCfWagUWqg=
 github.com/shamaton/msgpack/v2 v2.1.0/go.mod h1:aTUEmh31ziGX1Ml7wMPLVY0f4vT3CRsCvZRoSCs+VGg=
 github.com/shamaton/msgpackgen v0.3.0 h1:q6o7prOEJFdF9BAPgkOtfzJbs55pQi7g44RUnEVUxtM=

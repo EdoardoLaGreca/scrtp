@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	github.com/linuxdeepin/go-x11-client v0.0.0-20211221022052-94765319f76c // indirect
 	github.com/shamaton/msgpack/v2 v2.1.0 // indirect
 	golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 // indirect
 )
