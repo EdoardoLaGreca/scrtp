@@ -1,75 +1,85 @@
 package main
 
 import (
-	"fmt"
-	"os/exec"
-	"strings"
+	x "github.com/linuxdeepin/go-x11-client"
+	"github.com/linuxdeepin/go-x11-client/util/wm/ewmh"
 )
 
 type window struct {
 	name string
-	id   int
+	id   x.Window
+	geom geometry
 }
 
-// TODO: migrate most of these functions from using wmctrl to the X11 library
+type geometry struct {
+	x      int16
+	y      int16
+	width  uint16
+	height uint16
+}
 
-// current open windows
-var openWindows = make([]window, 0)
+type pixel [3]byte
 
-func updateWindowsList() error {
-	output, err := exec.Command("wmctrl", "-lG").Output()
+// X11 connection
+var xConn *x.Conn
+
+func init() {
+	conn, err := x.NewConn()
 	if err != nil {
-		printDebug("could not get window list")
+		panic(err)
 	}
 
-	winListStr := strings.Split(string(output), "\n")
-
-	openWindows = make([]window, 0)
-
-	openWindows = append(openWindows, window{name: "Entire desktop", id: 0})
-
-	for _, s := range winListStr {
-		var winID int
-		var winName string
-
-		fmt.Sscanf(s, "0x%x  %s", &winID, &winName)
-
-		openWindows = append(openWindows, window{name: winName, id: winID})
-	}
-
-	return nil
+	xConn = conn
 }
 
-// convert open windows to anonymous struct
-func convertWinToAnonStruct() []struct {
+func getWindowList() []window {
+	reply, err := ewmh.GetClientList(xConn).Reply(xConn)
+	if err != nil {
+		printDebug("unable to get currently open windows: " + err.Error())
+		return make([]window, 0)
+	}
+
+	windowList := make([]window, len(reply))
+
+	for i, w := range reply {
+		// if Reply returns error, just keep the empty string
+		windowName, _ := ewmh.GetWMName(xConn, w).Reply(xConn)
+		windowGeom, _ := getWinGeom(w)
+		windowList[i] = window{name: windowName, id: uint32(w), geom: windowGeom}
+	}
+
+	return windowList
+}
+
+// convert windows to anonymous struct
+func convertWinsToAnonStruct(windows []window) []struct {
 	name string
 	id   int
 } {
-	windows := make([]struct {
+	converted := make([]struct {
 		name string
 		id   int
 	}, 0)
 
 	for _, w := range windows {
-		windows = append(windows, struct {
+		converted = append(converted, struct {
 			name string
 			id   int
 		}{
 			name: w.name,
-			id:   w.id,
+			id:   int(w.id),
 		})
 	}
 
-	return windows
+	return converted
 }
 
 // is window ID valid?
 func isWinIDValid(id int) bool {
-	updateWindowsList()
 
 	// find window by window ID
-	for _, w := range openWindows {
-		if w.id == id {
+	for _, w := range getWindowList() {
+		if int(w.id) == id {
 			return true
 		}
 	}
@@ -79,23 +89,31 @@ func isWinIDValid(id int) bool {
 
 // id must be a valid window ID
 // activate window by switching to its desktop and raising it
-func activateWin(id int) {
-	hexID := fmt.Sprintf("0x%x", id)
-
-	err := exec.Command("wmctrl", "-i", "-a", hexID).Run()
-	if err != nil {
-		printDebug("could not activate window " + hexID)
-	}
+func activateWin(id x.Window) {
+	ewmh.SetActiveWindow(xConn, id)
 }
 
 // get window geometry (a.k.a. the x and y coordinates of the top-left corner
 // with width and height)
-func getWinGeom(id int) (x int, y int, width int, height int) {
-	hexID := fmt.Sprintf("0x%x", id)
-
-	output, err := exec.Command("wmctrl", "-lG").Output()
+func getWinGeom(id x.Window) (geometry, error) {
+	geom, err := x.GetGeometry(xConn, x.Drawable(id)).Reply(xConn)
 	if err != nil {
-		printDebug("could not get window list")
+		return geometry{}, err
 	}
 
+	return geometry{
+		x:      geom.X,
+		y:      geom.Y,
+		width:  geom.Width,
+		height: geom.Height,
+	}, nil
+}
+
+func getWindowFrame(w *window) ([]byte, error) {
+	reply, err := x.GetImage(xConn, x.ImageFormatZPixmap, x.Drawable(w.id), w.geom.x, w.geom.y, w.geom.width, w.geom.height).Reply(xConn)
+	if err != nil {
+		return nil, err
+	}
+
+	return reply.Data, nil
 }
