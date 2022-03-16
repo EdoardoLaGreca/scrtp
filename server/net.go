@@ -34,7 +34,7 @@ type WIDPkt struct {
 type ServerWinFramePkt struct {
 	width  int
 	height int
-	compfr []int
+	compfr []byte
 }
 
 // client input signal
