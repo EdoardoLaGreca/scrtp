@@ -45,7 +45,7 @@ func getWindowList() []window {
 		// if Reply returns error, just keep the empty string
 		windowName, _ := ewmh.GetWMName(xConn, w).Reply(xConn)
 		windowGeom, _ := getWinGeom(w)
-		windowList[i] = window{name: windowName, id: uint32(w), geom: windowGeom}
+		windowList[i] = window{name: windowName, id: w, geom: windowGeom}
 	}
 
 	return windowList
@@ -110,7 +110,7 @@ func getWinGeom(id x.Window) (geometry, error) {
 }
 
 func getWindowFrame(w *window) ([]byte, error) {
-	reply, err := x.GetImage(xConn, x.ImageFormatZPixmap, x.Drawable(w.id), w.geom.x, w.geom.y, w.geom.width, w.geom.height).Reply(xConn)
+	reply, err := x.GetImage(xConn, x.ImageFormatZPixmap, x.Drawable(w.id), w.geom.x, w.geom.y, w.geom.width, w.geom.height, 0xFFFFFFFF).Reply(xConn)
 	if err != nil {
 		return nil, err
 	}
