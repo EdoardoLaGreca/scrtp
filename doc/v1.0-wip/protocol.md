@@ -15,10 +15,6 @@ represented using the letter `C` while the server is represented using the
 letter `S`. Symbols like `>>` and `<<` are used to specify the message
 direction.
 
-The following steps require the client and the server to share a common AES key,
-which will be used for encryption during the whole connection, from the first
-packet to the last one. More about it on [Encryption](#Encryption).
-
 ```
 C      S
 |      |
@@ -44,28 +40,31 @@ C      S
 +--->>-+ (n) Eventually, the client closes the connection.
 ```
 
-Note that, if the server replies with "NO" in step `(2)`, the server will close
-the connection.
+Note that, if the server replies with an error message in step `(2)`, the server
+will close the connection.
 
 ## Steps
 
 The following steps are meant to examine in depth the outline shown in the
 overview. The number of each step corresponds with the number in the outline.
 
- 1. When the client sends a connection request to the server, a TCP connection
-    is established between the two. Then, the client sends its key (see
-    [Authentication](#Authentication)), its MAC address, its protocol version
-    and the desired image quality.
+The exact structure of the packets can be found in
+[Structure of packets](#structure-of-packets).
+
+ 1. When the client sends a connection request to the server, an encrypted
+    TCP connection is established between the two (see
+    [Authentication and encryption](#authentication-and-encryption)) and the
+    client sends the authentication packet.
 
  2. The server replies with a boolean value. If it is true, the authentication
     has successfully terminated and the server also sends a list of windows
-    currently open in the computer, separated by a newline character. Otherwise,
-    in case the server replied with false, an error message is sent and the
+    currently open in the computer by specifying their name and ID. Otherwise,
+    in case the server replies with false, an error message is sent and the
     connection will be closed by the server itself.
 
- 3. The client now has to choose a window (or the whole desktop) and send the
-    chosen window ID to the server. In case it's the whole desktop, the window
-    ID is 0.
+ 3. The client now has to choose a window (or the whole desktop) by its ID and
+    specify the video quality. If the window ID does not exist, the server
+    closes the connection.
 
  4. The server sends the current window frame.
 
@@ -195,7 +194,8 @@ for every window.
 
 ```
 {
-   "id": (integer)
+   "id": (integer),
+   "quality": (string)
 }
 ```
 
@@ -209,6 +209,15 @@ for every window.
       <td> id </td>
       <td> The chosen window's ID </td>
       <td> Integer with value greater or equal to 0 </td>
+   </tr>
+   <tr>
+      <td> quality </td>
+      <td> The video quality </td>
+      <td> Can be any 
+         <a href="https://trac.ffmpeg.org/wiki/Encode/H.264#Preset">
+            H.264 preset
+         </a>
+      </td>
    </tr>
 </table>
 
