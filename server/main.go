@@ -83,8 +83,8 @@ func handleConnection(conn net.Conn) {
 
 	printDebug("auth reply packet sent, waiting for window ID...")
 
-	wid := recvWIDPkt(conn).id
-	chosenWindow, err := findWindowByID(wid)
+	widPkt := recvWIDPkt(conn)
+	chosenWindow, err := findWindowByID(widPkt.id)
 
 	if err != nil {
 		printDebug("window ID is invalid")
@@ -93,7 +93,7 @@ func handleConnection(conn net.Conn) {
 
 	stop := make(chan struct{})
 
-	go frameSender(conn, chosenWindow, stop)
+	go frameSender(conn, chosenWindow, widPkt.quality, stop)
 
 	go inputReceiver(conn, chosenWindow, stop)
 
