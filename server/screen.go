@@ -1,15 +1,19 @@
 package main
 
 import (
+	"bytes"
 	"net"
 
-	x "github.com/linuxdeepin/go-x11-client"
-	"github.com/linuxdeepin/go-x11-client/util/wm/ewmh"
+	"github.com/BurntSushi/xgb"
+	"github.com/BurntSushi/xgb/shm"
+	"github.com/BurntSushi/xgb/xproto"
+	"github.com/BurntSushi/xgbutil/ewmh"
+	"github.com/gen2brain/x264-go"
 )
 
 type window struct {
 	name string
-	id   x.Window
+	id   xproto.Window
 	geom geometry
 }
 
@@ -23,7 +27,7 @@ type geometry struct {
 type pixel [3]byte
 
 // X11 connection
-var xConn *x.Conn
+var xConn *xgb.Conn
 
 // desktop as a window
 var desktop window = window{
@@ -33,7 +37,7 @@ var desktop window = window{
 
 func init() {
 	// init X11 connection
-	conn, err := x.NewConn()
+	conn, err := xgb.NewConn()
 	if err != nil {
 		panic(err)
 	}
@@ -49,9 +53,27 @@ func init() {
 	desktop.geom = desktopGeom
 }
 
-func frameSender(conn net.Conn, win window, stop chan<- struct{}) {
+func frameSender(conn net.Conn, win window, preset string, stop chan<- struct{}) {
+	// H.264 video output
+	var videoOutput bytes.Buffer
+	videoOutput.Grow(1024)
+
+	// init encoder
+	enc, err := x264.NewEncoder(&videoOutput, &x264.Options{
+		Width:     int(win.geom.width),
+		Height:    int(win.geom.height),
+		FrameRate: 60,
+		Tune:      "zerolatency",
+		Preset:    preset,
+		Profile:   "main",
+		LogLevel:  0,
+	})
+	if err != nil {
+		printDebug("error occurred during the H.264 encoder creation: " + err.Error())
+		stop <- struct{}{}
+	}
+
 	var winGeom geometry
-	var err error
 
 	for {
 
@@ -76,7 +98,9 @@ func frameSender(conn net.Conn, win window, stop chan<- struct{}) {
 			return
 		}
 
-		sendServerWinFramePkt(conn, ServerWinFramePkt{width: int(win.geom.width), height: int(win.geom.height), compfr: /*TODO*/})
+		enc.Encode()
+
+		sendServerWinFramePkt(conn, ServerWinFramePkt{width: int(win.geom.width), height: int(win.geom.height), compfr: videoOutput.Bytes()})
 	}
 }
 
@@ -144,14 +168,14 @@ func isWinIDValid(id int) bool {
 
 // id must be a valid window ID
 // activate window by switching to its desktop and raising it
-func activateWin(id x.Window) {
+func activateWin(id xproto.Window) {
 	ewmh.SetActiveWindow(xConn, id)
 }
 
 // get window geometry (a.k.a. the x and y coordinates of the top-left corner
 // with width and height)
-func getWinGeom(id x.Window) (geometry, error) {
-	geom, err := x.GetGeometry(xConn, x.Drawable(id)).Reply(xConn)
+func getWinGeom(id xproto.Window) (geometry, error) {
+	geom, err := xproto.GetGeometry(xConn, xproto.Drawable(id)).Reply()
 	if err != nil {
 		return geometry{}, err
 	}
@@ -165,7 +189,7 @@ func getWinGeom(id x.Window) (geometry, error) {
 }
 
 func getDesktopSize() (geometry, error) {
-	desktopGeometry, err := ewmh.GetDesktopGeometry(xConn).Reply(xConn)
+	desktopGeometry, err := ewmh.GetDesktopGeometry(xConn).Reply()
 	if err != nil {
 		printDebug("cannot get desktop geometry")
 	}
@@ -175,10 +199,20 @@ func getDesktopSize() (geometry, error) {
 }
 
 func getWindowFrame(w *window) ([]byte, error) {
-	reply, err := x.GetImage(xConn, x.ImageFormatZPixmap, x.Drawable(w.id), w.geom.x, w.geom.y, w.geom.width, w.geom.height, 0).Reply(xConn)
+	reply, err := shm.GetImage(xConn, xproto.Drawable(w.id), w.geom.x, w.geom.y, w.geom.width, w.geom.height, 0 /*...*/).Reply()
 	if err != nil {
 		return nil, err
 	}
 
 	return reply.Data, nil
+}
+
+// choose the video bitrate based on the window size
+func chooseBitrate(winWidth, winHeight uint) uint {
+	fps := uint(60)
+
+	// this constant is used to map winHeight*winWidth*fps to bitrates
+	k := 18.3
+
+	return uint(float64(winWidth*winHeight*fps) / k)
 }

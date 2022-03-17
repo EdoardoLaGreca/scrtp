@@ -3,6 +3,7 @@ module github.com/EdoardoLaGreca/scrtp/server
 go 1.17
 
 require (
+	github.com/BurntSushi/xgb v0.0.0-20210121224620-deaf085860bc
 	github.com/gen2brain/x264-go v0.2.0
 	github.com/linuxdeepin/go-x11-client v0.0.0-20211221022052-94765319f76c
 	github.com/shamaton/msgpackgen v0.3.0
