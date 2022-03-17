@@ -27,7 +27,8 @@ type AuthRepPkt struct {
 
 // client reply with window ID
 type WIDPkt struct {
-	id int
+	id      int
+	quality string
 }
 
 // server window frame
