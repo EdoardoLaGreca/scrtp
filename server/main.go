@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"log"
 	"net"
 	"os"
@@ -23,23 +22,11 @@ var props struct {
 // check if the program has enough privilege to access the /etc directory
 func checkEtc() bool {
 	dir, err := os.Open("/etc")
-	defer dir.Close()
+	defer func() {
+		_ = dir.Close()
+	}()
 
 	return err != nil
-}
-
-func findWindowByID(id int) (window, error) {
-	if id == 0 {
-		return desktop, nil
-	}
-
-	for _, w := range getWindowList() {
-		if int(w.id) == id {
-			return w, nil
-		}
-	}
-
-	return window{}, errors.New("window not found")
 }
 
 func handleConnection(conn net.Conn) {
