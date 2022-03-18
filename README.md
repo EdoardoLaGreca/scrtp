@@ -28,6 +28,8 @@ make sure that your `PATH` environment variable also contains
 
 ### Client
 
+![Go report card](https://goreportcard.com/badge/github.com/EdoardoLaGreca/scrtp/client)
+
 To compile, you need:
 
  - **Git** to clone the repo, otherwise you can download it through
@@ -46,6 +48,8 @@ go build .
 ```
 
 ### Server
+
+![Go report card](https://goreportcard.com/badge/github.com/EdoardoLaGreca/scrtp/server)
 
 To compile, you need:
 
@@ -88,10 +92,10 @@ messages is preferable but not strictly required.
 
 #### Server
 
+ - [x] Window buffer capturing (Windows and Linux)
+ - [x] Networking
+ - [x] Video compression
  - [ ] Input replication on real window
- - [ ] Window buffer capturing (Windows and Linux)
- - [ ] Networking
- - [ ] Video compression
  - [ ] Window resize
 
 
