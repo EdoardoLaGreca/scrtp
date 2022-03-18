@@ -2,12 +2,14 @@ package main
 
 import (
 	"bytes"
+	"errors"
+	"image"
 	"net"
 
-	"github.com/BurntSushi/xgb"
-	"github.com/BurntSushi/xgb/shm"
 	"github.com/BurntSushi/xgb/xproto"
+	"github.com/BurntSushi/xgbutil"
 	"github.com/BurntSushi/xgbutil/ewmh"
+	"github.com/BurntSushi/xgbutil/xgraphics"
 	"github.com/gen2brain/x264-go"
 )
 
@@ -24,10 +26,8 @@ type geometry struct {
 	height uint16
 }
 
-type pixel [3]byte
-
-// X11 connection
-var xConn *xgb.Conn
+// XUtil connection
+var xutil *xgbutil.XUtil
 
 // desktop as a window
 var desktop window = window{
@@ -37,12 +37,12 @@ var desktop window = window{
 
 func init() {
 	// init X11 connection
-	conn, err := xgb.NewConn()
+	conn, err := xgbutil.NewConn()
 	if err != nil {
 		panic(err)
 	}
 
-	xConn = conn
+	xutil = conn
 
 	desktopGeom, err := getDesktopSize()
 	if err != nil {
@@ -90,7 +90,7 @@ func frameSender(conn net.Conn, win window, preset string, stop chan<- struct{})
 			win.geom = winGeom
 		}
 
-		b, err := getWindowFrame(&win)
+		img, err := getWindowFrame(&win)
 		if err != nil {
 			printDebug("error occurred while getting a window frame: " + err.Error())
 			conn.Close()
@@ -98,9 +98,13 @@ func frameSender(conn net.Conn, win window, preset string, stop chan<- struct{})
 			return
 		}
 
-		enc.Encode()
+		err = enc.Encode(img)
+		if err != nil {
+			printDebug("error occurred while encoding the image: " + err.Error())
+		}
 
 		sendServerWinFramePkt(conn, ServerWinFramePkt{width: int(win.geom.width), height: int(win.geom.height), compfr: videoOutput.Bytes()})
+
 	}
 }
 
@@ -112,7 +116,7 @@ func inputReceiver(conn net.Conn, win window, stop chan<- struct{}) {
 }
 
 func getWindowList() []window {
-	reply, err := ewmh.GetClientList(xConn).Reply(xConn)
+	reply, err := ewmh.ClientListGet(xutil)
 	if err != nil {
 		printDebug("unable to get currently open windows: " + err.Error())
 		return make([]window, 0)
@@ -122,7 +126,7 @@ func getWindowList() []window {
 
 	for i, w := range reply {
 		// if Reply returns error, just keep the empty string
-		windowName, _ := ewmh.GetWMName(xConn, w).Reply(xConn)
+		windowName, _ := ewmh.WmNameGet(xutil, w)
 		windowGeom, _ := getWinGeom(w)
 		windowList[i] = window{name: windowName, id: w, geom: windowGeom}
 	}
@@ -153,29 +157,33 @@ func convertWinsToAnonStruct(windows []window) []struct {
 	return converted
 }
 
-// is window ID valid?
-func isWinIDValid(id int) bool {
+// find window by its ID, also useful to check if the ID is correct
+func findWindowByID(id int) (window, error) {
+	if id == 0 {
+		return desktop, nil
+	}
 
-	// find window by window ID
 	for _, w := range getWindowList() {
 		if int(w.id) == id {
-			return true
+			return w, nil
 		}
 	}
 
-	return false
+	return window{}, errors.New("window not found")
 }
 
+/* may be useful in future
 // id must be a valid window ID
 // activate window by switching to its desktop and raising it
 func activateWin(id xproto.Window) {
-	ewmh.SetActiveWindow(xConn, id)
+	ewmh.ActiveWindowSet(xutil, id)
 }
+*/
 
 // get window geometry (a.k.a. the x and y coordinates of the top-left corner
 // with width and height)
 func getWinGeom(id xproto.Window) (geometry, error) {
-	geom, err := xproto.GetGeometry(xConn, xproto.Drawable(id)).Reply()
+	geom, err := xproto.GetGeometry(xutil.Conn(), xproto.Drawable(id)).Reply()
 	if err != nil {
 		return geometry{}, err
 	}
@@ -189,24 +197,36 @@ func getWinGeom(id xproto.Window) (geometry, error) {
 }
 
 func getDesktopSize() (geometry, error) {
-	desktopGeometry, err := ewmh.GetDesktopGeometry(xConn).Reply()
+	desktopGeometry, err := ewmh.DesktopGeometryGet(xutil)
 	if err != nil {
 		printDebug("cannot get desktop geometry")
+		return geometry{}, err
 	}
 
 	return geometry{x: 0, y: 0, width: uint16(desktopGeometry.Width), height: uint16(desktopGeometry.Height)}, nil
 
 }
 
-func getWindowFrame(w *window) ([]byte, error) {
-	reply, err := shm.GetImage(xConn, xproto.Drawable(w.id), w.geom.x, w.geom.y, w.geom.width, w.geom.height, 0 /*...*/).Reply()
+func getWindowFrame(w *window) (image.Image, error) {
+	ximg, err := xgraphics.NewDrawable(xutil, xproto.Drawable(xutil.RootWin()))
 	if err != nil {
 		return nil, err
 	}
 
-	return reply.Data, nil
+	img := new(image.RGBA)
+	img.Stride = ximg.Stride
+	img.Rect = ximg.Rect
+	img.Pix = ximg.Pix
+
+	// convert ximg.Pix (BGRA) into RGBA by swapping B and R
+	for i := 0; i < len(ximg.Pix); i += 4 {
+		img.Pix[i], img.Pix[i+2] = img.Pix[i+2], img.Pix[i]
+	}
+
+	return img, nil
 }
 
+/* may be useful in future
 // choose the video bitrate based on the window size
 func chooseBitrate(winWidth, winHeight uint) uint {
 	fps := uint(60)
@@ -216,3 +236,4 @@ func chooseBitrate(winWidth, winHeight uint) uint {
 
 	return uint(float64(winWidth*winHeight*fps) / k)
 }
+*/
