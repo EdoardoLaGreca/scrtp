@@ -26,6 +26,9 @@ net.go:3: running "msgpackgen": exec: "msgpackgen": executable file not found in
 make sure that your `PATH` environment variable also contains
 `/home/<user>/go/bin`. In case it doesn't, add it and run the command again.
 
+Please keep in mind that I'm a human being and I may forget to update written
+things such as compilation requirements.
+
 ### Client
 
 ![Go report card](https://goreportcard.com/badge/github.com/EdoardoLaGreca/scrtp/client)
@@ -34,9 +37,10 @@ To compile, you need:
 
  - **Git** to clone the repo, otherwise you can download it through
 [this link](https://github.com/EdoardoLaGreca/scrtp/archive/refs/heads/main.zip)
- - **Go** ([here](https://go.dev/doc/install))
+ - **Go** ([see here](https://go.dev/doc/install))
  - the **GLFW dependencies**
-([here](https://github.com/go-gl/glfw#installation))
+   ([see here](https://github.com/go-gl/glfw#installation))
+ - the **x264-go dependencies** (`x264`)
 
 ```sh
 git clone https://github.com/EdoardoLaGreca/scrtp
@@ -55,8 +59,12 @@ To compile, you need:
 
  - **Git** to clone the repo, otherwise you can download it through
 [this link](https://github.com/EdoardoLaGreca/scrtp/archive/refs/heads/main.zip)
- - **Go** ([here](https://go.dev/doc/install))
- - **wmctrl** ([here](https://en.wikipedia.org/wiki/Wmctrl))
+ - **Go** ([see here](https://go.dev/doc/install))
+ - the **xgb and xgbutil dependencies** (probably `libxcb-devel`,
+   `xcb-util-devel` and their dependencies)
+ - the **x264-go dependencies** (`x264`)
+ - the **robotgo dependencies**
+   ([see here](https://github.com/go-vgo/robotgo#requirements))
 
 ```sh
 git clone https://github.com/EdoardoLaGreca/scrtp
