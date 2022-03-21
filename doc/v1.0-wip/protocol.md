@@ -21,7 +21,7 @@ C      S
 +--->>-+ (1) The client sends a connection request to the server with some info.
 |      |
 +-<<---+ (2) The server replies with a list of available windows or an error
-|      |     message.
+|      |     message and changes the connection from TCP to UDP.
 |      |
 +--->>-+ (3) The client chooses a window.
 |      |
@@ -60,11 +60,13 @@ The exact structure of the packets can be found in
     has successfully terminated and the server also sends a list of windows
     currently open in the computer by specifying their name and ID. Otherwise,
     in case the server replies with false, an error message is sent and the
-    connection will be closed by the server itself.
+    connection will be closed by the server itself. An additional token is sent
+    to keep the client logged in while the connection changes from TCP to UDP.
 
  3. The client now has to choose a window (or the whole desktop) by its ID and
     specify the video quality. If the window ID does not exist, the server
-    closes the connection.
+    closes the connection. The client also sends the token received from the
+    server.
 
  4. The server sends the current window frame.
 
@@ -148,6 +150,7 @@ the values are replaced with their type surrounded by parentheses.
 {
    "ok": (boolean),
    "issue": (string),
+   "token": (string),
    "windows": [
       {
          "name": (string),
@@ -179,9 +182,19 @@ the values are replaced with their type surrounded by parentheses.
       <td> Can either be a string (ok = false) or null (ok = true) </td>
    </tr>
    <tr>
+      <td> token </td>
+      <td>
+         A randomized token, used to keep the client logged in while the
+         connection changes from TCP to UDP
+      </td>
+      <td> Can be any string of any length </td>
+   </tr>
+   <tr>
       <td> windows </td>
-      <td> Contains an array of currently open windows with their name and ID
-         (each ID is unique), used if ok = true </td>
+      <td>
+         Contains an array of currently open windows with their name and ID
+         (each ID is unique), used if ok = true
+      </td>
       <td> Strings for names, integers for IDs; if ok = false, the array is
          empty </td>
    </tr>
@@ -195,7 +208,8 @@ for every window.
 ```
 {
    "id": (integer),
-   "quality": (string)
+   "quality": (string),
+   "token": (string)
 }
 ```
 
@@ -218,6 +232,11 @@ for every window.
             H.264 preset
          </a>
       </td>
+   </tr>
+   <tr>
+      <td> token </td>
+      <td> The server's token </td>
+      <td> Can be any string, but it must match the server's given token </td>
    </tr>
 </table>
 
@@ -256,7 +275,8 @@ for every window.
    </tr>
 </table>
 
-The server's window frame is compressed through [H.264](https://en.wikipedia.org/wiki/Advanced_Video_Coding). 
+The server's window frame is compressed through
+[H.264](https://en.wikipedia.org/wiki/Advanced_Video_Coding). 
 
 ### Client's input signal
 
@@ -336,9 +356,13 @@ The various types of keys are written into strings as follows:
  - Modifier keys and system command keys are preceded by an underscore (e.g.
    `_C`, `_A`, ...; see below).
  - Mouse buttons (in case `source` refers to mouse) are represented as: `lc`
-   (left click), `mc` (middle click), `rc` (right click). Scroll wheel is
-   represented as `scroll:<x-offset>:<y-offset>` where `x-offset` and `y-offset`
-   are respectively the scroll offsets on the X-axis and the Y-axis.
+   (left click), `mc` (middle click), `rc` (right click).
+
+The scroll wheel is sent as a key and represented as
+`scroll:<x-offset>:<y-offset>` where `x-offset` and `y-offset` are respectively
+the scroll offsets on the X-axis and Y-axis. If the wheel is scrolled following
+the X-axis, the representation is `scroll:<value>:` while, if the wheel is
+scrolled following the Y-axis, is `scroll::<value>`.
 
 Below there is a table that shows representations for modifier and system
 command keys.
