@@ -75,7 +75,7 @@ the problem of concurrency can be solved.
 Using [Conventional Commits](https://www.conventionalcommits.org) for commit
 messages is preferable but not strictly required.
 
-### Implemented features
+### Roadmap
 
 - [x] = implemented, tested and working
 - [ ] = not implemented, not tested or not working
