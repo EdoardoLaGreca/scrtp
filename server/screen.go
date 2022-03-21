@@ -11,6 +11,7 @@ import (
 	"github.com/BurntSushi/xgbutil/ewmh"
 	"github.com/BurntSushi/xgbutil/xgraphics"
 	"github.com/gen2brain/x264-go"
+	_ "github.com/go-vgo/robotgo"
 )
 
 type window struct {
@@ -108,10 +109,39 @@ func frameSender(conn net.Conn, win window, preset string, stop chan<- struct{})
 	}
 }
 
+// check if the keys array contains a certain key
+func keysContain(keys []string, key string) bool {
+	for _, k := range keys {
+		if k == key {
+			return true
+		}
+	}
+
+	return false
+}
+
 func inputReceiver(conn net.Conn, win window, stop chan<- struct{}) {
 	for {
+		insig := recvClientInputSigPkt(conn)
 
-		// TODO
+		switch insig.source {
+		case 0:
+			printDebug("unknown or unsupported input source, ignoring...")
+		case 1:
+			printDebug("got mouse input")
+
+			if keysContain("lc") {
+
+			} else if keysContain("mc") {
+
+			} else if keysContain("rc") {
+
+			}
+		case 2:
+			printDebug("got keyboard input")
+		default:
+			printDebug("unknwon value for input source")
+		}
 	}
 }
 
