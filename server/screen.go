@@ -6,12 +6,12 @@ import (
 	"image"
 	"net"
 
-	"github.com/BurntSushi/xgb/xproto"
-	"github.com/BurntSushi/xgbutil"
-	"github.com/BurntSushi/xgbutil/ewmh"
-	"github.com/BurntSushi/xgbutil/xgraphics"
 	"github.com/gen2brain/x264-go"
 	_ "github.com/go-vgo/robotgo"
+	"github.com/jezek/xgb/xproto"
+	"github.com/jezek/xgbutil"
+	"github.com/jezek/xgbutil/ewmh"
+	"github.com/jezek/xgbutil/xgraphics"
 )
 
 type window struct {
