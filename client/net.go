@@ -19,6 +19,7 @@ type AuthPkt struct {
 type AuthRepPkt struct {
 	ok      bool
 	issue   string
+	token   string
 	windows []struct {
 		name string
 		id   int
@@ -29,6 +30,7 @@ type AuthRepPkt struct {
 type WIDPkt struct {
 	id      int
 	quality string
+	token   string
 }
 
 // server window frame
