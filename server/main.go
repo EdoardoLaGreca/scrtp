@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"math/rand"
 	"net"
 	"os"
 )
@@ -19,6 +20,10 @@ var props struct {
 	hashedPassword string
 }
 
+func init() {
+	fillProps()
+}
+
 // check if the program has enough privilege to access the /etc directory
 func checkEtc() bool {
 	dir, err := os.Open("/etc")
@@ -29,7 +34,22 @@ func checkEtc() bool {
 	return err != nil
 }
 
-func handleConnection(conn net.Conn) {
+// generate token
+func genToken() string {
+	// choose length (from 50 to 100)
+	length := rand.Intn(50) + 50
+
+	var token string
+
+	for i := 0; i < length; i++ {
+		token += string(rand.Intn(10))
+	}
+
+	return token
+
+}
+
+func handleTCPConnection(conn net.Conn) {
 	printDebug("!! new connection from " + conn.RemoteAddr().String() + ", waiting for an authentication packet...")
 	defer printDebug("connection of " + conn.RemoteAddr().String() + " closed")
 	defer conn.Close()
@@ -116,10 +136,6 @@ func fillProps() {
 	props.hashedPassword = getHashedPw()
 }
 
-func init() {
-	fillProps()
-}
-
 func main() {
 	// enables the usage of generated stuff
 	RegisterGeneratedResolver()
@@ -131,12 +147,14 @@ func main() {
 
 	printDebug("listening on " + props.listenOn + " for new connections...")
 
+	// handle connections
 	for {
 		conn, err := lis.Accept()
 		if err != nil {
 			printDebug("Error while accepting a connection from " + conn.RemoteAddr().String())
 		}
 
-		go handleConnection(conn)
+		go handleTCPConnection(conn)
 	}
+
 }
