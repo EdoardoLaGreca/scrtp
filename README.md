@@ -17,63 +17,28 @@ build one or the other independently. However, since they use a client-server
 architecture, you need a client to connect to the server and you need a server
 to share one or more windows to clients.
 
-If you see this error (or a similar one) after `go generate`
-
-```
-net.go:3: running "msgpackgen": exec: "msgpackgen": executable file not found in $PATH
-```
-
-make sure that your `PATH` environment variable also contains
-`/home/<user>/go/bin`. In case it doesn't, add it and run the command again.
+[TODO]
 
 Please keep in mind that I'm a human being and I may forget to update written
 things such as compilation requirements.
 
 ### Client
 
-![Go report card](https://goreportcard.com/badge/github.com/EdoardoLaGreca/scrtp/client)
-
 To compile, you need:
 
  - **Git** to clone the repo, otherwise you can download it through
 [this link](https://github.com/EdoardoLaGreca/scrtp/archive/refs/heads/main.zip)
- - **Go** ([see here](https://go.dev/doc/install))
- - the **GLFW dependencies**
-   ([see here](https://github.com/go-gl/glfw#installation))
- - the **x264-go dependencies** (`x264`)
 
-```sh
-git clone https://github.com/EdoardoLaGreca/scrtp
-cd scrtp/client
-go get -d
-go install github.com/shamaton/msgpackgen
-go generate
-go build .
-```
+[TODO]
 
 ### Server
 
-![Go report card](https://goreportcard.com/badge/github.com/EdoardoLaGreca/scrtp/server)
-
 To compile, you need:
 
  - **Git** to clone the repo, otherwise you can download it through
 [this link](https://github.com/EdoardoLaGreca/scrtp/archive/refs/heads/main.zip)
- - **Go** ([see here](https://go.dev/doc/install))
- - the **xgb and xgbutil dependencies** (probably `libxcb-devel`,
-   `xcb-util-devel` and their dependencies)
- - the **x264-go dependencies** (`x264`)
- - the **robotgo dependencies**
-   ([see here](https://github.com/go-vgo/robotgo#requirements))
 
-```sh
-git clone https://github.com/EdoardoLaGreca/scrtp
-cd scrtp/server
-go get -d
-go install github.com/shamaton/msgpackgen
-go generate
-go build .
-```
+[TODO]
 
 ## Development
 
@@ -85,32 +50,35 @@ messages is preferable but not strictly required.
 
 ### Roadmap
 
+During the development, this roadmap may be subject to changes.
+
 - [x] = implemented, tested and working
 - [ ] = not implemented, not tested or not working
 
 #### Client
 
- - [x] Keyboard handling
- - [x] Mouse position handling
- - [x] Mouse click handling
- - [x] Mouse scroll handling
+ - [ ] Window creation
+ - [ ] Keyboard handling
+ - [ ] Mouse click handling
+ - [ ] Mouse position handling
+ - [ ] Mouse scroll handling
  - [ ] Networking
  - [ ] Video decompression
  - [ ] Window resize
 
 #### Server
 
- - [x] Window buffer capturing (Windows and Linux)
- - [x] Networking
- - [x] Video compression
+ - [ ] Window buffer capturing (Windows and Linux)
  - [ ] Input replication on real window
+ - [ ] Networking
+ - [ ] Video compression
  - [ ] Window resize
 
 
 #### Optional
 
  - [ ] Support for more input methods (gamepad, etc...)
- - [ ] Performance improvements by modifying the protocol
+ - [ ] Performance improvements by optimizing the protocol
 
 ## License
 
