@@ -1,10 +1,16 @@
+MAKE_CLIENT = make -f client/Makefile
+MAKE_SERVER = make -f server/Makefile
+
 all: client server
 
 client:
-	make -f client/Makefile all
+	$(MAKE_CLIENT) all
 
 server:
-	make -f server/Makefile all
+	$(MAKE_SERVER) all
 
 clean:
-	rm -r bin/
+	- rm -r obj/
+	- rm -r bin/
+	$(MAKE_CLIENT) clean
+	$(MAKE_SERVER) clean
