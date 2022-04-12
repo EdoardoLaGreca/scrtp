@@ -2,7 +2,9 @@ CC = gcc
 CFLAGS = -std=c90 -Wall -Wpedantic -O3
 CHECKLIB = ../script/check_lib.sh
 
-all: checkdeps build link
+all: checkdeps build
+
+build: compile link
 
 # check dependencies
 checkdeps:
@@ -11,12 +13,15 @@ checkdeps:
 	$(CHECKLIB) glfw
 # add dependencies as `$(CHECKLIB) dep`
 
-build:
+compile:
 	@ echo "Building..."
-# add build objects
+	- mkdir obj
+	ls | grep ".c$" | xargs -I "{}" $(CC) $(CFLAGS) -co "obj/{}"
 
 link:
 	@ echo "Linking..."
+	- mkdir bin
+	$(CC) -o bin/client obj/*.o
 
 clean:
 	@ echo "Cleaning client directory..."
