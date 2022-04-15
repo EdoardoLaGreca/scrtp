@@ -105,27 +105,86 @@ All packets use UDP for both ease of use and speed.
 The packets have the following structure:
 
 ```
-0   1   3    n+3 n+5    n+m+5 (bytes)
-+---+---+-----+---+-------+
-| c | n | key | m | value |
-+---+---+-----+---+-------+
+0       1   3    n+3 n+5    n+m+5 (bytes)
++-------+---+-----+---+-------+
+| flags | n | key | m | value |
++-------+---+-----+---+-------+
 ```
 
 where:
 
- - `c` is a boolean (integer of 8 bits) value that is `0` if the packet does not
-   need confirmation of being received, any other value means the opposite
+ - `flags` is a byte in which every bit is a flag
  - `key` is a string representing the meaning of the value
  - `n` is the length of the key in bytes
  - `value` is the value associated with the key
  - `m` is the length of the value in bytes
 
-The data type of the `value` field is implicit so it must be known to both the
-client and the server so that is not misinterpreted.
+The data type of the `value` field is implicit, which means that it must be
+known to both the client and the server so that is not misinterpreted.
 
-Both the client and the server can request a packet by sending that same packet
-but with `m` = 0, so that there is no value. **To be honest, this feature may
-actually not be useful at all.**
+## Flags
+
+As a reference, the representation below describes the bit positions in the
+`flags` field.
+
+```
++---+---+---+---+---+---+---+---+
+| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
++---+---+---+---+---+---+---+---+
+```
+
+<table>
+   <tr>
+      <th> position </th>
+      <th> meaning </th>
+   </tr>
+   <tr>
+      <td> 1 </td>
+      <td> (unused) </td>
+   </tr>
+   <tr>
+      <td> 2 </td>
+      <td> (unused) </td>
+   </tr>
+   <tr>
+      <td> 3 </td>
+      <td> (unused) </td>
+   </tr>
+   <tr>
+      <td> 4 </td>
+      <td> (unused) </td>
+   </tr>
+   <tr>
+      <td> 5 </td>
+      <td> (unused) </td>
+   </tr>
+   <tr>
+      <td> 6 </td>
+      <td> (unused) </td>
+   </tr>
+   <tr>
+      <td> 7 </td>
+      <td> (unused) </td>
+   </tr>
+   <tr>
+      <td> 8 </td>
+      <td>
+         acknowledgement required (1 = yes, 0 = no)
+      </td>
+   </tr>
+</table>
+
+### Acknowledgement
+
+If the acknowledgement is required, the receiver must send a packet in which:
+
+ - the acknowledgement flag is set to 0
+ - the key is `ack`
+ - the value is the key of the packet to acknowledge
+
+If two packets with the same key must be acknowledged, it is recommended for the
+second packet to wait the acknowledgement of the first one to avoid an
+acknowledgement mess.
 
 ## Keys
 
@@ -247,5 +306,11 @@ All the strings use the UTF-8 encoding.
             <li> the second for the scroll offset on the Y-axis </li>
          </ul>
       </td>
+   </tr>
+   <tr>
+      <td> end </td>
+      <td> boolean </td>
+      <td> yes </td>
+      <td> a request to end connection </td>
    </tr>
 </table>
