@@ -10,4 +10,4 @@ GLFWwindow* create_window(int width, int height, const char* title);
 /*
  * Enter the main loop of the window.
  */
-void window_loop();
+void window_loop(GLFWwindow* window);

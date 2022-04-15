@@ -26,7 +26,7 @@ create_window(int width, int height, const char* title)
 }
 
 void
-window_loop()
+window_loop(GLFWwindow* window)
 {
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window)) {
