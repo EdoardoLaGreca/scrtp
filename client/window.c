@@ -2,19 +2,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "print.h"
+
 GLFWwindow*
 create_window(int width, int height, const char* title)
 {
 	GLFWwindow* window;
 
 	if (!glfwInit()) {
-		
+		perr("glfwInit() failed");
 		exit(EXIT_FAILURE);
 	}
 
 	window = glfwCreateWindow(width, height, title, NULL, NULL);
 
 	if (!window) {
+		perr("glfwCreateWindow() failed");
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
