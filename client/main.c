@@ -8,7 +8,9 @@ main(void)
 {
 	GLFWwindow *window = create_window(640, 480, "Hello World");
 
-	window_loop();
+	set_callbacks(window);
+
+	window_loop(window);
 
 	return 0;
 }
