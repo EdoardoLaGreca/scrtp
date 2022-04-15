@@ -57,7 +57,7 @@ During the development, this roadmap may be subject to changes.
 
 #### Client
 
- - [ ] Window creation
+ - [x] Window creation
  - [ ] Keyboard handling
  - [ ] Mouse click handling
  - [ ] Mouse position handling
