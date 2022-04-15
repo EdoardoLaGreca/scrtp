@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+#include "print.h"
+
 void
 perr(const char *msg)
 {
