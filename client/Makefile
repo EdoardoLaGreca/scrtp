@@ -1,5 +1,6 @@
 CC = gcc
 CFLAGS = -std=c90 -Wall -Wpedantic -O3
+CLINK = -lglfw -lGL
 CHECKLIB = ../script/check_lib.sh
 
 all: checkdeps build
@@ -16,12 +17,12 @@ checkdeps:
 compile:
 	@ echo "Building..."
 	- mkdir obj
-	ls | grep ".c$" | xargs -I "{}" $(CC) $(CFLAGS) -co "obj/{}"
+	ls | grep ".c$$" | sed "s/.c//" | xargs -I "{}" $(CC) $(CFLAGS) -c -o obj/{}.o {}.c
 
 link:
 	@ echo "Linking..."
 	- mkdir bin
-	$(CC) -o bin/client obj/*.o
+	$(CC) $(CLINK) -o bin/client obj/*.o
 
 clean:
 	@ echo "Cleaning client directory..."
