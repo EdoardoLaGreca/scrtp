@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "window.h"
 #include "print.h"
 
 GLFWwindow*
@@ -42,4 +43,16 @@ window_loop(GLFWwindow* window)
 		/* Poll for and process events */
 		glfwPollEvents();
 	}
+}
+
+static void
+key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    printf("key_callback: %d %d %d %d\n", key, scancode, action, mods); /*DEBUG*/
+}
+
+void
+set_callbacks(GLFWwindow* window)
+{
+	glfwSetKeyCallback(window, key_callback);
 }
