@@ -3,9 +3,9 @@
 /*
  * Print an error message.
  */
-void perr(const char *msg);
+void print_err(const char *msg);
 
 /*
  * Print a verbose message.
  */
-void pverb(const char *msg);
+void print_verb(const char *msg);

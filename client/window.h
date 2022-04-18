@@ -5,9 +5,14 @@
 /*
  * Create a new window with the given title and size.
  */
-GLFWwindow* create_window(int width, int height, const char* title);
+GLFWwindow* window_create(int width, int height, const char* title);
 
 /*
  * Enter the main loop of the window.
  */
 void window_loop(GLFWwindow* window);
+
+/*
+ * Set window callbacks.
+ */
+void window_set_callbacks(GLFWwindow* window);

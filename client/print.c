@@ -3,13 +3,13 @@
 #include "print.h"
 
 void
-perr(const char *msg)
+print_err(const char *msg)
 {
 	fprintf(stderr, "%s\n", msg);
 }
 
 void
-pverb(const char *msg)
+print_verb(const char *msg)
 {
 	printf(msg);
 }

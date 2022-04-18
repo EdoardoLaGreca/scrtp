@@ -6,7 +6,7 @@
 #include "print.h"
 
 GLFWwindow*
-create_window(int width, int height, const char* title)
+window_create(int width, int height, const char* title)
 {
 	GLFWwindow* window;
 
@@ -52,7 +52,7 @@ key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 }
 
 void
-set_callbacks(GLFWwindow* window)
+window_set_callbacks(GLFWwindow* window)
 {
 	glfwSetKeyCallback(window, key_callback);
 }
