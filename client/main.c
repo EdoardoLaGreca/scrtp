@@ -6,9 +6,11 @@
 int
 main(void)
 {
-	GLFWwindow *window = create_window(640, 480, "Hello World");
+	/* TODO: do network things */
 
-	set_callbacks(window);
+	GLFWwindow *window = window_create(640, 480, "Hello World");
+
+	window_set_callbacks(window);
 
 	window_loop(window);
 
