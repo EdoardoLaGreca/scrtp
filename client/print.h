@@ -1,5 +1,7 @@
 #pragma once
 
+const int verbose;
+
 /*
  * Print an error message.
  */
