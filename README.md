@@ -64,7 +64,8 @@ Runtime dependencies:
 ## Development
 
 If you'd like to contribute, please make sure to carefully read the
-[doc/style.md](doc/style.md) file before.
+[doc/style.md](doc/style.md) file before. Also, start commit messages with a
+lowercase letter.
 
 Using [Conventional Commits](https://www.conventionalcommits.org) for commit
 messages is preferable but not strictly required.
