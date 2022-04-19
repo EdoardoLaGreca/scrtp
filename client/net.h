@@ -21,9 +21,19 @@ typedef struct {
 } packetmd;
 
 /*
+ * Remote hostname.
+ */
+char* HOSTNAME;
+
+/*
+ * Remote port.
+ */
+char* PORT;
+
+/*
  * The packet metadata used in the current connection.
  */
-packetmd metadata;
+packetmd METADATA;
 
 /*
  * Get packets metadata.
