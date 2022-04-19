@@ -37,33 +37,27 @@ OPTIONS:
         default values.
 ```
 
-## Compiling
+## Requirements
 
 The client and the server do not have a strict dependency on each other, you can
 build one or the other independently. However, since they use a client-server
 architecture, you need a client to connect to the server and you need a server
-to share one or more windows to clients.
-
-[TODO]
+to let other clients connect.
 
 Please keep in mind that I'm a human being and I may forget to update written
 things such as compilation requirements.
 
 ### Client
 
-To compile, you need:
+Compile-time dependencies:
+ - `glfw-devel`
 
- - **Git** to clone the repo, otherwise you can download it through
-[this link](https://github.com/EdoardoLaGreca/scrtp/archive/refs/heads/main.zip)
+Runtime dependencies:
+ - `glfw`
 
 [TODO]
 
 ### Server
-
-To compile, you need:
-
- - **Git** to clone the repo, otherwise you can download it through
-[this link](https://github.com/EdoardoLaGreca/scrtp/archive/refs/heads/main.zip)
 
 [TODO]
 
@@ -106,6 +100,9 @@ During the development, this roadmap may be subject to changes.
 
  - [ ] Support for more input methods (gamepad, etc...)
  - [ ] Performance improvements by optimizing the protocol
+ - [ ] Remove runtime dependencies (see
+       [statifier](http://statifier.sourceforge.net/) and
+       [Ermine](http://www.magicermine.com/))
 
 ## License
 
