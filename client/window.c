@@ -4,6 +4,7 @@
 
 #include "window.h"
 #include "print.h"
+#include "net.h"
 
 GLFWwindow*
 window_create(int width, int height, const char* title)
