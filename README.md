@@ -63,8 +63,8 @@ Runtime dependencies:
 
 ## Development
 
-I chose to use Go to write both client and server because of the ease with which
-the problem of concurrency can be solved.
+If you'd like to contribute, please make sure to carefully read the
+[doc/style.md](doc/style.md) file before.
 
 Using [Conventional Commits](https://www.conventionalcommits.org) for commit
 messages is preferable but not strictly required.
