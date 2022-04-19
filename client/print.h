@@ -1,6 +1,9 @@
 #pragma once
 
-const int verbose;
+/*
+ * Verbose output, 1 if verbose, 0 otherwise.
+ */
+int VERB_OUTPUT = 0;
 
 /*
  * Print an error message.
