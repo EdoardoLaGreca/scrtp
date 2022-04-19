@@ -2,10 +2,15 @@
 #include <stdlib.h>
 
 #include "window.h"
+#include "args.h"
 
 int
-main(void)
+main(int argc, char** argv)
 {
+	if (!args_scan(argc, argv)) {
+		exit(EXIT_FAILURE);
+	}
+
 	/* TODO: do network things */
 
 	GLFWwindow *window = window_create(640, 480, "Hello World");
