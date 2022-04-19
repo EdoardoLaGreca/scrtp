@@ -51,7 +51,7 @@ net_get_metadata(char* hostname, char* port, int use_ipv6)
 	sockfd = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
 
 	if (sockfd < 0) {
-		print_err("call to socket did not return 0\n");
+		print_err("call to socket returned a negative number\n");
 		memset(&pmd, 0, sizeof(pmd));
 		return pmd;
 	}
@@ -76,13 +76,13 @@ net_create_packet(int need_ack, char* key, char* value)
 }
 
 int
-net_send_packet(packet* p, packetmd* metadata)
+net_send_packet(packet* p)
 {
 	/*TODO*/
 }
 
 int
-net_receive_packet(packet* p, packetmd* metadata)
+net_receive_packet(packet* p)
 {
 	/*TODO*/
 }
