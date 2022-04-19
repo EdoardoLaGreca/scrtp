@@ -10,6 +10,33 @@ functioning.
 
 ⚠ The image above was entirely made for fun. Please Parsec, don't sue me.
 
+## Usage
+
+The default values, if any, used by the client and the server can be found in
+the repo's [etc](etc/) directory as config files.
+
+### Client
+
+```
+scrtp [OPTIONS]... HOST PORT
+
+OPTIONS:
+    -v  Print verbose output (useful during debugging).
+```
+
+### Server
+
+```
+scrtpd [OPTIONS]...
+
+OPTIONS:
+    -v  Print verbose output (useful during debugging).
+    -c FILE
+        Use FILE as configuration file instead of the default file located in
+        /etc/scrtp/config_server. If the default file cannot be found, use
+        default values.
+```
+
 ## Compiling
 
 The client and the server do not have a strict dependency on each other, you can
