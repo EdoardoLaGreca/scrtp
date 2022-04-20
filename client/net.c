@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "net.h"
 
@@ -78,11 +79,38 @@ net_create_packet(int need_ack, char* key, char* value)
 int
 net_send_packet(packet* p)
 {
-	/*TODO*/
+	char* buf;
+	packetmd* md;
+
+	buf = malloc(sizeof(packet));
+	if (buf == NULL) {
+		print_err("call to malloc returned NULL\n");
+		return -1;
+	}
+
+	/* serialize the packet */
+	memcpy(buf, p, sizeof(packet));
+
+	/* send the packet */
+	md = &METADATA;
+	sendto(md->sockfd, buf, sizeof(packet), md->flags, md->addr->ai_addr,
+		md->addr->ai_addrlen);
 }
 
 int
 net_receive_packet(packet* p)
+{
+	/*TODO*/
+}
+
+int
+net_do_handshake(packetmd* pmd)
+{
+	/*TODO*/
+}
+
+int
+net_close(packetmd* pmd)
 {
 	/*TODO*/
 }

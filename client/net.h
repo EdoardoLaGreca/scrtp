@@ -54,3 +54,13 @@ int net_send_packet(packet* p);
  * Receive a packet.
  */
 int net_receive_packet(packet* p);
+
+/*
+ * Do the initial handshake.
+ */
+int net_do_handshake(packetmd* pmd);
+
+/*
+ * Close the connection.
+ */
+int net_close(packetmd* pmd);
