@@ -15,14 +15,14 @@ checkdeps:
 # add dependencies as `$(CHECKLIB) dep`
 
 compile:
-	@ echo "Building..."
+	@ echo "Building scrtp..."
 	- mkdir obj
 	ls | grep ".c$$" | sed "s/.c//" | xargs -I "{}" $(CC) $(CFLAGS) -c -o obj/{}.o {}.c
 
 link:
-	@ echo "Linking..."
+	@ echo "Linking scrtp..."
 	- mkdir bin
-	$(CC) $(CLINK) -o bin/client obj/*.o
+	$(CC) $(CLINK) -o bin/scrtp obj/*.o
 
 clean:
 	@ echo "Cleaning client directory..."
