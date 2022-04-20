@@ -204,6 +204,15 @@ All the strings use the UTF-8 encoding.
       <td> the protocol version used by the client </td>
    </tr>
    <tr>
+      <td> ack </td>
+      <td> string </td>
+      <td> no </td>
+      <td>
+         the acknowledgement of the previous packet (see
+         <a href="#acknowledgement">Acknowledgement</a>)
+      </td>
+   </tr>
+   <tr>
       <td> pubkey </td>
       <td> string </td>
       <td> yes </td>
