@@ -42,8 +42,12 @@ packetmd net_get_metadata(char* hostname, char* port, int use_ipv6);
 
 /*
  * Create a new packet.
+ * need_ack states whether the packet needs an acknowledgement.
+ * key is the key.
+ * value is the value.
+ * len is the value length.
  */
-packet net_create_packet(int need_ack, char* key, void* value);
+packet net_create_packet(int need_ack, char* key, void* value, int len);
 
 /*
  * Send a packet.
