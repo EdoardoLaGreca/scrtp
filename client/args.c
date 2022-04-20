@@ -11,6 +11,7 @@ args_verb() /* -v */
 	VERB_OUTPUT = 1;
 }
 
+/* TODO: shrink this function (split it?) */
 int
 args_scan(int argc, char** argv)
 {
@@ -28,14 +29,17 @@ args_scan(int argc, char** argv)
 			/* it's a flag (one or more) */
 
 			int j;
-			for (j = 0; j < strlen(argv[i]); j++) {
+			char wrong_flag_msg[30]; /* wrong flag message */
+			for (j = 1; j < strlen(argv[i]); j++) {
 				switch (argv[i][j]) {
 				case 'v':
 					args_verb();
 					break;
 				default:
-					/* wrong flag */
-					print_err("unknwown flag: " + argv[i][j]);
+					/* wrong flag, print a message */
+					memset(wrong_flag_msg, 0, 20);
+					sprintf(wrong_flag_msg, "unknown flag: %c\n", argv[i][j]);
+					print_err(wrong_flag_msg);
 					return 0;
 				}
 			}
