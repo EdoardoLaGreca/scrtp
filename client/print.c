@@ -2,6 +2,8 @@
 
 #include "print.h"
 
+int VERB_OUTPUT = 0;
+
 void
 print_err(const char *msg)
 {

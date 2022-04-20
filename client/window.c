@@ -18,7 +18,7 @@ window_create(int width, int height, const char* title)
 	GLFWwindow* window;
 
 	if (!glfwInit()) {
-		perr("glfwInit() failed");
+		print_err("glfwInit() failed");
 		exit(EXIT_FAILURE);
 	}
 

@@ -3,7 +3,7 @@
 /*
  * Verbose output, 1 if verbose, 0 otherwise.
  */
-int VERB_OUTPUT = 0;
+extern int VERB_OUTPUT;
 
 /*
  * Print an error message.

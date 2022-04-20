@@ -1,39 +1,58 @@
+#define _POSIX_C_SOURCE 200112L
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "print.h"
 #include "net.h"
+
+#define ACK_FLAG (1 << 0)
+
+char* HOSTNAME;
+char* PORT;
+packetmd METADATA;
 
 static struct addrinfo*
 get_addrinfo(char* hostname, char* port, int use_ipv6)
 {
 	struct addrinfo hints;
 	struct addrinfo* res;
-	struct addrinfo* tmp;
-	int status;
+	struct addrinfo* tmp; /* used to go through the linked list */
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_DGRAM;
 
-	if ((status = getaddrinfo(hostname, port, &hints, res)) != 0) {
+	if (getaddrinfo(hostname, port, &hints, &res) != 0) {
 		print_err("call to getaddrinfo did not return 0");
 		return NULL;
 	}
 
 	/* choose a result based on whether we want ipv4 or ipv6 */
 	for (tmp = res; tmp != NULL; tmp = tmp->ai_next) {
-		if (tmp->ai_family == AF_INET && !use_ipv6 ||
-		tmp ->ai_family == AF_INET6 && use_ipv6) {
-			return tmp;
+		if ((tmp->ai_family == AF_INET && !use_ipv6) ||
+		(tmp ->ai_family == AF_INET6 && use_ipv6)) {
+			/* found the right result, which is pointed to by tmp */
+			break;
 		}
 	}
 
-	/* no result was chosen */
-	print_err("no suitable address found");
-	return NULL;
+	/* free the rest of the results */
+	for (; res != NULL; res = res->ai_next) {
+		if (res != tmp) {
+			freeaddrinfo(res);
+		}
+	}
+
+	if (tmp == NULL) {
+		/* no result was chosen */
+		print_err("no suitable address found");
+	}
+
+	return tmp;
 }
 
 packetmd
@@ -81,32 +100,57 @@ net_send_packet(packet* p)
 {
 	char* buf;
 	packetmd* md;
+	int sentbytes;
 
 	buf = malloc(sizeof(packet));
 	if (buf == NULL) {
 		print_err("call to malloc returned NULL");
-		return -1;
+		return 0;
 	}
 
 	/* serialize the packet */
 	memcpy(buf, p, sizeof(packet));
 
-	/* send the packet */
+	/* send the packet using data from METADATA */
 	md = &METADATA;
-	sendto(md->sockfd, buf, sizeof(packet), md->flags, md->addr->ai_addr,
-		md->addr->ai_addrlen);
+	sentbytes = sendto(md->sockfd, buf, sizeof(packet), md->flags,
+		md->addr->ai_addr, md->addr->ai_addrlen);
+
+	free(buf);
+
+	if (sentbytes < 0 || sentbytes != sizeof(packet)) {
+		print_err("call to sendto returned a negative number or mismatched bytes");
+		free(buf);
+		return 0;
+	}
+
+	/* if packet has ack flag, wait for ack */
+	if ((p->flags & ACK_FLAG) != 0) {
+		net_acknowledge(p->key);
+	}
+
+	return 1;
 }
 
 int
 net_receive_packet(packet* p)
 {
 	/*TODO*/
+	return 42;
 }
 
 int
-net_do_handshake(packetmd* pmd)
+net_do_handshake(packet* p)
 {
 	/*TODO*/
+	return 42;
+}
+
+int
+net_acknowledge(char* key)
+{
+	/*TODO*/
+	return 42;
 }
 
 int
@@ -115,9 +159,19 @@ net_close(packetmd* pmd)
 	packet p;
 	p = net_create_packet(1, "end", NULL, 0);
 
+	p.value = malloc(sizeof(unsigned char));
+	if (p.value == NULL) {
+		print_err("call to malloc returned NULL");
+		return 0;
+	}
+
 	/* boolean value */
-	p.value = 0x01;
+	*(unsigned char*)p.value = 0x01;
 	p.m = 1;
 
 	net_send_packet(&p);
+
+	free(p.value);
+
+	return 1;
 }

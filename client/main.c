@@ -8,15 +8,17 @@
 int
 main(int argc, char** argv)
 {
+	GLFWwindow* window;
+
 	if (!args_scan(argc, argv)) {
 		exit(EXIT_FAILURE);
 	}
-
+	/*
 	METADATA = net_get_metadata(HOSTNAME, PORT, 0);
-
+	*/
 	/* TODO: do network things */
 
-	GLFWwindow* window = window_create(640, 480, "Hello World");
+	window = window_create(640, 480, "Hello World");
 
 	window_set_callbacks(window);
 
