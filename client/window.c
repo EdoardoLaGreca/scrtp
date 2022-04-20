@@ -33,15 +33,15 @@ window_create(int width, int height, const char* title)
 void
 window_loop(GLFWwindow* window)
 {
-	/* Loop until the user closes the window */
+	/* loop until the user closes the window */
 	while (!glfwWindowShouldClose(window)) {
-		/* Render here */
+		/* render here */
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		/* Swap front and back buffers */
+		/* swap front and back buffers */
 		glfwSwapBuffers(window);
 
-		/* Poll for and process events */
+		/* poll for and process events */
 		glfwPollEvents();
 	}
 }
