@@ -19,7 +19,7 @@ get_addrinfo(char* hostname, char* port, int use_ipv6)
 	hints.ai_socktype = SOCK_DGRAM;
 
 	if ((status = getaddrinfo(hostname, port, &hints, res)) != 0) {
-		print_err("call to getaddrinfo did not return 0\n");
+		print_err("call to getaddrinfo did not return 0");
 		return NULL;
 	}
 
@@ -32,7 +32,7 @@ get_addrinfo(char* hostname, char* port, int use_ipv6)
 	}
 
 	/* no result was chosen */
-	print_err("no suitable address found\n");
+	print_err("no suitable address found");
 	return NULL;
 }
 
@@ -52,7 +52,7 @@ net_get_metadata(char* hostname, char* port, int use_ipv6)
 	sockfd = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
 
 	if (sockfd < 0) {
-		print_err("call to socket returned a negative number\n");
+		print_err("call to socket returned a negative number");
 		memset(&pmd, 0, sizeof(pmd));
 		return pmd;
 	}
@@ -84,7 +84,7 @@ net_send_packet(packet* p)
 
 	buf = malloc(sizeof(packet));
 	if (buf == NULL) {
-		print_err("call to malloc returned NULL\n");
+		print_err("call to malloc returned NULL");
 		return -1;
 	}
 

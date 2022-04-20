@@ -18,7 +18,7 @@ args_scan(int argc, char** argv)
 	char* port = NULL;
 
 	if (argc < 3) {
-		print_err("Usage: scrtp [OPTIONS]... HOST PORT\n");
+		print_err("Usage: scrtp [OPTIONS]... HOST PORT");
 		return 0;
 	}
 
@@ -46,7 +46,7 @@ args_scan(int argc, char** argv)
 				port = argv[i];
 			} else {
 				/* too many arguments */
-				print_err("too many arguments\n");
+				print_err("too many arguments");
 				return 0;
 			}
 		}
@@ -54,7 +54,7 @@ args_scan(int argc, char** argv)
 
 	if (host == NULL || port == NULL) {
 		/* not enough arguments */
-		print_err("not enough arguments\n");
+		print_err("not enough arguments");
 		return 0;
 	}
 

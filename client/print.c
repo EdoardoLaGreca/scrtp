@@ -12,6 +12,6 @@ void
 print_verb(const char *msg)
 {
 	if (VERB_OUTPUT) {
-		printf(msg);
+		printf("%s\n", msg);
 	}
 }
