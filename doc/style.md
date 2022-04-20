@@ -230,5 +230,5 @@ It is preferable to use the `#pragma once` include guard instead of the standard
 one because, even though it is not standard, it is quite widespread and easier
 to read and write.
 
-The order of contents of a header file and its respective source file should be
-the same.
+A header file and its respective source file should have the same content order
+for better organization, but it is not mandatory.
