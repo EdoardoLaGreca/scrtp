@@ -6,6 +6,12 @@
 #include "print.h"
 #include "net.h"
 
+static void
+key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    printf("key_callback: %d %d %d %d\n", key, scancode, action, mods); /*DEBUG*/
+}
+
 GLFWwindow*
 window_create(int width, int height, const char* title)
 {
@@ -19,7 +25,7 @@ window_create(int width, int height, const char* title)
 	window = glfwCreateWindow(width, height, title, NULL, NULL);
 
 	if (!window) {
-		perr("glfwCreateWindow() failed");
+		print_err("failed to create an OpenGL context");
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
@@ -44,12 +50,6 @@ window_loop(GLFWwindow* window)
 		/* poll for and process events */
 		glfwPollEvents();
 	}
-}
-
-static void
-key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-    printf("key_callback: %d %d %d %d\n", key, scancode, action, mods); /*DEBUG*/
 }
 
 void
