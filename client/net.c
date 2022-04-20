@@ -65,13 +65,13 @@ net_get_metadata(char* hostname, char* port, int use_ipv6)
 }
 
 packet
-net_create_packet(int need_ack, char* key, char* value)
+net_create_packet(int need_ack, char* key, void* value)
 {
 	packet p;
 	p.flags = need_ack;
 	p.n = strlen(key);
 	p.key = key;
-	p.m = strlen(value);
+	p.m = /* find out how long is the value */;
 	p.value = value;
 	return p;
 }
@@ -112,5 +112,7 @@ net_do_handshake(packetmd* pmd)
 int
 net_close(packetmd* pmd)
 {
-	/*TODO*/
+	packet p;
+
+	p = net_create_packet(1, "end", NULL);
 }

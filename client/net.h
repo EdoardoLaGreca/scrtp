@@ -8,7 +8,7 @@ typedef struct {
 	unsigned short n;
 	char* key;
 	unsigned short m;
-	char* value;
+	void* value;
 } packet;
 
 /*
@@ -43,7 +43,7 @@ packetmd net_get_metadata(char* hostname, char* port, int use_ipv6);
 /*
  * Create a new packet.
  */
-packet net_create_packet(int need_ack, char* key, char* value);
+packet net_create_packet(int need_ack, char* key, void* value);
 
 /*
  * Send a packet.
