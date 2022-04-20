@@ -77,6 +77,86 @@ var_point* var_name; /* OK */
 var_point* var_name1, * var_name2; /* NOT OK */
 ```
 
+## If, Struct, etc...
+
+Flow control statements like `if`, `while`, `for`, `do...while` are written all
+in the same way as shown below.
+
+```C
+if (condition) {
+	code;
+}
+```
+
+```C
+while (condition) {
+	code;
+}
+```
+
+```C
+for (init; condition; increment) {
+	code;
+}
+```
+
+```C
+do {
+	code;
+} while (condition);
+```
+
+The `switch...case` statement is a bit different as `case`s are vertically
+aligned to the switch keyword.
+
+```C
+switch (expr) {
+case val1:
+	break;
+case val2:
+case val3:
+	break;
+default:
+	break;
+}
+```
+
+Other statements and specifiers are written as follows.
+
+```C
+enum name {
+	val1,
+	val2,
+	val3
+};
+```
+
+```C
+struct name {
+	type1 field1;
+	type2 field2;
+	type3 field3;
+};
+```
+
+```C
+union name {
+	type1 field1;
+	type2 field2;
+	type3 field3;
+};
+```
+
+```C
+typedef existing_type alias;
+/* or */
+typedef struct {
+	type1 field1;
+	type2 field2;
+	type3 field3;
+} typename;
+```
+
 ## Functions
 
 Functions are written in this way:
