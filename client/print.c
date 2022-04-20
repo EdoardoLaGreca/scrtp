@@ -11,5 +11,7 @@ print_err(const char *msg)
 void
 print_verb(const char *msg)
 {
-	printf(msg);
+	if (VERB_OUTPUT) {
+		printf(msg);
+	}
 }
