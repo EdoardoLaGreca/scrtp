@@ -216,15 +216,16 @@ The order of the contents of header files and source files must be (from top to
 bottom):
 
  1. include guard (only in header files)
- 2. `#include` directive(s) for system header files (using `<` and `>`)
- 3. `#include` directive(s) for local header files (using `"`)
- 4. `#define` directive(s)
- 5. enumeration(s) (using `enum`)
- 6. data structures(s) (using `struct`)
- 7. type definition(s) (using `typedef`)
- 8. global variable(s)
- 9. static function(s) (only in source files)
- 10. non-static function(s)
+ 2. `#define` directives for system/local header files
+ 3. `#include` directive(s) for system header files (using `<` and `>`)
+ 4. `#include` directive(s) for local header files (using `"`)
+ 5. `#define` directive(s)
+ 6. enumeration(s) (using `enum`)
+ 7. data structures(s) (using `struct`)
+ 8. type definition(s) (using `typedef`)
+ 9. global variable(s)
+ 10. static function(s) (only in source files)
+ 11. non-static function(s)
 
 It is preferable to use the `#pragma once` include guard instead of the standard
 one because, even though it is not standard, it is quite widespread and easier
