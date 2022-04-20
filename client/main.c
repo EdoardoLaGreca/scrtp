@@ -3,6 +3,7 @@
 
 #include "window.h"
 #include "args.h"
+#include "net.h"
 
 int
 main(int argc, char** argv)
@@ -11,9 +12,11 @@ main(int argc, char** argv)
 		exit(EXIT_FAILURE);
 	}
 
+	METADATA = net_get_metadata(HOSTNAME, PORT, 0);
+
 	/* TODO: do network things */
 
-	GLFWwindow *window = window_create(640, 480, "Hello World");
+	GLFWwindow* window = window_create(640, 480, "Hello World");
 
 	window_set_callbacks(window);
 
