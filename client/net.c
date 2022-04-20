@@ -114,7 +114,10 @@ net_close(packetmd* pmd)
 {
 	packet p;
 	p = net_create_packet(1, "end", NULL, 0);
+
+	/* boolean value */
 	p.value = 0x01;
 	p.m = 1;
+
 	net_send_packet(&p);
 }
