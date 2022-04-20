@@ -1,6 +1,6 @@
 # style
 
-This file contains some rough style guidelines about how to write code in this
+This file contains some rough style guidelines on how to write code in this
 repository.
 
 The C standard used in the source code of this repo is ANSI C (a.k.a. C89/C90).
