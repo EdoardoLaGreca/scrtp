@@ -28,3 +28,5 @@ clean:
 	@ echo "Cleaning client directory..."
 	- rm -r obj/
 	- rm -r bin/
+
+.PHONY: checkdeps clean

@@ -14,3 +14,5 @@ clean:
 	- rm -r bin/
 	$(MAKE_CLIENT) clean
 	$(MAKE_SERVER) clean
+
+.PHONY: all client server clean
