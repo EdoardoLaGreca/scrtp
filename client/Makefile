@@ -1,7 +1,12 @@
 CC = gcc
 CFLAGS = -std=c90 -Wall -Wpedantic -O3
-CLINK = -lglfw -lGL
-CHECKLIB = ../script/check_lib.sh
+CHECK_LIBS = ../script/check_libs.sh
+
+# libraries to link with, without prefixes or suffixes (like "-l", "lib" or ".so")
+LIBS = glfw GL
+
+# command to add "-l" to each library
+GEN_LD_ARGS = echo $(LIBS) | sed "s/^/-l/g" | sed "s/ / -l/g"
 
 all: checkdeps build
 
@@ -10,9 +15,7 @@ build: compile link
 # check dependencies
 checkdeps:
 	@ echo "Checking dependencies..."
-	$(CHECKLIB) glfw
-	$(CHECKLIB) gl
-# add dependencies as `$(CHECKLIB) dep`
+	$(CHECKLIB) $(LIBS)
 
 compile:
 	@ echo "Building scrtp..."
@@ -22,7 +25,7 @@ compile:
 link:
 	@ echo "Linking scrtp..."
 	- mkdir bin
-	$(CC) $(CLINK) -o bin/scrtp obj/*.o
+	$(CC) `$(GEN_LD_ARGS)` -o bin/scrtp obj/*.o
 
 clean:
 	@ echo "Cleaning client directory..."
