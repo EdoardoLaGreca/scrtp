@@ -53,10 +53,10 @@ things such as compilation requirements.
 ### Client
 
 Compile-time dependencies:
- - `glfw-devel`
+ - `libglfw3-dev` (a.k.a. `glfw-devel`)
 
 Runtime dependencies:
- - `glfw`
+ - `libglfw3` (a.k.a. `glfw`)
 
 [TODO]
 
