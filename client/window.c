@@ -21,6 +21,21 @@ key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 	net_send_packet(&kbdev);
 }
 
+static void
+mousebtn_callback(GLFWwindow* window, int button, int action, int mods)
+{
+	packet msclk;
+	unsigned char data[2] = { action, button };
+
+	if (action != GLFW_PRESS && action != GLFW_RELEASE) {
+		/* if mouse was not pressed or released, ignore it */
+		return;
+	}
+
+	net_create_packet(0, "msclk", data, sizeof(data));
+	net_send_packet(&msclk);
+}
+
 GLFWwindow*
 window_create(int width, int height, const char* title)
 {
@@ -65,4 +80,5 @@ void
 window_set_callbacks(GLFWwindow* window)
 {
 	glfwSetKeyCallback(window, key_callback);
+	glfwSetMouseButtonCallback(window, mousebtn_callback);
 }
