@@ -1,4 +1,4 @@
 #! /bin/sh
 
-ldconfig -p | grep "$1" >/dev/null 2>&1
+ldconfig -p | grep "lib$1.so" >/dev/null 2>&1
 exit $?
