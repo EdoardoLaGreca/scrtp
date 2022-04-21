@@ -1,4 +1,8 @@
 #! /bin/sh
 
-pkg-config --exists "$1" >/dev/null 2>&1
-exit $?
+if [ `find /lib* /usr/lib* -iname "lib$1.so"` ]
+then
+  exit 0
+else
+  exit 1
+fi
