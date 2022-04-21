@@ -15,7 +15,7 @@ build: compile link
 # check dependencies
 checkdeps:
 	@ echo "Checking dependencies..."
-	$(CHECKLIB) $(LIBS)
+	$(CHECK_LIBS) $(LIBS)
 
 compile:
 	@ echo "Building scrtp..."
