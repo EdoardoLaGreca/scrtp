@@ -2,10 +2,10 @@
 
 for arg in "$@"
 	do
-	if [ ! `find /lib* /usr/lib* -name "lib$1.so"` ]
+	if [ ! `find /lib* /usr/lib* -name "lib$arg.so"` ]
 	then
 		# library not found
-		echo "library \"lib$1.so\" not found"
+		echo "library \"lib$arg.so\" not found"
 		exit 1
 	fi
 done
