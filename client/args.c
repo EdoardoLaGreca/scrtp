@@ -25,7 +25,7 @@ args_scan(int argc, char** argv)
 		return 0;
 	}
 
-	for (i = 0; i < argc; i++) {
+	for (i = 1; i < argc; i++) {
 		if (argv[i][0] == '-') {
 			/* it's a flag (one or more) */
 
