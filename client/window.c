@@ -9,7 +9,10 @@
 static void
 key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    printf("key_callback: %d %d %d %d\n", key, scancode, action, mods); /*DEBUG*/
+	packet kbdev;
+	unsigned char data[2] = { action, scancode };
+	net_create_packet(0, "kbdev", data, sizeof(data));
+	net_send_packet(&kbdev);
 }
 
 GLFWwindow*
