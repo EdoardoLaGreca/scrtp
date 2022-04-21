@@ -1,5 +1,5 @@
-MAKE_CLIENT = make -f client/Makefile
-MAKE_SERVER = make -f server/Makefile
+MAKE_CLIENT = cd client && make
+MAKE_SERVER = cd server && make
 
 all: client server
 
