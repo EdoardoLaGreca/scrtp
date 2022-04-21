@@ -10,8 +10,8 @@ build: compile link
 # check dependencies
 checkdeps:
 	@ echo "Checking dependencies..."
-	su -c "ldconfig" || echo "failed to update ldconfig, results may not be accurate"
 	$(CHECKLIB) glfw
+	$(CHECKLIB) gl
 # add dependencies as `$(CHECKLIB) dep`
 
 compile:
