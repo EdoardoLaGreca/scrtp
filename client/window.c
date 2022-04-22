@@ -36,6 +36,16 @@ mousebtn_callback(GLFWwindow* window, int button, int action, int mods)
 	net_send_packet(&msclk);
 }
 
+static void
+mousepos_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	packet mspos;
+	unsigned int data[4] = { (unsigned int) xpos, (unsigned int) ypos };
+
+	net_create_packet(0, "msmv", data, sizeof(data));
+	net_send_packet(&mspos);
+}
+
 GLFWwindow*
 window_create(int width, int height, const char* title)
 {
@@ -81,4 +91,5 @@ window_set_callbacks(GLFWwindow* window)
 {
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetMouseButtonCallback(window, mousebtn_callback);
+	glfwSetCursorPosCallback(window, mousepos_callback);
 }
