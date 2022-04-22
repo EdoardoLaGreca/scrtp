@@ -4,7 +4,7 @@ MAKE_SERVER = cd server # add build.sh
 all: client server
 
 client:
-	- chmod +x client/build.sh
+	- chmod 744 client/build.sh
 	$(MAKE_CLIENT) all
 
 #server:
