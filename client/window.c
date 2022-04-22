@@ -10,7 +10,7 @@ static void
 key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	packet kbdev;
-	unsigned char data[2] = { action, scancode };
+	unsigned char data[2] = { (unsigned char) action, (unsigned char) scancode };
 
 	/* do not send the same action twice */
 	static int last_action = GLFW_RELEASE;
@@ -29,7 +29,7 @@ static void
 mousebtn_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	packet msclk;
-	unsigned char data[2] = { action, button };
+	unsigned char data[2] = { (unsigned char) action, (unsigned char) button };
 
 	/* do not send the same action twice */
 	static int last_action = GLFW_RELEASE;
