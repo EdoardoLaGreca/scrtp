@@ -48,6 +48,7 @@ packetmd net_get_metadata(char* hostname, char* port, int use_ipv6);
  * key is the key.
  * value is the value.
  * len is the value length in bytes.
+ * Remember to free the packet's content with net_free_packet() after use.
  */
 packet net_create_packet(int need_ack, char* key, void* value, int len);
 
@@ -70,11 +71,9 @@ int net_receive_packet(packet* p);
 int net_do_handshake(packet* p);
 
 /*
- * Wait for packet acknowledgement (blocking).
- * This function waits for packet acknowledgement.
- * If non-acknowledged packets arrive in the meantime, [TODO]
+ * Route incoming packets.
  */
-int net_acknowledge(char* key);
+void net_route_packets();
 
 /*
  * Close the connection.

@@ -21,15 +21,14 @@
 
 /* internal structure for pending ack requests, as a list item */
 typedef struct ack_request_s {
-	char* key; /* key of the packet*/
-	unsigned long etime; /* time of request as epoch time */
+	char* key; /* key of the packet */
 	struct need_ack_s* next;
-} ack_reqest;
+} ack_request;
 
 char* HOSTNAME = NULL;
 char* PORT = NULL;
 packetmd METADATA = {NULL, -1, 0};
-static ack_reqest* PENDING_ACKS = NULL;
+static ack_request* PENDING_ACKS = NULL;
 
 static struct addrinfo*
 get_addrinfo(char* hostname, char* port, int use_ipv6)
@@ -78,6 +77,67 @@ get_addrinfo(char* hostname, char* port, int use_ipv6)
 	return tmp;
 }
 
+static void
+free_packet(packet* p)
+{
+	if (p->key != NULL) {
+		free(p->key);
+	}
+
+	if (p->value != NULL) {
+		free(p->value);
+	}
+}
+
+static void
+queue_ack(char* key)
+{
+	ack_request* ar;
+	ack_request* tmp;
+
+	ar = malloc(sizeof(ack_request));
+	ar->key = malloc(strlen(key) + 1);
+	strcpy(ar->key, key);
+	ar->next = NULL;
+
+	tmp = PENDING_ACKS;
+
+	/* go to last item in list */
+	while (tmp->next != NULL) {
+		tmp = tmp->next;
+	}
+
+	tmp->next = ar;
+}
+
+static void
+complete_ack(char* key)
+{
+	ack_request* tmp;
+	ack_request* prev = NULL;
+	tmp = PENDING_ACKS;
+
+	while (tmp != NULL) {
+		if (strcmp(tmp->key, key) == 0) {
+			/* remove this item from the list */
+
+			if (prev != NULL) {
+				prev->next = tmp->next;
+			} else {
+				PENDING_ACKS = tmp->next;
+			}
+
+			free(tmp->key);
+			free(tmp);
+
+			return;
+		}
+
+		prev = tmp;
+		tmp = tmp->next;
+	}
+}
+
 packetmd
 net_get_metadata(char* hostname, char* port, int use_ipv6)
 {
@@ -122,9 +182,14 @@ net_create_packet(int need_ack, char* key, void* value, int len)
 	packet p;
 	p.flags = need_ack;
 	p.n = strlen(key);
-	p.key = key;
 	p.m = len;
-	p.value = value;
+
+	p.key = malloc(p.n + 1);
+	scrncpy(p.key, key, p.n);
+
+	p.value = malloc(p.m);
+	memcpy(p.value, value, len);
+
 	return p;
 }
 
@@ -179,11 +244,14 @@ net_do_handshake(packet* p)
 	return 42;
 }
 
-int
-net_acknowledge(char* key)
+void
+net_route_packets()
 {
-	/*TODO*/
-	return 42;
+	while (1) {
+		packet p;
+		net_receive_packet(&p);
+		/*TODO*/
+	}
 }
 
 int
