@@ -13,9 +13,10 @@ main(int argc, char** argv)
 	if (!args_scan(argc, argv)) {
 		exit(EXIT_FAILURE);
 	}
-	/*
+
+	/* set METADATA global variable for future packets */
 	METADATA = net_get_metadata(HOSTNAME, PORT, 0);
-	*/
+
 	/* TODO: do network things */
 
 	window = window_create(640, 480, "Hello World");
