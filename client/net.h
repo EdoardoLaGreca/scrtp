@@ -37,6 +37,8 @@ extern packetmd METADATA;
 
 /*
  * Get packets metadata.
+ * If the hostname resolves only to one address (either IPv4 or IPv6), that
+ * address is used, regardless of the use_ipv6 parameter.
  */
 packetmd net_get_metadata(char* hostname, char* port, int use_ipv6);
 
