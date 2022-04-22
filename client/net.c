@@ -19,9 +19,17 @@
 
 #define ACK_FLAG (1 << 0)
 
-char* HOSTNAME;
-char* PORT;
-packetmd METADATA;
+/* internal structure for pending ack requests, as a list item */
+typedef struct ack_request_s {
+	char* key; /* key of the packet*/
+	unsigned long etime; /* time of request as epoch time */
+	struct need_ack_s* next;
+} ack_reqest;
+
+char* HOSTNAME = NULL;
+char* PORT = NULL;
+packetmd METADATA = {NULL, -1, 0};
+static ack_reqest* PENDING_ACKS = NULL;
 
 static struct addrinfo*
 get_addrinfo(char* hostname, char* port, int use_ipv6)
