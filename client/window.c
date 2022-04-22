@@ -10,7 +10,9 @@ static void
 key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	packet kbdev;
-	unsigned char data[2] = { (unsigned char) action, (unsigned char) scancode };
+	unsigned char data[2];
+	data[0] = (unsigned char) action;
+	data[1] = (unsigned char) scancode;
 
 	/* do not send the same action twice */
 	static int last_action = GLFW_RELEASE;
@@ -29,7 +31,9 @@ static void
 mousebtn_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	packet msclk;
-	unsigned char data[2] = { (unsigned char) action, (unsigned char) button };
+	unsigned char data[2];
+	data[0] = (unsigned char) action;
+	data[1] = (unsigned char) button;
 
 	/* do not send the same action twice */
 	static int last_action = GLFW_RELEASE;
@@ -48,7 +52,9 @@ static void
 cursorpos_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	packet msmv;
-	unsigned long data[2] = { (unsigned long) xpos, (unsigned long) ypos };
+	unsigned long data[2];
+	data[0] = (unsigned long) xpos;
+	data[1] = (unsigned long) ypos;
 
 	net_create_packet(0, "msmv", data, sizeof(data));
 	net_send_packet(&msmv);
@@ -58,7 +64,9 @@ static void
 scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	packet msscr;
-	double data[2] = { xoffset, yoffset };
+	double data[2];
+	data[0] = xoffset;
+	data[1]	= yoffset;
 
 	net_create_packet(0, "msscr", data, sizeof(data));
 	net_send_packet(&msscr);
