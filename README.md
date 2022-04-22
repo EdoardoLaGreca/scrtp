@@ -91,7 +91,7 @@ During the development, this roadmap may be subject to changes.
  - [x] Mouse scroll handling
  - [ ] Networking
  - [ ] IPv6
- - [ ] Video decompression
+ - [ ] Video decoding
  - [ ] Window resize
 
 #### Server
@@ -100,7 +100,7 @@ During the development, this roadmap may be subject to changes.
  - [ ] Input replication on real window
  - [ ] Networking
  - [ ] IPv6
- - [ ] Video compression
+ - [ ] Video encoding
  - [ ] Window resize
 
 
