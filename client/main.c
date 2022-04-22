@@ -19,7 +19,7 @@ main(int argc, char** argv)
 
 	/* TODO: do network things */
 
-	window = window_create(640, 480, "Hello World");
+	window = window_create(640, 480, "scrtp");
 
 	window_set_callbacks(window);
 
