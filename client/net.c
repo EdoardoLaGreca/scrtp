@@ -12,6 +12,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #include "print.h"
 #include "net.h"
@@ -38,11 +39,18 @@ get_addrinfo(char* hostname, char* port, int use_ipv6)
 		return NULL;
 	}
 
+	if (res->ai_next == NULL) {
+		/* only one result, no need to go through the list */
+		return res;
+	}
+
 	/* choose a result based on whether we want ipv4 or ipv6 */
 	for (tmp = res; tmp != NULL; tmp = tmp->ai_next) {
-		if ((tmp->ai_family == AF_INET && !use_ipv6) ||
-		(tmp ->ai_family == AF_INET6 && use_ipv6)) {
-			/* found the right result, which is pointed to by tmp */
+		if (use_ipv6 && tmp->ai_family == AF_INET6) {
+			/* we want ipv6, and tmp points to an ipv6 address */
+			break;
+		} else if (!use_ipv6 && tmp->ai_family == AF_INET) {
+			/* we want ipv4, and tmp points to an ipv4 address */
 			break;
 		}
 	}
@@ -75,11 +83,21 @@ net_get_metadata(char* hostname, char* port, int use_ipv6)
 		exit(EXIT_FAILURE);
 	}
 
-	sockfd = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
+	memset(&pmd, 0, sizeof(pmd));
+
+	if (ai->ai_family == AF_INET) {
+		sockfd = socket(PF_INET, ai->ai_socktype, ai->ai_protocol);
+	} else if (ai->ai_family == AF_INET6) {
+		sockfd = socket(PF_INET6, ai->ai_socktype, ai->ai_protocol);
+	} else {
+		print_err("unknown address family");
+		return pmd;
+	}
 
 	if (sockfd < 0) {
 		print_err("call to socket returned a negative number");
-		memset(&pmd, 0, sizeof(pmd));
+		print_verb("next message is the socket error:");
+		print_verb(strerror(errno));
 		return pmd;
 	}
 
