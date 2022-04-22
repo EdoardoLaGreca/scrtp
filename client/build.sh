@@ -19,13 +19,13 @@ checkdeps() {
 compile() {
 	echo "Building scrtp..."
 	mkdir -p obj
-	ls | grep ".c$$" | sed "s/.c//" | xargs -I "{}" $cc $cflags -c -o obj/{}.o {}.c
+	ls *.c | sed "s/.c//" | xargs -I "{}" $cc $cflags -c -o obj/{}.o {}.c
 }
 
 link() {
 	echo "Linking scrtp..."
 	mkdir -p bin
-	$cc $gen_ld_args -o bin/scrtp obj/*.o
+	$cc -o bin/scrtp obj/*.o $gen_ld_args
 }
 
 clean() {
