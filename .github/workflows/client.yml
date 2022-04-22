@@ -1,4 +1,4 @@
-name: client (scrtp) CI
+name: client-scrtp
 
 on:
   push:

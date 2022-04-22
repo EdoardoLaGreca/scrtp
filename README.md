@@ -52,7 +52,7 @@ things such as compilation requirements.
 
 ### Client
 
-![](https://img.shields.io/github/workflow/status/EdoardoLaGreca/scrtp/client%20(scrtp)%20CI)
+![](https://img.shields.io/github/workflow/status/EdoardoLaGreca/scrtp/client-scrtp)
 
 Compile-time dependencies:
  - `libglfw3-dev` (a.k.a. `glfw-devel`)
