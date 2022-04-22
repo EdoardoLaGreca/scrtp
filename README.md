@@ -108,9 +108,8 @@ During the development, this roadmap may be subject to changes.
 
  - [ ] Support for more input methods (gamepad, etc...)
  - [ ] Performance improvements by optimizing the protocol
- - [ ] Remove runtime dependencies (see
-       [statifier](http://statifier.sourceforge.net/) and
-       [Ermine](http://www.magicermine.com/))
+ - [ ] Remove runtime dependencies (see [Ermine](http://www.magicermine.com/))
+ - [ ] Audio handling (encoding and decoding)
 
 ## License
 
