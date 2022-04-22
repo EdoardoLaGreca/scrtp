@@ -1,5 +1,5 @@
-MAKE_CLIENT = cd client && make
-MAKE_SERVER = cd server && make
+MAKE_CLIENT = cd client && build.sh
+MAKE_SERVER = cd server # add build.sh
 
 all: client server
 
