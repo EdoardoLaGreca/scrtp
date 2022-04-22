@@ -43,7 +43,17 @@ cursorpos_callback(GLFWwindow* window, double xpos, double ypos)
 	unsigned long data[2] = { (unsigned long) xpos, (unsigned long) ypos };
 
 	net_create_packet(0, "msmv", data, sizeof(data));
-	net_send_packet(&mspos);
+	net_send_packet(&msmv);
+}
+
+static void
+scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	packet msscr;
+	double data[2] = { xoffset, yoffset };
+
+	net_create_packet(0, "msscr", data, sizeof(data));
+	net_send_packet(&msscr);
 }
 
 GLFWwindow*
