@@ -57,10 +57,13 @@ case $1 in
 	"clean")
 		clean
 		;;
+	"build")
+		build
+		;;
 	"all")
 		all
 		;;
 	*)
-		echo "Usage: $0 [checkdeps|compile|link|clean|all]"
+		echo "Usage: $0 [checkdeps|compile|link|clean|build|all]"
 		;;
 esac
