@@ -37,10 +37,10 @@ mousebtn_callback(GLFWwindow* window, int button, int action, int mods)
 }
 
 static void
-mousepos_callback(GLFWwindow* window, double xpos, double ypos)
+cursorpos_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	packet mspos;
-	unsigned int data[4] = { (unsigned int) xpos, (unsigned int) ypos };
+	packet msmv;
+	unsigned long data[2] = { (unsigned long) xpos, (unsigned long) ypos };
 
 	net_create_packet(0, "msmv", data, sizeof(data));
 	net_send_packet(&mspos);
@@ -91,5 +91,5 @@ window_set_callbacks(GLFWwindow* window)
 {
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetMouseButtonCallback(window, mousebtn_callback);
-	glfwSetCursorPosCallback(window, mousepos_callback);
+	glfwSetCursorPosCallback(window, cursorpos_callback);
 }
