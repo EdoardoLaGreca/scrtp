@@ -102,4 +102,5 @@ window_set_callbacks(GLFWwindow* window)
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetMouseButtonCallback(window, mousebtn_callback);
 	glfwSetCursorPosCallback(window, cursorpos_callback);
+	glfwSetScrollCallback(window, scroll_callback);
 }
