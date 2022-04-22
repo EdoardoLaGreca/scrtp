@@ -12,13 +12,17 @@ key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 	packet kbdev;
 	unsigned char data[2] = { action, scancode };
 
-	if (action != GLFW_PRESS && action != GLFW_RELEASE) {
+	/* do not send the same action twice */
+	static int last_action = GLFW_RELEASE;
+
+	if ((action != GLFW_PRESS && action != GLFW_RELEASE) || last_action == action) {
 		/* if key was not pressed or released, ignore it */
 		return;
 	}
 
 	net_create_packet(0, "kbdev", data, sizeof(data));
 	net_send_packet(&kbdev);
+	last_action = action;
 }
 
 static void
@@ -27,13 +31,17 @@ mousebtn_callback(GLFWwindow* window, int button, int action, int mods)
 	packet msclk;
 	unsigned char data[2] = { action, button };
 
-	if (action != GLFW_PRESS && action != GLFW_RELEASE) {
+	/* do not send the same action twice */
+	static int last_action = GLFW_RELEASE;
+
+	if ((action != GLFW_PRESS && action != GLFW_RELEASE) || last_action == action) {
 		/* if mouse was not pressed or released, ignore it */
 		return;
 	}
 
 	net_create_packet(0, "msclk", data, sizeof(data));
 	net_send_packet(&msclk);
+	last_action = action;
 }
 
 static void
