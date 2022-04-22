@@ -297,7 +297,7 @@ All the strings use the UTF-8 encoding.
       <td> array of 2 integers </td>
       <td> no </td>
       <td>
-         a mouse move event represented as 2 integers of 8 bits:
+         a mouse move event represented as 2 integers of 16 bits:
          <ul>
             <li> the first for the new mouse position on the X-axis </li>
             <li> the second for the new mouse position on the Y-axis </li>
