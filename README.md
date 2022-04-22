@@ -85,10 +85,10 @@ During the development, this roadmap may be subject to changes.
 #### Client
 
  - [x] Window creation
- - [ ] Keyboard handling
- - [ ] Mouse click handling
- - [ ] Mouse position handling
- - [ ] Mouse scroll handling
+ - [x] Keyboard handling
+ - [x] Mouse click handling
+ - [x] Mouse position handling
+ - [x] Mouse scroll handling
  - [ ] Networking
  - [ ] IPv6
  - [ ] Video decompression
