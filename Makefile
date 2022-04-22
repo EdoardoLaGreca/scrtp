@@ -1,13 +1,14 @@
-MAKE_CLIENT = cd client && build.sh
+MAKE_CLIENT = cd client && ./build.sh
 MAKE_SERVER = cd server # add build.sh
 
 all: client server
 
 client:
+	- chmod +x client/build.sh
 	$(MAKE_CLIENT) all
 
-server:
-	$(MAKE_SERVER) all
+#server:
+# todo
 
 clean:
 	- rm -r obj/
