@@ -11,11 +11,12 @@ key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	packet kbdev;
 	unsigned char data[2];
-	data[0] = (unsigned char) action;
-	data[1] = (unsigned char) scancode;
 
 	/* do not send the same action twice */
 	static int last_action = GLFW_RELEASE;
+
+	data[0] = (unsigned char) action;
+	data[1] = (unsigned char) scancode;
 
 	if ((action != GLFW_PRESS && action != GLFW_RELEASE) || last_action == action) {
 		/* if key was not pressed or released, ignore it */
@@ -32,11 +33,12 @@ mousebtn_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	packet msclk;
 	unsigned char data[2];
-	data[0] = (unsigned char) action;
-	data[1] = (unsigned char) button;
 
 	/* do not send the same action twice */
 	static int last_action = GLFW_RELEASE;
+
+	data[0] = (unsigned char) action;
+	data[1] = (unsigned char) button;
 
 	if ((action != GLFW_PRESS && action != GLFW_RELEASE) || last_action == action) {
 		/* if mouse was not pressed or released, ignore it */
