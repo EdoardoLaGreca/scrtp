@@ -2,6 +2,7 @@
 
 cc=gcc
 cflags="-std=c90 -Wall -Wpedantic -O3"
+cflags_dbg="-std=c90 -Wall -Wpedantic -Og -g"
 check_libs="../script/check_libs.sh"
 
 # libraries to link with, without prefixes or suffixes (like "-l", "lib" or ".so")
@@ -22,10 +23,17 @@ compile() {
 	ls *.c | sed "s/.c//" | xargs -I "{}" $cc $cflags -c -o obj/{}.o {}.c
 }
 
+compile_dbg() {
+	echo "Building scrtp (debug)..."
+	mkdir -p obj
+	ls *.c | sed "s/.c//" | xargs -I "{}" $cc $cflags_dbg -c -o obj/{}.o {}.c
+}
+
 link() {
+	name=$1
 	echo "Linking scrtp..."
 	mkdir -p bin
-	$cc -o bin/scrtp obj/*.o $gen_ld_args
+	$cc -o bin/$name obj/*.o $gen_ld_args
 }
 
 clean() {
@@ -36,7 +44,12 @@ clean() {
 
 build() {
 	compile
-	link
+	link scrtp
+}
+
+build_dbg() {
+	compile_dbg
+	link scrtp_dbg
 }
 
 all() {
@@ -51,6 +64,9 @@ case $1 in
 	"compile")
 		compile
 		;;
+	"compile_dbg")
+		compile_dbg
+		;;
 	"link")
 		link
 		;;
@@ -60,10 +76,13 @@ case $1 in
 	"build")
 		build
 		;;
+	"build_dbg")
+		build_dbg
+		;;
 	"all")
 		all
 		;;
 	*)
-		echo "Usage: $0 [checkdeps|compile|link|clean|build|all]"
+		echo "Usage: $0 [checkdeps|compile|compile_dbg|link|clean|build|build_dbg|all]"
 		;;
 esac
