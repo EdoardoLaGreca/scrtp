@@ -1,8 +1,15 @@
 #define _POSIX_C_SOURCE 200112L
 
 #include <sys/types.h>
+
+#ifdef __linux__
 #include <sys/socket.h>
 #include <netdb.h>
+#elif _WIN32
+	#include <winsock2.h>
+	#include <ws2tcpip.h>
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 
