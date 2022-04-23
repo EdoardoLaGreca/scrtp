@@ -312,12 +312,27 @@ net_do_handshake(packet* p)
 }
 
 void
-net_route_packets()
+net_route_packet(packet* p)
 {
-	while (1) {
-		packet p;
-		net_receive_packet(&p);
-		/*TODO*/
+	packet newp;
+
+	/* if the other side requested an ack, reply immediately */
+	if (p->flags & ACK_FLAG) {
+		reply_ack(p->key);
+	}
+
+	/* route the packet to the appropriate handler or handle directly */
+	if (strcmp(p->key, "error") == 0) {
+		print_err(p->value);
+	} else if (strcmp(p->key, "pubkey") == 0) {
+		if (REMOTE_PUBKEY == NULL) {
+			REMOTE_PUBKEY = malloc(p->value_length);
+			memcpy(REMOTE_PUBKEY, p->value, p->value_length);
+		} else {
+			print_err("received a remote pubkey but one already got");
+		}
+	} else if (strcmp(p->key, "wins") == 0) {
+
 	}
 }
 
