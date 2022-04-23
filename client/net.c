@@ -227,18 +227,23 @@ net_get_metadata(char* hostname, char* port, int use_ipv6)
 }
 
 packet
-net_create_packet(int need_ack, char* key, void* value, int len)
+net_create_packet(int flags, char* key, void* value, int len)
 {
 	packet p;
-	p.flags = need_ack;
-	p.n = strlen(key);
-	p.m = len;
+	p.flags = flags;
+	p.key_length = strlen(key) + 1;
+	p.value_length = len;
 
-	p.key = malloc(p.n + 1);
+	p.key = malloc(p.key_length);
 	strcpy(p.key, key);
 
-	p.value = malloc(p.m);
-	memcpy(p.value, value, len);
+	p.value = malloc(p.value_length);
+
+	/* the caller may just want to allocate space for the value and add a value
+	 * later, so we don't want to copy the value if it's NULL */
+	if (value != NULL) {
+		memcpy(p.value, value, len);
+	}
 
 	return p;
 }
