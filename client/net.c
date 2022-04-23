@@ -336,25 +336,16 @@ net_route_packet(packet* p)
 	}
 }
 
-int
+void
 net_close(packetmd* pmd)
 {
 	packet p;
-	p = net_create_packet(1, "end", NULL, 0);
+	p = net_create_packet(1, "end", NULL, 1);
 
-	p.value = malloc(sizeof(unsigned char));
-	if (p.value == NULL) {
-		print_err("call to malloc returned NULL");
-		return 0;
-	}
-
-	/* boolean value */
-	*(unsigned char*)p.value = 0x01;
-	p.m = 1;
+	/* add boolean value */
+	memcpy(p.value, 0x01, 1);
 
 	net_send_packet(&p);
 
-	free(p.value);
-
-	return 1;
+	net_free_packet(&p);
 }
