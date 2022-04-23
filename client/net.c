@@ -128,6 +128,65 @@ complete_ack(char* key) /* complete an ack after receiving the response */
 	}
 }
 
+static void
+reply_ack(char* key) /* reply to an ack request */
+{
+	packet ack;
+	ack = net_create_packet(ACK_FLAG, "ack", key, strlen(key) + 1);
+	net_send_packet(&ack);
+	free_packet(&ack);
+}
+
+static int /* serialize a packet, return the length */
+serialize_packet(packet* p, void* serialized)
+{
+	int length = 0;
+	int idx = 0; /* index */
+
+	/* calculate length */
+	length += sizeof(p->flags);
+	length += sizeof(p->key_length);
+	length += p->key_length;
+	length += sizeof(p->value_length);
+	length += p->value_length;
+
+	serialized = malloc(length);
+
+	/* serialize the packet fields */
+	memcpy(serialized + idx, p->flags, sizeof(p->flags));
+	idx += sizeof(p->flags);
+	memcpy(serialized + idx, p->key_length, sizeof(p->key_length));
+	idx += sizeof(p->key_length);
+	memcpy(serialized + idx, p->key, p->key_length);
+	idx += p->key_length;
+	memcpy(serialized + idx, p->value_length, sizeof(p->value_length));
+	idx += sizeof(p->value_length);
+	memcpy(serialized + idx, p->value, p->value_length);
+	idx += p->value_length;
+
+	return length;
+}
+
+static int
+choose_window(char* windows)
+{
+	int win_num, input = -1;
+
+	printf("choose a window by its index:\n");
+	win_num = print_windows(windows);
+
+	while (1) {
+		printf(">> ");
+		scanf("%d", &input);
+
+		if (input >= 0 && input <= win_num) {
+			return input;
+		} else {
+			printf("invalid input, try again\n");
+		}
+	}
+}
+
 packetmd
 net_get_metadata(char* hostname, char* port, int use_ipv6)
 {
