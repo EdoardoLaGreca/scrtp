@@ -57,32 +57,4 @@ all() {
 	build
 }
 
-case $1 in
-	"checkdeps")
-		checkdeps
-		;;
-	"compile")
-		compile
-		;;
-	"compile_dbg")
-		compile_dbg
-		;;
-	"link")
-		link
-		;;
-	"clean")
-		clean
-		;;
-	"build")
-		build
-		;;
-	"build_dbg")
-		build_dbg
-		;;
-	"all")
-		all
-		;;
-	*)
-		echo "Usage: $0 [checkdeps|compile|compile_dbg|link|clean|build|build_dbg|all]"
-		;;
-esac
+eval $1
