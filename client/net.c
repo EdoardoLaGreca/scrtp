@@ -14,6 +14,7 @@
 #include <string.h>
 #include <errno.h>
 
+#include "const.h"
 #include "print.h"
 #include "net.h"
 
@@ -25,10 +26,11 @@ typedef struct ack_request_s {
 	struct ack_request_s* next;
 } ack_request;
 
+static ack_request* PENDING_ACKS = NULL;
 char* HOSTNAME = NULL;
 char* PORT = NULL;
 packetmd METADATA = {NULL, -1, 0};
-static ack_request* PENDING_ACKS = NULL;
+char* REMOTE_PUBKEY = NULL;
 
 static struct addrinfo*
 get_addrinfo(char* hostname, char* port, int use_ipv6)
