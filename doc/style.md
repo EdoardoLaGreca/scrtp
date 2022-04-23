@@ -191,6 +191,12 @@ structure names, enum names, etc...) must use
 variables and macros defined using the `#define` directive, which also use
 snake_case but with all capital letters.
 
+The name of non-static functions that are declared in a module (not in `main.c`)
+must begin with the module name in which they are defined. For example, if a
+non-static function called `my_func` is declared in the `mod` module (`mod.c` +
+`mod.h`), its actual name must be `mod_my_func`.  
+Static functions can have any name.
+
 Avoid an excessive use of underscores. As a rule of thumb, if the name can be
 understood even without a certain underscore, that underscore can be removed.  
 Also, avoid at all using underscores before or after names.
