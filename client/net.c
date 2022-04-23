@@ -80,19 +80,7 @@ get_addrinfo(char* hostname, char* port, int use_ipv6)
 }
 
 static void
-free_packet(packet* p)
-{
-	if (p->key != NULL) {
-		free(p->key);
-	}
-
-	if (p->value != NULL) {
-		free(p->value);
-	}
-}
-
-static void
-queue_ack(char* key)
+queue_ack(char* key) /* queue an ack after sending a request */
 {
 	ack_request* ar;
 	ack_request* tmp;
@@ -113,7 +101,7 @@ queue_ack(char* key)
 }
 
 static void
-complete_ack(char* key)
+complete_ack(char* key) /* complete an ack after receiving the response */
 {
 	ack_request* tmp;
 	ack_request* prev = NULL;
@@ -155,6 +143,7 @@ net_get_metadata(char* hostname, char* port, int use_ipv6)
 
 	memset(&pmd, 0, sizeof(pmd));
 
+	/* create a socket based on the address family (IPv4 vs IPv6) */
 	if (ai->ai_family == AF_INET) {
 		sockfd = socket(PF_INET, ai->ai_socktype, ai->ai_protocol);
 	} else if (ai->ai_family == AF_INET6) {
@@ -193,6 +182,18 @@ net_create_packet(int need_ack, char* key, void* value, int len)
 	memcpy(p.value, value, len);
 
 	return p;
+}
+
+void
+free_packet(packet* p)
+{
+	if (p->key != NULL) {
+		free(p->key);
+	}
+
+	if (p->value != NULL) {
+		free(p->value);
+	}
 }
 
 int
