@@ -22,7 +22,7 @@
 /* internal structure for pending ack requests, as a list item */
 typedef struct ack_request_s {
 	char* key; /* key of the packet */
-	struct need_ack_s* next;
+	struct ack_request_s* next;
 } ack_request;
 
 char* HOSTNAME = NULL;
@@ -185,7 +185,7 @@ net_create_packet(int need_ack, char* key, void* value, int len)
 	p.m = len;
 
 	p.key = malloc(p.n + 1);
-	scrncpy(p.key, key, p.n);
+	strcpy(p.key, key);
 
 	p.value = malloc(p.m);
 	memcpy(p.value, value, len);
@@ -224,7 +224,7 @@ net_send_packet(packet* p)
 
 	/* if packet has ack flag, wait for ack */
 	if ((p->flags & ACK_FLAG) != 0) {
-		net_acknowledge(p->key);
+		queue_ack(p->key);
 	}
 
 	return 1;
