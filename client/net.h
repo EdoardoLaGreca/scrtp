@@ -5,9 +5,9 @@
  */
 typedef struct {
 	unsigned char flags;
-	unsigned short n;
+	unsigned short key_length;
 	char* key;
-	unsigned short m;
+	unsigned short value_length;
 	void* value;
 } packet;
 
@@ -44,13 +44,18 @@ packetmd net_get_metadata(char* hostname, char* port, int use_ipv6);
 
 /*
  * Create a new packet.
- * need_ack states whether the packet needs an acknowledgement.
+ * flags is the packet flags.
  * key is the key.
  * value is the value.
  * len is the value length in bytes.
  * Remember to free the packet's content with net_free_packet() after use.
  */
-packet net_create_packet(int need_ack, char* key, void* value, int len);
+packet net_create_packet(int flags, char* key, void* value, int len);
+
+/*
+ * Free a packet.
+ */
+void free_packet(packet* p);
 
 /*
  * Send a packet.
@@ -71,7 +76,8 @@ int net_receive_packet(packet* p);
 int net_do_handshake(packet* p);
 
 /*
- * Route incoming packets.
+ * Route incoming packets or handle them directly.
+ * If the packet is not supposed to be sent by the remote host, nothing happens.
  */
 void net_route_packets();
 
@@ -79,4 +85,4 @@ void net_route_packets();
  * Close the connection.
  * Returns 1 on success, 0 on failure.
  */
-int net_close(packetmd* pmd);
+void net_close(packetmd* pmd);
