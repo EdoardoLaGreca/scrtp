@@ -14,3 +14,8 @@ void print_err(const char *msg);
  * Print a verbose message.
  */
 void print_verb(const char *msg);
+
+/*
+ * Print a list of windows with their indices.
+ */
+int print_windows(char* windows);
