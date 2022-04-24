@@ -17,5 +17,6 @@ void print_verb(const char *msg);
 
 /*
  * Print a list of windows with their indices.
+ * Return the number of windows.
  */
 int print_windows(char* windows);
