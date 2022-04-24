@@ -90,19 +90,20 @@ During the development, this roadmap may be subject to changes.
  - [x] Mouse position handling
  - [x] Mouse scroll handling
  - [ ] Networking
- - [ ] IPv6
  - [ ] Video decoding
+ - [ ] Cryptography
  - [ ] Window resize
+ - [ ] IPv6
 
 #### Server
 
  - [ ] Window buffer capturing (Windows and Linux)
  - [ ] Input replication on real window
  - [ ] Networking
- - [ ] IPv6
  - [ ] Video encoding
+ - [ ] Cryptography
  - [ ] Window resize
-
+ - [ ] IPv6
 
 #### Optional
 
