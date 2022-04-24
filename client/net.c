@@ -189,14 +189,18 @@ choose_window(char* windows)
 	}
 }
 
-static void
+/* encrypt the packet and return its length */
+/* bytes is the pointer to the heap-allocated data */
+static int
 encrypt_packet(packet* p, unsigned char* bytes)
 {
 	/*TODO*/
 }
 
+/* decrypt the packet */
+/* length is the length of the data pointed to by bytes */
 static void
-decrypt_packet(unsigned char* bytes, packet* p)
+decrypt_packet(unsigned char* bytes, int length, packet* p)
 {
 	/*TODO*/
 }
