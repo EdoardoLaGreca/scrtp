@@ -55,7 +55,7 @@ packet net_create_packet(int flags, char* key, void* value, int len);
 /*
  * Free a packet.
  */
-void free_packet(packet* p);
+void net_free_packet(packet* p);
 
 /*
  * Send a packet.

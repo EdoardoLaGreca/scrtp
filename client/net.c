@@ -134,7 +134,7 @@ reply_ack(char* key) /* reply to an ack request */
 	packet ack;
 	ack = net_create_packet(ACK_FLAG, "ack", key, strlen(key) + 1);
 	net_send_packet(&ack);
-	free_packet(&ack);
+	net_free_packet(&ack);
 }
 
 static int /* serialize a packet, return the length */
@@ -249,7 +249,7 @@ net_create_packet(int flags, char* key, void* value, int len)
 }
 
 void
-free_packet(packet* p)
+net_free_packet(packet* p)
 {
 	if (p->key != NULL) {
 		free(p->key);
