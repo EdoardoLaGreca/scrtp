@@ -17,26 +17,35 @@ server side, and that error is so bad that the communication cannot continue,
 the side where the error occurred should send an `error` packet with a brief
 description of what happened.
 
- 1. The server sends its public key to the client as an unencrypted packet.
- 2. The client sends its public key to the server as an unencrypted packet.
- 3. From now on, the packets will be encrypted using the public keys.
- 4. The client sends its protocol version. If it does not match with the one
-    used by the server, the server sends back an error.
- 5. The server sends a list of windows in the following form
+Every message of the following steps is encrypted (see
+[Authentication and encryption](#authentication-and-encryption)).
+
+ 1. To start a connection, the client sends its own protocol version.
+ 2. The server first verifies that the message containing the protocol version
+    can be decrypted correctly. This is necessary to verify that the key used
+    for encryption is the same as the one used for decryption. Then, it also
+    verifies that the protocol version matches. If something goes wrong during
+    these operations, the server sends back an error. Otherwise, it sends a list
+    of open windows in the following form:
     ```
-    window name 1\n
-    window name 2\n
-    window name 3\n
+    window name something\n
+    window something else\n
+    another window\n
     ```
-    where `\n` represents a newline character.
- 6. The client chooses a window by its line number (the first has line number 1
-    while the entire desktop has number 0). If that line number does not exist
+    where `\n` represents a newline character. The "entire desktop" must not be
+    in the list.
+ 3. The client chooses a window by its line number (the first has line number 1
+    while the "entire desktop" has number 0). If that line number does not exist
     (it is negative or too high), the server sends back an error.
- 7. The server sends the window size.
- 8. The client sends the desired video quality. If it is below 1 or above 5, the
+ 4. The server sends the window size.
+ 5. The client sends the desired video quality. If it is below 1 or above 5, the
     server sends back an error.
- 9. Now the client and the server are ready to go: the server can begin to send
+ 6. Now the client and the server are ready to go: the server can begin to send
     the window frames while the client can begin to send the input signals.
+
+At any moment, if the window size changes in the server, the server must send
+the updated size to the client using the appropriate message before sending the
+next window frame data.
 
 ## Concurrency
 
@@ -56,7 +65,11 @@ input signals:  S-<-<-<-<-<-<-C
 
 ## Authentication and encryption
 
-The protocol makes use of public key for both authentication and cryptography.
+The protocol makes use of a pre-shared AES-256 key. That key is used to encrypt
+and decrypt every message sent back and forth between the client and the server.
+
+The same key used for encryption is also used for authentication. For this
+reason, every client must have a different key.
 
 ## Compression
 
