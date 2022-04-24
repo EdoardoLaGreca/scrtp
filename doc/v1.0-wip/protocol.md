@@ -241,9 +241,15 @@ All the strings use the UTF-8 encoding.
    </tr>
    <tr>
       <td> winsize </td>
-      <td> integer </td>
+      <td> array of 2 integers </td>
       <td> yes </td>
-      <td> the window size (width and height) </td>
+      <td>
+         the window size represented as 2 integers of 16 bits:
+         <ul>
+            <li> the first for the window width </li>
+            <li> the second for the window height </li>
+         </ul>
+      </td>
    </tr>
    <tr>
       <td> quality </td>
