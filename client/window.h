@@ -2,6 +2,10 @@
 
 #include <GLFW/glfw3.h>
 
+/* window size */
+extern unsigned int WINDOW_WIDTH;
+extern unsigned int WINDOW_HEIGHT;
+
 /*
  * Create a new window with the given title and size.
  */

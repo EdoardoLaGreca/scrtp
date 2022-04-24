@@ -6,6 +6,9 @@
 #include "print.h"
 #include "net.h"
 
+unsigned int WINDOW_WIDTH = 640;
+unsigned int WINDOW_HEIGHT = 480;
+
 static void
 key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
