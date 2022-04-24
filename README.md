@@ -110,7 +110,8 @@ During the development, this roadmap may be subject to changes.
  - [ ] Support for more input methods (gamepad, etc...)
  - [ ] Performance improvements by optimizing the protocol
  - [ ] Remove runtime dependencies (see [Ermine](http://www.magicermine.com/))
- - [ ] Audio handling (encoding and decoding)
+ - [ ] Audio handling (encoding and decoding, see
+       [Opus](https://opus-codec.org/))
 
 ## License
 
