@@ -189,6 +189,18 @@ choose_window(char* windows)
 	}
 }
 
+static void
+encrypt_packet(packet* p, unsigned char* bytes)
+{
+	/*TODO*/
+}
+
+static void
+decrypt_packet(unsigned char* bytes, packet* p)
+{
+	/*TODO*/
+}
+
 packetmd
 net_get_metadata(char* hostname, char* port, int use_ipv6)
 {
