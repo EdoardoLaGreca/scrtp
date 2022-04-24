@@ -153,15 +153,15 @@ serialize_packet(packet* p, void* serialized)
 	serialized = malloc(length);
 
 	/* serialize the packet fields */
-	memcpy(serialized + idx, p->flags, sizeof(p->flags));
+	memcpy((char*) serialized + idx, &p->flags, sizeof(p->flags));
 	idx += sizeof(p->flags);
-	memcpy(serialized + idx, p->key_length, sizeof(p->key_length));
+	memcpy((char*) serialized + idx, &p->key_length, sizeof(p->key_length));
 	idx += sizeof(p->key_length);
-	memcpy(serialized + idx, p->key, p->key_length);
+	memcpy((char*) serialized + idx, &p->key, p->key_length);
 	idx += p->key_length;
-	memcpy(serialized + idx, p->value_length, sizeof(p->value_length));
+	memcpy((char*) serialized + idx, &p->value_length, sizeof(p->value_length));
 	idx += sizeof(p->value_length);
-	memcpy(serialized + idx, p->value, p->value_length);
+	memcpy((char*) serialized + idx, &p->value, p->value_length);
 	idx += p->value_length;
 
 	return length;
@@ -340,10 +340,11 @@ void
 net_close(packetmd* pmd)
 {
 	packet p;
+	unsigned char value = 0x01;
 	p = net_create_packet(1, "end", NULL, 1);
 
 	/* add boolean value */
-	memcpy(p.value, 0x01, 1);
+	memcpy(p.value, &value, 1);
 
 	net_send_packet(&p);
 
