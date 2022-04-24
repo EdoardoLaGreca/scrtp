@@ -15,6 +15,7 @@
 #include <errno.h>
 #include <stdio.h>
 
+#include "window.h"
 #include "const.h"
 #include "print.h"
 #include "net.h"
@@ -133,7 +134,7 @@ static void
 reply_ack(char* key) /* reply to an ack request */
 {
 	packet ack;
-	ack = net_create_packet(ACK_FLAG, "ack", key, strlen(key) + 1);
+	ack = net_create_packet(0, "ack", key, strlen(key) + 1);
 	net_send_packet(&ack);
 	net_free_packet(&ack);
 }
@@ -315,24 +316,57 @@ net_do_handshake(packet* p)
 void
 net_route_packet(packet* p)
 {
-	packet newp;
-
 	/* if the other side requested an ack, reply immediately */
 	if (p->flags & ACK_FLAG) {
 		reply_ack(p->key);
 	}
 
 	/* route the packet to the appropriate handler or handle directly */
+	/* keys that should not be received are not handled */
 	if (strcmp(p->key, "error") == 0) {
+
 		print_err(p->value);
+
+	} else if (strcmp(p->key, "ack") == 0) {
+
+		complete_ack(p->value);
+
 	} else if (strcmp(p->key, "pubkey") == 0) {
+
 		if (REMOTE_PUBKEY == NULL) {
 			REMOTE_PUBKEY = malloc(p->value_length);
 			memcpy(REMOTE_PUBKEY, p->value, p->value_length);
 		} else {
-			print_err("received a remote pubkey but one already got");
+			print_err("received a remote pubkey but already got one");
 		}
+
 	} else if (strcmp(p->key, "wins") == 0) {
+
+		packet newp;
+		int chosen_win;
+		chosen_win = choose_window(p->value);
+		newp = net_create_packet(ACK_FLAG, "winid", &chosen_win, sizeof(int));
+		net_send_packet(&newp);
+
+	} else if (strcmp(p->key, "winsize") == 0) {
+
+		unsigned short winsize[2];
+		memcpy(winsize, p->value, sizeof(winsize));
+		WINDOW_WIDTH = winsize[0];
+		WINDOW_HEIGHT = winsize[1];
+
+	} else if (strcmp(p->key, "compfr") == 0) {
+
+		/*TODO*/
+
+	} else if (strcmp(p->key, "end") == 0) {
+
+		print_verb("connection closed.");
+
+	} else {
+
+		print_err("received an unexpected key:");
+		print_err(p->key);
 
 	}
 }
