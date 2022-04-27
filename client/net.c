@@ -177,6 +177,33 @@ serialize_packet(packet* p, unsigned char* serialized)
 	return length;
 }
 
+/* deserialize a packet, return the packet as a parameter*/
+static packet
+deserialize_packet(unsigned char* serialized, int length)
+{
+	int idx = 0; /* index */
+	packet p;
+
+	p.flags = *(unsigned int*) (serialized + idx);
+	idx += sizeof(p.flags);
+
+	p.key_length = *(unsigned int*) (serialized + idx);
+	idx += sizeof(p.key_length);
+
+	p.key = malloc(p.key_length);
+	memcpy(p.key, serialized + idx, p.key_length);
+	idx += p.key_length;
+
+	p.value_length = *(unsigned int*) (serialized + idx);
+	idx += sizeof(p.value_length);
+
+	p.value = malloc(p.value_length);
+	memcpy(p.value, serialized + idx, p.value_length);
+	idx += p.value_length;
+
+	return p;
+}
+
 static int
 choose_window(char* windows)
 {
