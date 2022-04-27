@@ -21,6 +21,7 @@
 #include "net.h"
 
 #define ACK_FLAG (1 << 0)
+#define NET_BUFFER_SIZE 1024
 
 /* internal structure for pending ack requests, as a list item */
 typedef struct ack_request_s {
@@ -360,8 +361,48 @@ net_send_packet(packet* p)
 int
 net_receive_packet(packet* p)
 {
+	int packet_len = NET_BUFFER_SIZE;
+	int recvbytes = 0;
+	unsigned char buffer[NET_BUFFER_SIZE]; /* array of bytes */
+	unsigned char* packet = NULL; /* full content */
+
+	packet = malloc(NET_BUFFER_SIZE);
+
+	if (packet == NULL) {
+		print_err("call to malloc returned NULL");
+		return 0;
+	}
+
+	do {
+		/* receive the packet */
+		recvbytes = recvfrom(METADATA.sockfd, buffer, NET_BUFFER_SIZE,
+			METADATA.flags, METADATA.addr->ai_addr, &METADATA.addr->ai_addrlen);
+
+		/* check for errors */
+		if (recvbytes < 0) {
+			print_err("call to recvfrom returned a negative number:");
+			print_err(strerror(errno));
+			return 0;
+		}
+
+		/* the buffer has been filled, so there is probably more content */
+		/* expand the packet size */
+		packet_len += NET_BUFFER_SIZE;
+		packet = realloc(packet, packet_len);
+
+		/* append the buffer to the packet */
+		memcpy(packet + packet_len - NET_BUFFER_SIZE, buffer, NET_BUFFER_SIZE);
+
+		if (packet == NULL) {
+			print_err("call to realloc returned NULL");
+			return 0;
+		}
+
+	} while (recvbytes == NET_BUFFER_SIZE);
+
 	/*TODO*/
-	return 42;
+
+	return 1;
 }
 
 int
