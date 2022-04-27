@@ -81,8 +81,9 @@ get_addrinfo(char* hostname, char* port, int use_ipv6)
 	return tmp;
 }
 
+/* queue an ack after sending a request */
 static void
-queue_ack(char* key) /* queue an ack after sending a request */
+queue_ack(char* key)
 {
 	ack_request* ar;
 	ack_request* tmp;
@@ -102,8 +103,9 @@ queue_ack(char* key) /* queue an ack after sending a request */
 	tmp->next = ar;
 }
 
+/* complete an ack after receiving the response */
 static void
-complete_ack(char* key) /* complete an ack after receiving the response */
+complete_ack(char* key)
 {
 	ack_request* tmp;
 	ack_request* prev = NULL;
@@ -130,8 +132,9 @@ complete_ack(char* key) /* complete an ack after receiving the response */
 	}
 }
 
+/* reply to an ack request */
 static void
-reply_ack(char* key) /* reply to an ack request */
+reply_ack(char* key)
 {
 	packet ack;
 	ack = net_create_packet(0, "ack", key, strlen(key) + 1);
@@ -139,8 +142,9 @@ reply_ack(char* key) /* reply to an ack request */
 	net_free_packet(&ack);
 }
 
-static int /* serialize a packet, return the length */
-serialize_packet(packet* p, void* serialized)
+/* serialize a packet, return the bytes as a parameter and the length */
+static int
+serialize_packet(packet* p, unsigned char* serialized)
 {
 	int length = 0;
 	int idx = 0; /* index */
