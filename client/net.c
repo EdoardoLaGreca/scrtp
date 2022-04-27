@@ -230,6 +230,7 @@ static int
 encrypt_packet(packet* p, unsigned char* bytes)
 {
 	/*TODO*/
+	return 42;
 }
 
 /* decrypt the packet */
