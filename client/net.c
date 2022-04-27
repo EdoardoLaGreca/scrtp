@@ -159,15 +159,19 @@ serialize_packet(packet* p, unsigned char* serialized)
 	serialized = malloc(length);
 
 	/* serialize the packet fields */
-	memcpy((char*) serialized + idx, &p->flags, sizeof(p->flags));
+	memcpy((unsigned char*) serialized + idx, &p->flags, sizeof(p->flags));
 	idx += sizeof(p->flags);
-	memcpy((char*) serialized + idx, &p->key_length, sizeof(p->key_length));
+
+	memcpy((unsigned char*) serialized + idx, &p->key_length, sizeof(p->key_length));
 	idx += sizeof(p->key_length);
-	memcpy((char*) serialized + idx, &p->key, p->key_length);
+
+	memcpy((unsigned char*) serialized + idx, &p->key, p->key_length);
 	idx += p->key_length;
-	memcpy((char*) serialized + idx, &p->value_length, sizeof(p->value_length));
+
+	memcpy((unsigned char*) serialized + idx, &p->value_length, sizeof(p->value_length));
 	idx += sizeof(p->value_length);
-	memcpy((char*) serialized + idx, &p->value, p->value_length);
+
+	memcpy((unsigned char*) serialized + idx, &p->value, p->value_length);
 	idx += p->value_length;
 
 	return length;
