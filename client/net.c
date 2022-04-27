@@ -213,14 +213,20 @@ choose_window(char* windows)
 	win_num = print_windows(windows);
 
 	while (1) {
-		printf(">> ");
-		scanf("%d", &input);
+		int values_read = 0;
+		char c;
 
-		if (input >= 0 && input <= win_num) {
+		printf(">>");
+
+		values_read = scanf("%d", &input);
+
+		while((c = getchar()) != '\n');
+
+		if (values_read == 1 && input >= 0 && input <= win_num) {
 			return input;
-		} else {
-			printf("invalid input, try again\n");
 		}
+
+		printf("invalid input, try again\n");
 	}
 }
 
