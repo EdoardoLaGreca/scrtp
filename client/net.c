@@ -21,7 +21,6 @@
 #include "net.h"
 
 #define ACK_FLAG (1 << 0)
-#define NET_BUFFER_SIZE 1024
 
 /* internal structure for pending ack requests, as a list item */
 typedef struct ack_request_s {
@@ -370,46 +369,57 @@ net_send_packet(packet* p)
 int
 net_receive_packet(packet* p)
 {
-	int packet_len = NET_BUFFER_SIZE;
-	int recvbytes = 0;
-	unsigned char buffer[NET_BUFFER_SIZE]; /* array of bytes */
-	unsigned char* packet = NULL; /* full content */
+	unsigned char flags;
+	unsigned int key_length = 0, value_length = 0;
+	char* key = NULL;
+	unsigned char* value = NULL;
+	unsigned int recvbytes, i;
 
-	packet = malloc(NET_BUFFER_SIZE);
+	/* sizes of the packet fields */
+	int sizes[5] = { sizeof(flags), sizeof(key_length), sizeof(key),
+		sizeof(value_length), sizeof(value) };
 
-	if (packet == NULL) {
-		print_err("call to malloc returned NULL");
-		return 0;
-	}
+	/* pointers to the packet fields */
+	void* pointers[5] = { &flags, &key_length, &key, &value_length, &value };
 
-	do {
-		/* receive the packet */
-		recvbytes = recvfrom(METADATA.sockfd, buffer, NET_BUFFER_SIZE,
-			METADATA.flags, METADATA.addr->ai_addr, &METADATA.addr->ai_addrlen);
+	for (i = 0; i < 5; i++) {
+		/* receive */
+		recvbytes = receive_bytes(pointers[i], sizes[i]);
 
 		/* check for errors */
 		if (recvbytes < 0) {
 			print_err("call to recvfrom returned a negative number:");
 			print_err(strerror(errno));
+
+			if (key != NULL) {
+				free(key);
+			}
+
+			if (value != NULL) {
+				free(value);
+			}
+
 			return 0;
 		}
 
-		/* the buffer has been filled, so there is probably more content */
-		/* expand the packet size */
-		packet_len += NET_BUFFER_SIZE;
-		packet = realloc(packet, packet_len);
-
-		/* append the buffer to the packet */
-		memcpy(packet + packet_len - NET_BUFFER_SIZE, buffer, NET_BUFFER_SIZE);
-
-		if (packet == NULL) {
-			print_err("call to realloc returned NULL");
-			return 0;
+		if (key_length > 0 && key == NULL) {
+			/* alloc key */
+			key = calloc(key_length, sizeof(char));
 		}
 
-	} while (recvbytes == NET_BUFFER_SIZE);
+		if (value_length > 0 && value == NULL) {
+			/* alloc value */
+			value = calloc(value_length, sizeof(unsigned char));
+		}
+	}
 
-	/*TODO*/
+	recvbytes = receive_bytes(&key_length, sizeof(key_length));
+
+	p->flags = flags;
+	p->key_length = key_length;
+	p->key = key;
+	p->value_length = value_length;
+	p->value = value;
 
 	return 1;
 }
