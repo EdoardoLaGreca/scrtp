@@ -380,11 +380,16 @@ net_receive_packet(packet* p)
 		sizeof(value_length), sizeof(value) };
 
 	/* pointers to the packet fields */
-	void* pointers[5] = { &flags, &key_length, &key, &value_length, &value };
+	void* ptrs[5];
+	ptrs[0] = &flags;
+	ptrs[1] = &key_length;
+	ptrs[2] = &key;
+	ptrs[3] = &value_length;
+	ptrs[4] = &value;
 
 	for (i = 0; i < 5; i++) {
 		/* receive */
-		recvbytes = receive_bytes(pointers[i], sizes[i]);
+		recvbytes = receive_bytes(ptrs[i], sizes[i]);
 
 		/* check for errors */
 		if (recvbytes < 0) {
