@@ -231,6 +231,15 @@ choose_window(char* windows)
 	}
 }
 
+/* receive bytes and return them as a parameter */
+/* return the number of bytes actually received */
+static int
+receive_bytes(void* bytes_ptr, int num_bytes)
+{
+	return recvfrom(METADATA.sockfd, &bytes_ptr, num_bytes, METADATA.flags,
+		METADATA.addr->ai_addr, &METADATA.addr->ai_addrlen);
+}
+
 /* encrypt the packet and return its length */
 /* bytes is the pointer to the heap-allocated data */
 static int
