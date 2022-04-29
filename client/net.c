@@ -374,6 +374,7 @@ net_receive_packet(packet* p)
 	char* key = NULL;
 	unsigned char* value = NULL;
 	unsigned int recvbytes, i;
+	void* buffer = NULL;
 
 	/* sizes of the packet fields */
 	int sizes[5] = { sizeof(flags), sizeof(key_length), sizeof(key),
@@ -418,7 +419,9 @@ net_receive_packet(packet* p)
 		}
 	}
 
-	recvbytes = receive_bytes(&key_length, sizeof(key_length));
+	/* receive the rest of the packet, but discard it */
+	buffer = malloc(1024);
+	while (receive_bytes(&buffer, 1024) == 1024);
 
 	p->flags = flags;
 	p->key_length = key_length;
