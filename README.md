@@ -34,10 +34,9 @@ OPTIONS:
     -v       Print verbose output (useful during debugging).
     --4and6  Use IPv4 and IPv6 (default is only IPv4).
     --only6  Use only IPv6 (default is only IPv4).
-    -c FILE
-        Use FILE as configuration file instead of the default file located in
-        /etc/scrtp/config_server. If the default file cannot be found, use
-        default values.
+    -c FILE  Use FILE as configuration file instead of the default file located
+             in /etc/scrtp/config_server. If the default file cannot be found,
+             use default values.
 ```
 
 ## Requirements
