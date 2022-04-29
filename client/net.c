@@ -341,29 +341,20 @@ net_free_packet(packet* p)
 int
 net_send_packet(packet* p)
 {
-	char* buf;
+	char* serialized;
 	packetmd* md;
-	int sentbytes;
-
-	buf = malloc(sizeof(packet));
-	if (buf == NULL) {
-		print_err("call to malloc returned NULL");
-		return 0;
-	}
+	int sentbytes, serialized_len;
 
 	/* serialize the packet */
-	memcpy(buf, p, sizeof(packet));
+	serialized_len = serialize_packet(p, serialized);
 
-	/* send the packet using data from METADATA */
-	md = &METADATA;
-	sentbytes = sendto(md->sockfd, buf, sizeof(packet), md->flags,
-		md->addr->ai_addr, md->addr->ai_addrlen);
+	/* send the packet */
+	sentbytes = send_bytes(serialized, serialized_len);
 
-	free(buf);
+	free(serialized);
 
 	if (sentbytes < 0 || sentbytes != sizeof(packet)) {
 		print_err("call to sendto returned a negative number or mismatched bytes");
-		free(buf);
 		return 0;
 	}
 
