@@ -421,7 +421,12 @@ net_receive_packet(packet* p)
 
 	/* receive the rest of the packet, but discard it */
 	buffer = malloc(1024);
+	if (buffer == NULL) {
+		print_err("call to malloc returned NULL");
+		return 0;
+	}
 	while (receive_bytes(&buffer, 1024) == 1024);
+	free(buffer);
 
 	p->flags = flags;
 	p->key_length = key_length;
