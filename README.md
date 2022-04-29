@@ -21,8 +21,8 @@ the repo's [etc](etc/) directory as config files.
 scrtp [OPTIONS]... HOST PORT
 
 OPTIONS:
-    -v  Print verbose output (useful during debugging).
-    -6  Use IPv6 if possible.
+    -v       Print verbose output (useful during debugging).
+    -6       Use IPv6 if possible.
 ```
 
 ### Server
@@ -31,7 +31,7 @@ OPTIONS:
 scrtpd [OPTIONS]...
 
 OPTIONS:
-    -v  Print verbose output (useful during debugging).
+    -v       Print verbose output (useful during debugging).
     --4and6  Use IPv4 and IPv6 (default is only IPv4).
     --only6  Use only IPv6 (default is only IPv4).
     -c FILE
