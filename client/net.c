@@ -230,6 +230,15 @@ choose_window(char* windows)
 	}
 }
 
+/* send bytes */
+/* return the number of bytes actually sent (return value of sendto function) */
+static int
+send_bytes(void* bytes_ptr, int length)
+{
+	return sendto(METADATA.sockfd, bytes_ptr, length, METADATA.flags,
+		METADATA.addr->ai_addr, METADATA.addr->ai_addrlen);
+}
+
 /* receive bytes and return them as a parameter */
 /* return the number of bytes actually received */
 static int
