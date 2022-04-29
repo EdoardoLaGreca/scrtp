@@ -177,7 +177,7 @@ serialize_packet(packet* p, unsigned char* serialized)
 	return length;
 }
 
-/* deserialize a packet, return the packet as a parameter*/
+/* deserialize a packet */
 static packet
 deserialize_packet(unsigned char* serialized, int length)
 {
@@ -240,7 +240,7 @@ send_bytes(void* bytes_ptr, int length)
 }
 
 /* receive bytes and return them as a parameter */
-/* return the number of bytes actually received */
+/* return the number of bytes actually received (return value of recvfrom function) */
 static int
 receive_bytes(void* bytes_ptr, int num_bytes)
 {
