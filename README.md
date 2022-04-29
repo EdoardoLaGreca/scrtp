@@ -112,6 +112,8 @@ During the development, this roadmap may be subject to changes.
  - [ ] Remove runtime dependencies (see [Ermine](http://www.magicermine.com/))
  - [ ] Audio handling (encoding and decoding, see
        [Opus](https://opus-codec.org/))
+ - [ ] Add a GitHub Action workflow for memory checks using
+       [Valgrind](https://valgrind.org/)
 
 ## License
 
