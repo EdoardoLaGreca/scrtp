@@ -369,70 +369,48 @@ net_send_packet(packet* p)
 int
 net_receive_packet(packet* p)
 {
-	unsigned char flags;
-	unsigned int key_length = 0, value_length = 0;
-	char* key = NULL;
-	unsigned char* value = NULL;
-	unsigned int recvbytes, i;
-	void* buffer = NULL;
+	const unsigned int chunk_length = 1024;
+	unsigned int recvbytes = 0, buffer_length = 1024;
+	unsigned char* buffer = NULL;
 
-	/* sizes of the packet fields */
-	int sizes[5] = { sizeof(flags), sizeof(key_length), sizeof(key),
-		sizeof(value_length), sizeof(value) };
-
-	/* pointers to the packet fields */
-	void* ptrs[5];
-	ptrs[0] = &flags;
-	ptrs[1] = &key_length;
-	ptrs[2] = &key;
-	ptrs[3] = &value_length;
-	ptrs[4] = &value;
-
-	for (i = 0; i < 5; i++) {
-		/* receive */
-		recvbytes = receive_bytes(ptrs[i], sizes[i]);
-
-		/* check for errors */
-		if (recvbytes < 0) {
-			print_err("call to recvfrom returned a negative number:");
-			print_err(strerror(errno));
-
-			if (key != NULL) {
-				free(key);
-			}
-
-			if (value != NULL) {
-				free(value);
-			}
-
-			return 0;
-		}
-
-		if (key_length > 0 && key == NULL) {
-			/* alloc key */
-			key = calloc(key_length, sizeof(char));
-		}
-
-		if (value_length > 0 && value == NULL) {
-			/* alloc value */
-			value = calloc(value_length, sizeof(unsigned char));
-		}
-	}
-
-	/* receive the rest of the packet, but discard it */
-	buffer = malloc(1024);
+	buffer = malloc(buffer_length);
 	if (buffer == NULL) {
 		print_err("call to malloc returned NULL");
 		return 0;
 	}
-	while (receive_bytes(&buffer, 1024) == 1024);
-	free(buffer);
 
-	p->flags = flags;
-	p->key_length = key_length;
-	p->key = key;
-	p->value_length = value_length;
-	p->value = value;
+	/* receive the packet */
+	do {
+		recvbytes = receive_bytes(buffer + buffer_length - chunk_length,
+			chunk_length);
+
+		if (recvbytes < 0) {
+			print_err("call to recvfrom returned a negative number");
+			return 0;
+		} else if (recvbytes == chunk_length) {
+			/* add space for the next chunk of bytes */
+			buffer_length += chunk_length;
+			buffer = realloc(buffer, buffer_length);
+
+			if (buffer == NULL) {
+				print_err("call to realloc returned NULL");
+				return 0;
+			}
+		} else {
+			/* resize the buffer to fit the actual content */
+			buffer_length = buffer_length - chunk_length + recvbytes;
+			buffer = realloc(buffer, buffer_length);
+
+			if (buffer == NULL) {
+				print_err("call to realloc returned NULL");
+				return 0;
+			}
+		}
+	} while (recvbytes == chunk_length);
+
+
+	/* deserialize the packet */
+	*p = deserialize_packet(buffer, buffer_length);
 
 	return 1;
 }
