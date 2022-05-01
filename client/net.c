@@ -144,7 +144,7 @@ reply_ack(char* key)
 
 /* serialize a packet, return the bytes as a parameter and the length */
 static int
-serialize_packet(packet* p, unsigned char* serialized)
+serialize_packet(packet* p, unsigned char** serialized)
 {
 	int length = 0;
 	int idx = 0; /* index */
@@ -156,22 +156,22 @@ serialize_packet(packet* p, unsigned char* serialized)
 	length += sizeof(p->value_length);
 	length += p->value_length;
 
-	serialized = malloc(length);
+	*serialized = malloc(length);
 
 	/* serialize the packet fields */
-	memcpy((unsigned char*) serialized + idx, &p->flags, sizeof(p->flags));
+	memcpy((unsigned char*) *serialized + idx, &p->flags, sizeof(p->flags));
 	idx += sizeof(p->flags);
 
-	memcpy((unsigned char*) serialized + idx, &p->key_length, sizeof(p->key_length));
+	memcpy((unsigned char*) *serialized + idx, &p->key_length, sizeof(p->key_length));
 	idx += sizeof(p->key_length);
 
-	memcpy((unsigned char*) serialized + idx, &p->key, p->key_length);
+	memcpy((unsigned char*) *serialized + idx, p->key, p->key_length);
 	idx += p->key_length;
 
-	memcpy((unsigned char*) serialized + idx, &p->value_length, sizeof(p->value_length));
+	memcpy((unsigned char*) *serialized + idx, &p->value_length, sizeof(p->value_length));
 	idx += sizeof(p->value_length);
 
-	memcpy((unsigned char*) serialized + idx, &p->value, p->value_length);
+	memcpy((unsigned char*) *serialized + idx, p->value, p->value_length);
 	idx += p->value_length;
 
 	return length;
@@ -341,20 +341,21 @@ net_free_packet(packet* p)
 int
 net_send_packet(packet* p)
 {
-	char* serialized;
-	packetmd* md;
+	unsigned char* serialized = NULL;
 	int sentbytes, serialized_len;
 
 	/* serialize the packet */
-	serialized_len = serialize_packet(p, serialized);
+	serialized_len = serialize_packet(p, &serialized);
 
 	/* send the packet */
 	sentbytes = send_bytes(serialized, serialized_len);
 
 	free(serialized);
 
-	if (sentbytes < 0 || sentbytes != sizeof(packet)) {
-		print_err("call to sendto returned a negative number or mismatched bytes");
+	if (sentbytes < 0 ) {
+		print_err("call to sendto returned a negative number");
+	} else if (sentbytes != serialized_len) {
+		print_err("call to sendto returned mismatched bytes");
 		return 0;
 	}
 
