@@ -371,7 +371,7 @@ int
 net_receive_packet(packet* p)
 {
 	const unsigned int chunk_length = 1024;
-	unsigned int recvbytes = 0, buffer_length = 1024;
+	unsigned int recvbytes = 0, buffer_length = chunk_length;
 	unsigned char* buffer = NULL;
 
 	buffer = malloc(buffer_length);
