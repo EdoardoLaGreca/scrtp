@@ -184,18 +184,18 @@ deserialize_packet(unsigned char* serialized, int length)
 	int idx = 0; /* index */
 	packet p;
 
-	p.flags = *(unsigned int*) (serialized + idx);
-	idx += sizeof(p.flags);
+	p.flags = *(unsigned char*) (serialized + idx);
+	idx += sizeof(unsigned char);
 
-	p.key_length = *(unsigned int*) (serialized + idx);
-	idx += sizeof(p.key_length);
+	p.key_length = *(unsigned short*) (serialized + idx);
+	idx += sizeof(unsigned short);
 
 	p.key = malloc(p.key_length);
 	memcpy(p.key, serialized + idx, p.key_length);
 	idx += p.key_length;
 
-	p.value_length = *(unsigned int*) (serialized + idx);
-	idx += sizeof(p.value_length);
+	p.value_length = *(unsigned short*) (serialized + idx);
+	idx += sizeof(unsigned short);
 
 	p.value = malloc(p.value_length);
 	memcpy(p.value, serialized + idx, p.value_length);
