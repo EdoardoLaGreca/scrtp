@@ -245,8 +245,23 @@ send_bytes(void* bytes_ptr, int length)
 static int
 receive_bytes(void* bytes_ptr, int length)
 {
-	return recvfrom(METADATA.sockfd, bytes_ptr, length, METADATA.flags,
-		METADATA.addr->ai_addr, &METADATA.addr->ai_addrlen);
+	int addr_length, ret_code;
+	struct sockaddr_storage src_addr;
+
+	/* initialize to the size of IPv6 so that also IPv4 can fit */
+	char address[INET6_ADDRSTRLEN];
+
+	addr_length = sizeof(struct sockaddr_storage);
+
+	recvfrom(METADATA.sockfd, bytes_ptr, length, METADATA.flags,
+		&src_addr, &addr_length);
+
+	if (src_addr.ss_family == AF_INET) {
+		address = inet_ntop(, ) /*TODO*/
+
+	}
+
+	return ret_code;
 }
 
 /* encrypt the packet and return its length */
