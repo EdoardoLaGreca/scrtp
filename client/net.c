@@ -5,6 +5,7 @@
 #ifdef __linux__
 #include <sys/socket.h>
 #include <netdb.h>
+#include <unistd.h>
 #elif _WIN32
 	#include <winsock2.h>
 	#include <ws2tcpip.h>
@@ -482,7 +483,7 @@ net_route_packet(packet* p)
 }
 
 void
-net_close(packetmd* pmd)
+net_close()
 {
 	packet p;
 	unsigned char value = 0x01;
@@ -494,4 +495,7 @@ net_close(packetmd* pmd)
 	net_send_packet(&p);
 
 	net_free_packet(&p);
+
+	/* close the socket */
+	close(METADATA.sockfd);
 }

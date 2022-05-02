@@ -85,4 +85,4 @@ void net_route_packets();
  * Close the connection.
  * Returns 1 on success, 0 on failure.
  */
-void net_close(packetmd* pmd);
+void net_close();
