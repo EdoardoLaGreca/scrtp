@@ -43,18 +43,15 @@ clean() {
 }
 
 build() {
-	compile
-	link scrtp
+	compile && link scrtp
 }
 
 build_dbg() {
-	compile_dbg
-	link scrtp_dbg
+	compile_dbg && link scrtp_dbg
 }
 
 all() {
-	checkdeps
-	build
+	checkdeps && build
 }
 
 eval $1
