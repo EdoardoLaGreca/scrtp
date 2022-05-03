@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <unistd.h>
+#include <arpa/inet.h>
 #elif _WIN32
 	#include <winsock2.h>
 	#include <ws2tcpip.h>
@@ -242,6 +243,7 @@ send_bytes(void* bytes_ptr, int length)
 
 /* receive bytes and return them as a parameter */
 /* return the number of bytes actually received (return value of recvfrom function) */
+/* return -2 if the packet came from a wrong address */
 static int
 receive_bytes(void* bytes_ptr, int length)
 {
@@ -251,14 +253,21 @@ receive_bytes(void* bytes_ptr, int length)
 	/* initialize to the size of IPv6 so that also IPv4 can fit */
 	char address[INET6_ADDRSTRLEN];
 
+	memset(address, 0, sizeof(address));
 	addr_length = sizeof(struct sockaddr_storage);
 
-	recvfrom(METADATA.sockfd, bytes_ptr, length, METADATA.flags,
+	ret_code = recvfrom(METADATA.sockfd, bytes_ptr, length, METADATA.flags,
 		&src_addr, &addr_length);
 
-	if (src_addr.ss_family == AF_INET) {
-		address = inet_ntop(, ) /*TODO*/
+	inet_ntop(src_addr.ss_family,
+        src_addr.ss_family == AF_INET?
+            &((struct sockaddr_in *) &src_addr)->sin_addr:
+            &((struct sockaddr_in6 *) &src_addr)->sin6_addr,
+        address, sizeof(address));
 
+	if (strcmp(address, METADATA.addr) != 0) {
+		/* -2 stands for "packet from wrong address" */
+		return -2;
 	}
 
 	return ret_code;
@@ -401,8 +410,11 @@ net_receive_packet(packet* p)
 		recvbytes = receive_bytes(buffer + buffer_length - chunk_length,
 			chunk_length);
 
-		if (recvbytes < 0) {
-			print_err("call to recvfrom returned a negative number");
+		if (recvbytes == -1) {
+			print_err("call to recvfrom returned -1");
+			return 0;
+		} else if (recvbytes == -2) {
+			print_verb("received packet from wrong address");
 			return 0;
 		} else if (recvbytes == chunk_length) {
 			/* add space for the next chunk of bytes */
