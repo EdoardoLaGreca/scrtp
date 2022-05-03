@@ -2,7 +2,7 @@
 
 #include <sys/types.h>
 
-#ifdef __linux__
+#ifdef __unix__
 	#include <sys/socket.h>
 	#include <netdb.h>
 	#include <unistd.h>
