@@ -76,10 +76,10 @@ int net_receive_packet(packet* p);
 int net_do_handshake();
 
 /*
- * Route incoming packets or handle them directly.
+ * Route packet or handle it directly.
  * If the packet is not supposed to be sent by the remote host, nothing happens.
  */
-void net_route_packets();
+void net_route_packet(packet* p);
 
 /*
  * Close the connection.
