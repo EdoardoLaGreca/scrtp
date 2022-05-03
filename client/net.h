@@ -73,7 +73,7 @@ int net_receive_packet(packet* p);
  * Do the initial handshake.
  * Returns 1 on success, 0 on failure.
  */
-int net_do_handshake(packet* p);
+int net_do_handshake();
 
 /*
  * Route incoming packets or handle them directly.

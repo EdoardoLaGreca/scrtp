@@ -424,7 +424,7 @@ net_receive_packet(packet* p)
 }
 
 int
-net_do_handshake(packet* p)
+net_do_handshake()
 {
 	/*TODO*/
 	return 42;
