@@ -92,6 +92,12 @@ queue_ack(char* key)
 	strcpy(ar->key, key);
 	ar->next = NULL;
 
+	if (PENDING_ACKS == NULL) {
+		/* list is empty */
+		PENDING_ACKS = ar;
+		return;
+	}
+
 	tmp = PENDING_ACKS;
 
 	/* go to last item in list */
@@ -103,6 +109,7 @@ queue_ack(char* key)
 }
 
 /* complete an ack after receiving the response */
+/* if the key is not present in the list, it does nothing */
 static void
 complete_ack(char* key)
 {
@@ -357,7 +364,7 @@ net_send_packet(packet* p)
 
 	free(serialized);
 
-	if (sentbytes < 0 ) {
+	if (sentbytes < 0) {
 		print_err("call to sendto returned a negative number");
 	} else if (sentbytes != serialized_len) {
 		print_err("call to sendto returned mismatched bytes");
@@ -365,7 +372,7 @@ net_send_packet(packet* p)
 	}
 
 	/* if packet has ack flag, wait for ack */
-	if ((p->flags & ACK_FLAG) != 0) {
+	if (p->flags & ACK_FLAG) {
 		queue_ack(p->key);
 	}
 
@@ -443,6 +450,8 @@ net_route_packet(packet* p)
 		print_err(p->value);
 
 	} else if (strcmp(p->key, "ack") == 0) {
+		/* add null terminator in case there isn't already */
+		((char*) p->value)[p->value_length - 1] = '\0';
 
 		complete_ack(p->value);
 
