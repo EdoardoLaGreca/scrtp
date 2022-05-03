@@ -1,5 +1,7 @@
 #pragma once
 
+#define ACK_FLAG (1 << 0)
+
 /*
  * A packet.
  */

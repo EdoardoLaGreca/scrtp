@@ -21,8 +21,6 @@
 #include "print.h"
 #include "net.h"
 
-#define ACK_FLAG (1 << 0)
-
 /* internal structure for pending ack requests, as a list item */
 typedef struct ack_request_s {
 	char* key; /* key of the packet */
