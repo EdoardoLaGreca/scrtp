@@ -135,6 +135,10 @@ where:
 The data type of the `value` field is implicit, which means that it must be
 known to both the client and the server so that is not misinterpreted.
 
+The `key` field (and the `value` field, if it is a string) must be
+null-terminated. The respective length fields (`n` and `m`) must also consider
+the null-terminator in the bytes count.
+
 ## Flags
 
 As a reference, the representation below describes the bit positions in the
