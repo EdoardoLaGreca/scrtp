@@ -25,5 +25,7 @@ main(int argc, char** argv)
 
 	window_loop(window);
 
+	net_close(METADATA.sockfd);
+
 	return 0;
 }
