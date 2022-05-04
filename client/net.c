@@ -26,7 +26,7 @@
 
 /* internal structure for pending ack requests, as a list item */
 typedef struct ack_request_s {
-	char* key; /* key of the packet */
+	packet pkt; /* whole packet whose ack was sent */
 	struct ack_request_s* next;
 } ack_request;
 
@@ -85,14 +85,15 @@ get_addrinfo(char* hostname, char* port, int use_ipv6)
 
 /* queue an ack after sending a request */
 static void
-queue_ack(char* key)
+queue_ack(packet* p)
 {
 	ack_request* ar;
 	ack_request* tmp;
 
+	/* fill the ack_request structure */
 	ar = malloc(sizeof(ack_request));
-	ar->key = malloc(strlen(key) + 1);
-	strcpy(ar->key, key);
+	memcpy(&ar->pkt, p, sizeof(packet));
+	net_init_packet(&ar->pkt, p->flags, p->key, p->value, p->value_length);
 	ar->next = NULL;
 
 	if (PENDING_ACKS == NULL) {
@@ -121,7 +122,7 @@ complete_ack(char* key)
 	tmp = PENDING_ACKS;
 
 	while (tmp != NULL) {
-		if (strcmp(tmp->key, key) == 0) {
+		if (strcmp(tmp->pkt.key, key) == 0) {
 			/* remove this item from the list */
 
 			if (prev != NULL) {
@@ -130,7 +131,7 @@ complete_ack(char* key)
 				PENDING_ACKS = tmp->next;
 			}
 
-			free(tmp->key);
+			net_free_packet(&tmp->pkt);
 			free(tmp);
 
 			return;
