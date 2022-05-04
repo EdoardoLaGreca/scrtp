@@ -340,8 +340,6 @@ net_init_packet(packet* p, unsigned char flags, char* key, void* value, int len)
 	if (value != NULL) {
 		memcpy(p->value, value, len);
 	}
-
-	return p;
 }
 
 void
@@ -506,10 +504,7 @@ net_close()
 {
 	packet p;
 	unsigned char value = 0x01;
-	net_init_packet(&p, 1, "end", NULL, 1);
-
-	/* add boolean value */
-	memcpy(p.value, &value, 1);
+	net_init_packet(&p, 1, "end", &value, 1);
 
 	net_send_packet(&p);
 
