@@ -21,6 +21,9 @@
 #include "print.h"
 #include "net.h"
 
+#define PROTO_VERSION "1.0"
+#define MAX_RESEND_TIMES 3
+
 /* internal structure for pending ack requests, as a list item */
 typedef struct ack_request_s {
 	char* key; /* key of the packet */
