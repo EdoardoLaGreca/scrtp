@@ -143,7 +143,7 @@ static void
 reply_ack(char* key)
 {
 	packet ack;
-	ack = net_create_packet(0, "ack", key, strlen(key) + 1);
+	net_init_packet(&ack, 0, "ack", key, strlen(key) + 1);
 	net_send_packet(&ack);
 	net_free_packet(&ack);
 }
@@ -316,23 +316,29 @@ net_get_metadata(char* hostname, char* port, int use_ipv6)
 	return pmd;
 }
 
-packet
-net_create_packet(int flags, char* key, void* value, int len)
+int
+net_init_packet(packet* p, unsigned char flags, char* key, void* value, int len)
 {
-	packet p;
-	p.flags = flags;
-	p.key_length = strlen(key) + 1;
-	p.value_length = len;
+	p->flags = flags;
+	p->key_length = strlen(key) + 1;
+	p->value_length = len;
 
-	p.key = malloc(p.key_length);
-	strcpy(p.key, key);
+	p->key = malloc(p->key_length);
+	if (p->key == NULL) {
+		return 0;
+	}
 
-	p.value = malloc(p.value_length);
+	strcpy(p->key, key);
+
+	p->value = malloc(p->value_length);
+	if (p->value == NULL) {
+		return 0;
+	}
 
 	/* the caller may just want to allocate space for the value and add a value
 	 * later, so we don't want to copy the value if it's NULL */
 	if (value != NULL) {
-		memcpy(p.value, value, len);
+		memcpy(p->value, value, len);
 	}
 
 	return p;
@@ -469,7 +475,7 @@ net_route_packet(packet* p)
 		packet newp;
 		int chosen_win;
 		chosen_win = choose_window(p->value);
-		newp = net_create_packet(ACK_FLAG, "winid", &chosen_win, sizeof(int));
+		net_init_packet(&newp, ACK_FLAG, "winid", &chosen_win, sizeof(int));
 		net_send_packet(&newp);
 
 	} else if (strcmp(p->key, "winsize") == 0) {
@@ -500,7 +506,7 @@ net_close()
 {
 	packet p;
 	unsigned char value = 0x01;
-	p = net_create_packet(1, "end", NULL, 1);
+	net_init_packet(&p, 1, "end", NULL, 1);
 
 	/* add boolean value */
 	memcpy(p.value, &value, 1);

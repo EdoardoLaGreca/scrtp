@@ -45,14 +45,12 @@ extern packetmd METADATA;
 packetmd net_get_metadata(char* hostname, char* port, int use_ipv6);
 
 /*
- * Create a new packet.
- * flags is the packet flags.
- * key is the key.
- * value is the value.
+ * Initialize a packet passed as a pointer, which must not be NULL.
  * len is the value length in bytes.
+ * Returns 1 on success, 0 on failure.
  * Remember to free the packet's content with net_free_packet() after use.
  */
-packet net_create_packet(int flags, char* key, void* value, int len);
+int net_init_packet(packet* p, unsigned char flags, char* key, void* value, int len);
 
 /*
  * Free a packet.

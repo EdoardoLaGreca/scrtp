@@ -26,7 +26,7 @@ key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 		return;
 	}
 
-	net_create_packet(0, "kbdev", data, sizeof(data));
+	net_init_packet(&kbdev, 0, "kbdev", data, sizeof(data));
 	net_send_packet(&kbdev);
 	last_action = action;
 }
@@ -48,7 +48,7 @@ mousebtn_callback(GLFWwindow* window, int button, int action, int mods)
 		return;
 	}
 
-	net_create_packet(0, "msclk", data, sizeof(data));
+	net_init_packet(&msclk, 0, "msclk", data, sizeof(data));
 	net_send_packet(&msclk);
 	last_action = action;
 }
@@ -61,7 +61,7 @@ cursorpos_callback(GLFWwindow* window, double xpos, double ypos)
 	data[0] = (unsigned long) xpos;
 	data[1] = (unsigned long) ypos;
 
-	net_create_packet(0, "msmv", data, sizeof(data));
+	net_init_packet(&msmv, 0, "msmv", data, sizeof(data));
 	net_send_packet(&msmv);
 }
 
@@ -73,7 +73,7 @@ scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	data[0] = xoffset;
 	data[1]	= yoffset;
 
-	net_create_packet(0, "msscr", data, sizeof(data));
+	net_init_packet(&msscr, 0, "msscr", data, sizeof(data));
 	net_send_packet(&msscr);
 }
 
