@@ -17,7 +17,6 @@
 #include <stdio.h>
 
 #include "window.h"
-#include "const.h"
 #include "print.h"
 #include "net.h"
 
