@@ -343,6 +343,8 @@ net_init_packet(packet* p, unsigned char flags, char* key, void* value, int len)
 	if (value != NULL) {
 		memcpy(p->value, value, len);
 	}
+
+	return 1;
 }
 
 void
@@ -380,7 +382,7 @@ net_send_packet(packet* p)
 
 	/* if packet has ack flag, wait for ack */
 	if (p->flags & ACK_FLAG) {
-		queue_ack(p->key);
+		queue_ack(p);
 	}
 
 	return 1;
