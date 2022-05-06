@@ -34,6 +34,8 @@ char* HOSTNAME = NULL;
 char* PORT = NULL;
 packetmd METADATA = {NULL, -1, 0};
 char* REMOTE_PUBKEY = NULL;
+unsigned short CURRENT_INDEX = 0;
+unsigned char CURRENT_INDEX_REMOTE[sizeof(unsigned short)*8] = {0};
 
 static struct addrinfo*
 get_addrinfo(char* hostname, char* port, int use_ipv6)
@@ -160,6 +162,7 @@ serialize_packet(packet* p, unsigned char** serialized)
 
 	/* calculate length */
 	length += sizeof(p->flags);
+	length += sizeof(p->index);
 	length += sizeof(p->key_length);
 	length += p->key_length;
 	length += sizeof(p->value_length);
@@ -170,6 +173,9 @@ serialize_packet(packet* p, unsigned char** serialized)
 	/* serialize the packet fields */
 	memcpy((unsigned char*) *serialized + idx, &p->flags, sizeof(p->flags));
 	idx += sizeof(p->flags);
+
+	memcpy((unsigned char*) *serialized + idx, &p->index, sizeof(p->index));
+	idx += sizeof(p->index);
 
 	memcpy((unsigned char*) *serialized + idx, &p->key_length, sizeof(p->key_length));
 	idx += sizeof(p->key_length);
@@ -195,6 +201,9 @@ deserialize_packet(unsigned char* serialized, int length)
 
 	p.flags = *(unsigned char*) (serialized + idx);
 	idx += sizeof(unsigned char);
+
+	p.index = *(unsigned short*) (serialized + idx);
+	idx += sizeof(unsigned short);
 
 	p.key_length = *(unsigned short*) (serialized + idx);
 	idx += sizeof(unsigned short);
@@ -325,6 +334,8 @@ net_init_packet(packet* p, unsigned char flags, char* key, void* value, int len)
 	p->flags = flags;
 	p->key_length = strlen(key) + 1;
 	p->value_length = len;
+	p->index = CURRENT_INDEX;
+	CURRENT_INDEX++;
 
 	p->key = malloc(p->key_length);
 	if (p->key == NULL) {

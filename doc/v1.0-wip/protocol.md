@@ -118,15 +118,16 @@ All packets use UDP for both ease of use and speed.
 The packets have the following structure:
 
 ```
-0       1   3    n+3 n+5    n+m+5 (bytes)
-+-------+---+-----+---+-------+
-| flags | n | key | m | value |
-+-------+---+-----+---+-------+
+0       1     3   5    n+5 n+7    n+m+7 (bytes)
++-------+-----+---+-----+---+-------+
+| flags | idx | n | key | m | value |
++-------+-----+---+-----+---+-------+
 ```
 
 where:
 
  - `flags` is a byte in which every bit is a flag
+ - `idx` is the packet index (starting from 0)
  - `key` is a string representing the meaning of the value
  - `n` is the length of the key in bytes
  - `value` is the value associated with the key

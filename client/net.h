@@ -7,6 +7,7 @@
  */
 typedef struct {
 	unsigned char flags;
+	unsigned short index;
 	unsigned short key_length;
 	char* key;
 	unsigned short value_length;
