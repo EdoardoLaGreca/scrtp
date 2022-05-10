@@ -263,13 +263,9 @@ send_bytes(void* bytes_ptr, int length)
 static int
 receive_bytes(void* bytes_ptr, int length)
 {
-	int ret_code;
-
 	/* fill the buffer with a packet coming from the METADATA address */
-	ret_code = recvfrom(METADATA.sockfd, bytes_ptr, length, METADATA.flags,
+	return recvfrom(METADATA.sockfd, bytes_ptr, length, METADATA.flags,
 		METADATA.addr->ai_addr, &METADATA.addr->ai_addrlen);
-
-	return ret_code;
 }
 
 /* encrypt the packet and return its length */
