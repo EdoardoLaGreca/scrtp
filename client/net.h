@@ -68,7 +68,7 @@ int net_send_packet(packet* p);
  * Receive a packet.
  * Returns 1 on success, 0 on failure.
  */
-int net_receive_packet(packet* p);
+int net_receive_packet(packet* p, int timeout);
 
 /*
  * Do the initial handshake.

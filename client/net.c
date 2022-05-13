@@ -396,7 +396,7 @@ net_send_packet(packet* p)
 }
 
 int
-net_receive_packet(packet* p)
+net_receive_packet(packet* p, int timeout)
 {
 	const unsigned int chunk_length = 1024;
 	unsigned int recvbytes = 0, buffer_length = chunk_length;
@@ -406,6 +406,11 @@ net_receive_packet(packet* p)
 	if (buffer == NULL) {
 		print_err("call to malloc returned NULL");
 		return 0;
+	}
+
+	if (timeout > 0) {
+		/* temporarily set the socket to non-blocking */
+		/*TODO*/
 	}
 
 	/* receive the packet */
@@ -437,6 +442,10 @@ net_receive_packet(packet* p)
 		}
 	} while (recvbytes == chunk_length);
 
+	if (timeout > 0) {
+		/* set the blocking flag */
+		/*TODO*/
+	}
 
 	/* deserialize the packet */
 	*p = deserialize_packet(buffer, buffer_length);
