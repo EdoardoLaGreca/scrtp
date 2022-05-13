@@ -1,11 +1,13 @@
 #define _POSIX_C_SOURCE 200112L
 
 #include <sys/types.h>
+#include <errno.h>
 
 #ifdef __unix__
 	#include <sys/socket.h>
 	#include <netdb.h>
 	#include <unistd.h>
+	#include <fcntl.h>
 #elif _WIN32
 	#include <winsock2.h>
 	#include <ws2tcpip.h>
@@ -281,6 +283,18 @@ encrypt_packet(packet* p, unsigned char* bytes)
 /* length is the length of the data pointed to by bytes */
 static void
 decrypt_packet(unsigned char* bytes, int length, packet* p)
+{
+	/*TODO*/
+}
+
+static void
+set_flag_nonblocking()
+{
+	/*TODO*/
+}
+
+static void
+set_flag_blocking()
 {
 	/*TODO*/
 }
