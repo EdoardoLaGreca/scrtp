@@ -65,7 +65,9 @@ void net_free_packet(packet* p);
 int net_send_packet(packet* p);
 
 /*
- * Receive a packet.
+ * Receive a packet through the argument p.
+ * The timeout argument is expressed in milliseconds and is considered only if
+ * greater than 0.
  * Returns 1 on success, 0 on failure.
  */
 int net_receive_packet(packet* p, int timeout);
