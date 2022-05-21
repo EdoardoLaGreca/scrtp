@@ -7,7 +7,7 @@
 	#include <sys/socket.h>
 	#include <netdb.h>
 	#include <unistd.h>
-	#include <fcntl.h>
+	#include <sys/poll.h>
 #elif _WIN32
 	#include <winsock2.h>
 	#include <ws2tcpip.h>
@@ -287,18 +287,6 @@ decrypt_packet(unsigned char* bytes, int length, packet* p)
 	/*TODO*/
 }
 
-static void
-set_flag_nonblocking()
-{
-	/*TODO*/
-}
-
-static void
-set_flag_blocking()
-{
-	/*TODO*/
-}
-
 packetmd
 net_get_metadata(char* hostname, char* port, int use_ipv6)
 {
@@ -423,8 +411,12 @@ net_receive_packet(packet* p, int timeout)
 	}
 
 	if (timeout > 0) {
-		/* temporarily set the socket to non-blocking */
-		/*TODO*/
+		/* create pollfd */
+		struct pollfd fds[1];
+		fds[0].fd = METADATA.sockfd;
+		fds[0].events = POLLIN;
+
+		poll(fds, 1, timeout);
 	}
 
 	/* receive the packet */
@@ -455,11 +447,6 @@ net_receive_packet(packet* p, int timeout)
 			}
 		}
 	} while (recvbytes == chunk_length);
-
-	if (timeout > 0) {
-		/* set the blocking flag */
-		/*TODO*/
-	}
 
 	/* deserialize the packet */
 	*p = deserialize_packet(buffer, buffer_length);
