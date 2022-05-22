@@ -24,6 +24,7 @@
 
 #define PROTO_VERSION "1.0"
 #define MAX_RESEND_TIMES 3
+#define TIMEOUT_MSECS 1000
 
 /* internal structure for pending ack requests, as a list item */
 typedef struct ack_request_s {
