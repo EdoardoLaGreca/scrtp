@@ -450,12 +450,22 @@ net_receive_packet(packet* p, int timeout)
 	}
 
 	if (timeout > 0) {
+		int poll_result;
+
 		/* create pollfd */
 		struct pollfd fds[1];
 		fds[0].fd = METADATA.sockfd;
 		fds[0].events = POLLIN;
 
-		poll(fds, 1, timeout);
+		poll_result = poll(fds, 1, timeout);
+
+		if (poll_result == 0) {
+			print_err("timeout waiting for packet");
+			return 0;
+		} else if (poll_result < 0) {
+			print_err("call to poll returned a negative number");
+			return 0;
+		}
 	}
 
 	/* receive the packet */
