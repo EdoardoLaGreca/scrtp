@@ -506,6 +506,80 @@ net_receive_packet(packet* p, int timeout)
 int
 net_do_handshake()
 {
+	packet p;
+	int winid, got_ack = 0, got_response = 0;
+
+	/* step 1 */
+	net_init_packet(&p, ACK_FLAG, "version", PROTO_VERSION, strlen(PROTO_VERSION) + 1);
+	net_send_packet(&p);
+	print_verb("sent version");
+	net_free_packet(&p);
+
+	/* step 2 */
+	while (!got_ack || !got_response) {
+		net_receive_packet(&p, TIMEOUT_MSECS);
+		if (check_packet_error(&p)) {
+			return 0;
+		}
+
+		if (check_packet_key(&p, "ack")) {
+			print_verb("received ack");
+			complete_ack(p.value);
+			got_ack = 1;
+		} else if (check_packet_key(&p, "wins")) {
+			print_verb("received window list");
+			got_response = 1;
+		} else {
+			print_err("received an unexpected packet");
+		}
+
+		opt_reply_ack(&p);
+	}
+
+	got_ack = 0;
+	got_response = 0;
+
+	/* step 3 */
+	winid = print_windows(p.value);
+	net_free_packet(&p);
+	net_init_packet(&p, ACK_FLAG, "winid", &winid, sizeof(winid));
+	net_send_packet(&p);
+	print_verb("sent window id");
+	net_free_packet(&p);
+
+	/* step 4 */
+	while (!got_ack || !got_response) {
+		net_receive_packet(&p, TIMEOUT_MSECS);
+		if (check_packet_error(&p)) {
+			return 0;
+		}
+
+		if (check_packet_key(&p, "ack")) {
+			print_verb("received ack");
+			complete_ack(p.value);
+			got_ack = 1;
+		} else if (check_packet_key(&p, "winsize")) {
+			unsigned short winsize[2];
+
+			print_verb("received window size");
+
+			memcpy(winsize, p.value, sizeof(winsize));
+			WINDOW_WIDTH = winsize[0];
+			WINDOW_HEIGHT = winsize[1];
+
+			got_response = 1;
+		} else {
+			print_err("received an unexpected packet");
+		}
+
+		opt_reply_ack(&p);
+	}
+
+	got_ack = 0;
+	got_response = 1;
+
+	/* step 5 */
+	net_free_packet(&p);
 	/*TODO*/
 	return 42;
 }
