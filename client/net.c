@@ -225,6 +225,44 @@ deserialize_packet(unsigned char* serialized, int length)
 	return p;
 }
 
+/* if keys match return 1, else return 0 */
+static int
+check_packet_key(packet* p, char* key)
+{
+	if (strcmp(p->key, key) != 0) {
+		print_err("received packet with unexpected key");
+		return 0;
+	}
+
+	return 1;
+}
+
+/* if p is an error packet return 1, else return 0 */
+static int
+check_packet_error(packet* p)
+{
+	if (strcmp(p->key, "error") == 0) {
+		print_err("received packet with error flag");
+		return 1;
+	}
+
+	return 0;
+}
+
+/* optionally reply to ack request (if needed) */
+/* return 1 if the ack reply was sent, 0 otherwise */
+static int
+opt_reply_ack(packet* p)
+{
+	if (p->flags & ACK_FLAG) {
+		/* reply to ack request */
+		reply_ack(p->key);
+		return 1;
+	}
+
+	return 0;
+}
+
 static int
 choose_window(char* windows)
 {
