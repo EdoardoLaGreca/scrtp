@@ -293,6 +293,25 @@ choose_window(char* windows)
 	}
 }
 
+static int
+choose_quality()
+{
+	int quality = 0;
+
+	printf("choose a quality level by its index:\n");
+	print_qualities();
+
+	do {
+		scanf("%d", &quality);
+
+		if (quality < 1 || quality > 5) {
+			printf("invalid quality level\n");
+		}
+	} while (quality < 1 || quality > 5);
+
+	return quality;
+}
+
 /* send bytes */
 /* return the number of bytes actually sent (return value of sendto function) */
 static int
@@ -588,7 +607,7 @@ net_do_handshake()
 
 	/* step 5 */
 	net_free_packet(&p);
-	quality = print_quality();
+	quality = choose_quality();
 	net_init_packet(&p, ACK_FLAG, "quality", &quality, sizeof(quality));
 	if (!net_send_packet(&p)) {
 		print_err("failed to send quality packet");
