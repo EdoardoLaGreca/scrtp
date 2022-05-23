@@ -20,3 +20,9 @@ void print_verb(const char *msg);
  * Return the number of windows.
  */
 int print_windows(char* windows);
+
+/*
+ * Print a list of qualities with their indices.
+ * Return the number of qualities.
+ */
+int print_qualities();

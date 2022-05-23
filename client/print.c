@@ -42,3 +42,13 @@ print_windows(char* windows)
 
 	return window_idx;
 }
+
+int
+print_qualities()
+{
+	printf("1 - lowest\n");
+	printf("2 - low\n");
+	printf("3 - medium\n");
+	printf("4 - high\n");
+	printf("5 - highest\n");
+}
