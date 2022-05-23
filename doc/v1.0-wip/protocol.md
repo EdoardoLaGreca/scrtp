@@ -38,8 +38,8 @@ Every message of the following steps is encrypted (see
     while the "entire desktop" has number 0). If that line number does not exist
     (it is negative or too high), the server sends back an error.
  4. The server sends the window size.
- 5. The client sends the desired video quality. If it is below 1 or above 5, the
-    server sends back an error.
+ 5. The client sends the desired [video quality](#compression). If it is below 1
+    or above 5, the server sends back an error.
  6. Now the client and the server are ready to go: the server can begin to send
     the window frames while the client can begin to send the input signals.
 
