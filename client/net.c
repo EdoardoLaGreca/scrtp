@@ -302,7 +302,9 @@ choose_quality()
 	print_qualities();
 
 	do {
-		scanf("%d", &quality);
+		if (scanf("%d", &quality) == 0) {
+			continue;
+		}
 
 		if (quality < 1 || quality > 5) {
 			printf("invalid quality level\n");
