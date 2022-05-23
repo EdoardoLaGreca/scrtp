@@ -28,7 +28,7 @@ key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 
 	net_init_packet(&kbdev, 0, "kbdev", data, sizeof(data));
 	if (!net_send_packet(&kbdev)) {
-		print_error("net_send_packet() failed");
+		print_err("net_send_packet() failed");
 	}
 	last_action = action;
 }
@@ -52,7 +52,7 @@ mousebtn_callback(GLFWwindow* window, int button, int action, int mods)
 
 	net_init_packet(&msclk, 0, "msclk", data, sizeof(data));
 	if (!net_send_packet(&msclk)) {
-		print_error("net_send_packet() failed");
+		print_err("net_send_packet() failed");
 	}
 	last_action = action;
 }
@@ -67,7 +67,7 @@ cursorpos_callback(GLFWwindow* window, double xpos, double ypos)
 
 	net_init_packet(&msmv, 0, "msmv", data, sizeof(data));
 	if (!net_send_packet(&msmv)) {
-		print_error("net_send_packet() failed");
+		print_err("net_send_packet() failed");
 	}
 }
 
@@ -81,7 +81,7 @@ scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 	net_init_packet(&msscr, 0, "msscr", data, sizeof(data));
 	if (!net_send_packet(&msscr)) {
-		print_error("net_send_packet() failed");
+		print_err("net_send_packet() failed");
 	}
 }
 
