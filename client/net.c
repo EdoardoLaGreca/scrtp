@@ -603,7 +603,6 @@ net_close()
 {
 	packet p;
 	unsigned char value = 0x01;
-	int success;
 	net_init_packet(&p, 1, "end", &value, 1);
 
 	if (!net_send_packet(&p)) {
