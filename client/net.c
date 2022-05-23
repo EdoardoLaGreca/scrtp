@@ -565,7 +565,7 @@ net_do_handshake()
 	got_response = 0;
 
 	/* step 3 */
-	winid = print_windows(p.value);
+	winid = choose_window(p.value);
 	net_free_packet(&p);
 	net_init_packet(&p, ACK_FLAG, "winid", &winid, sizeof(winid));
 	if (!net_send_packet(&p)) {
