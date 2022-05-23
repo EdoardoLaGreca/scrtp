@@ -23,8 +23,6 @@ print_windows(char* windows)
 {
 	int window_idx = 0, char_idx = 0;
 
-	printf("Choose a window:\n");
-
 	printf("0 - entire desktop\n");
 	window_idx = 1;
 
