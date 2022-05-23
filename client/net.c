@@ -580,68 +580,14 @@ net_do_handshake()
 
 	/* step 5 */
 	net_free_packet(&p);
-	/*TODO*/
-	return 42;
-}
-
-void
-net_route_packet(packet* p)
-{
-	/* if the other side requested an ack, reply immediately */
-	if (p->flags & ACK_FLAG) {
-		reply_ack(p->key);
+	quality = print_quality();
+	net_init_packet(&p, ACK_FLAG, "quality", &quality, sizeof(quality));
+	if (!net_send_packet(&p)) {
+		print_err("failed to send quality packet");
 	}
+	net_free_packet(&p);
 
-	/* route the packet to the appropriate handler or handle directly */
-	/* keys that should not be received are not handled */
-	if (strcmp(p->key, "error") == 0) {
-
-		print_err(p->value);
-
-	} else if (strcmp(p->key, "ack") == 0) {
-		/* add null terminator in case there isn't already */
-		((char*) p->value)[p->value_length - 1] = '\0';
-
-		complete_ack(p->value);
-
-	} else if (strcmp(p->key, "pubkey") == 0) {
-
-		if (REMOTE_PUBKEY == NULL) {
-			REMOTE_PUBKEY = malloc(p->value_length);
-			memcpy(REMOTE_PUBKEY, p->value, p->value_length);
-		} else {
-			print_err("received a remote pubkey but already got one");
-		}
-
-	} else if (strcmp(p->key, "wins") == 0) {
-
-		packet newp;
-		int chosen_win;
-		chosen_win = choose_window(p->value);
-		net_init_packet(&newp, ACK_FLAG, "winid", &chosen_win, sizeof(int));
-		net_send_packet(&newp);
-
-	} else if (strcmp(p->key, "winsize") == 0) {
-
-		unsigned short winsize[2];
-		memcpy(winsize, p->value, sizeof(winsize));
-		WINDOW_WIDTH = winsize[0];
-		WINDOW_HEIGHT = winsize[1];
-
-	} else if (strcmp(p->key, "compfr") == 0) {
-
-		/*TODO*/
-
-	} else if (strcmp(p->key, "end") == 0) {
-
-		print_verb("connection closed.");
-
-	} else {
-
-		print_err("received an unexpected key:");
-		print_err(p->key);
-
-	}
+	return 1;
 }
 
 void

@@ -79,12 +79,6 @@ int net_receive_packet(packet* p, int timeout);
 int net_do_handshake();
 
 /*
- * Route packet or handle it directly.
- * If the packet is not supposed to be sent by the remote host, nothing happens.
- */
-void net_route_packet(packet* p);
-
-/*
  * Close the connection.
  * Returns 1 on success, 0 on failure.
  */
