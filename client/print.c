@@ -51,4 +51,6 @@ print_qualities()
 	printf("3 - medium\n");
 	printf("4 - high\n");
 	printf("5 - highest\n");
+
+	return 5;
 }
