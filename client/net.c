@@ -147,13 +147,17 @@ complete_ack(char* key)
 }
 
 /* reply to an ack request */
-static void
+static int
 reply_ack(char* key)
 {
 	packet ack;
+	int success;
+
 	net_init_packet(&ack, 0, "ack", key, strlen(key) + 1);
-	net_send_packet(&ack);
+	success = net_send_packet(&ack);
 	net_free_packet(&ack);
+
+	return success;
 }
 
 /* serialize a packet, return the bytes as a parameter and the length */
@@ -507,11 +511,13 @@ int
 net_do_handshake()
 {
 	packet p;
-	int winid, got_ack = 0, got_response = 0;
+	int winid, got_ack = 0, got_response = 0, quality;
 
 	/* step 1 */
 	net_init_packet(&p, ACK_FLAG, "version", PROTO_VERSION, strlen(PROTO_VERSION) + 1);
-	net_send_packet(&p);
+	if (!net_send_packet(&p)) {
+		print_err("failed to send version packet");
+	}
 	print_verb("sent version");
 	net_free_packet(&p);
 
@@ -543,7 +549,9 @@ net_do_handshake()
 	winid = print_windows(p.value);
 	net_free_packet(&p);
 	net_init_packet(&p, ACK_FLAG, "winid", &winid, sizeof(winid));
-	net_send_packet(&p);
+	if (!net_send_packet(&p)) {
+		print_err("failed to send winid packet");
+	}
 	print_verb("sent window id");
 	net_free_packet(&p);
 
@@ -590,17 +598,23 @@ net_do_handshake()
 	return 1;
 }
 
-void
+int
 net_close()
 {
 	packet p;
 	unsigned char value = 0x01;
+	int success;
 	net_init_packet(&p, 1, "end", &value, 1);
 
-	net_send_packet(&p);
+	if (!net_send_packet(&p)) {
+		print_err("failed to send end packet");
+		return 0;
+	}
 
 	net_free_packet(&p);
 
 	/* close the socket */
 	close(METADATA.sockfd);
+
+	return 1;
 }
