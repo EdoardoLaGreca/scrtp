@@ -351,6 +351,19 @@ decrypt_packet(unsigned char* bytes, int length, packet* p)
 	/*TODO*/
 }
 
+static int
+poll_socket(int timeout)
+{
+	int poll_result;
+
+	/* create pollfd */
+	struct pollfd fds[1];
+	fds[0].fd = METADATA.sockfd;
+	fds[0].events = POLLIN;
+
+	return poll(fds, 1, timeout);
+}
+
 packetmd
 net_get_metadata(char* hostname, char* port, int use_ipv6)
 {
@@ -475,14 +488,7 @@ net_receive_packet(packet* p, int timeout)
 	}
 
 	if (timeout > 0) {
-		int poll_result;
-
-		/* create pollfd */
-		struct pollfd fds[1];
-		fds[0].fd = METADATA.sockfd;
-		fds[0].events = POLLIN;
-
-		poll_result = poll(fds, 1, timeout);
+		int poll_result = poll_socket(timeout);
 
 		if (poll_result == 0) {
 			print_err("timeout waiting for packet");
