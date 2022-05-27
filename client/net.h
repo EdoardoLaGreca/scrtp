@@ -73,6 +73,13 @@ int net_send_packet(packet* p);
 int net_receive_packet(packet* p, int timeout);
 
 /*
+ * Receive and check both the current packet's ack and the current packet's
+ * expected response key, with an optional timeout (see net_receive_packet
+ * function).
+ */
+int net_receive_and_check(char* packet_key, char* response_key, int timeout);
+
+/*
  * Do the initial handshake.
  * Returns 1 on success, 0 on failure.
  */

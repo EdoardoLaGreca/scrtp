@@ -529,6 +529,41 @@ net_receive_packet(packet* p, int timeout)
 }
 
 int
+net_receive_and_check(char* packet_key, char* response_key, int timeout)
+{
+	packet p;
+	int got_ack = 0, got_response = 0;
+
+	while (!got_ack || !got_response) {
+		if (!net_receive_packet(&p, TIMEOUT_MSECS)) {
+			print_err("call to net_receive_packet returned 0");
+		}
+
+		if (check_packet_error(&p)) {
+			return 0;
+		}
+
+		if (check_packet_key(&p, "ack") && strcmp(p.value, packet_key) == 0) {
+			print_verb("received ack for previous packet:");
+			print_verb(packet_key);
+			complete_ack(p.value);
+			got_ack = 1;
+		} else if (check_packet_key(&p, response_key)) {
+			print_verb("received correct response packet:");
+			print_verb(response_key);
+			got_response = 1;
+		} else {
+			print_err("received an unexpected packet");
+		}
+
+		if (opt_reply_ack(&p)) {
+			print_verb("sending ack for packet:");
+			print_verb(p.key);
+		}
+	}
+}
+
+int
 net_do_handshake()
 {
 	packet p;
