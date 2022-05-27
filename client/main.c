@@ -17,9 +17,11 @@ main(int argc, char** argv)
 	/* set METADATA global variable for future packets */
 	METADATA = net_get_metadata(HOSTNAME, PORT, 0);
 
-	/* TODO: do network things */
+	if (!net_do_handshake()) {
+		print_err("handshake failed");
+	}
 
-	window = window_create(640, 480, "scrtp");
+	window = window_create(WINDOW_WIDTH, WINDOW_HEIGHT, "scrtp");
 
 	window_set_callbacks(window);
 
