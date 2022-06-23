@@ -6,7 +6,7 @@ Screen teleport - low latency remote screen control.
 Releases section on GitHub when both the client and the server will be fully
 functioning.
 
-![fake parsec logo](img/fake_parsec_logo.png)
+[click here for a very funny image, SFW](https://raw.githubusercontent.com/EdoardoLaGreca/scrtp/main/img/fake_parsec_logo.png)
 
 ⚠ The image above was entirely made for fun. Please Parsec, don't sue me.
 
