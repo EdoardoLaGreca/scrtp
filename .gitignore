@@ -40,4 +40,5 @@
 *.idb
 *.pdb
 
-.vscode/
+.vscode/*
+!.vscode/*.json
