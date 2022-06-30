@@ -27,6 +27,10 @@ main(int argc, char** argv)
 
 	window_loop(window);
 
+	if (!net_update_loop()) {
+		print_err("an error occurred in the update loop");
+	}
+
 	net_close(METADATA.sockfd);
 
 	return 0;

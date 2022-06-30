@@ -87,6 +87,12 @@ int net_receive_and_check(char* packet_key, char* response_key, int timeout);
 int net_do_handshake();
 
 /*
+ * Do the update loop: send user inputs and receive updated window frames.
+ * Returns 1 on success, 0 on failure.
+ */
+int net_update_loop();
+
+/*
  * Close the connection.
  * Returns 1 on success, 0 on failure.
  */

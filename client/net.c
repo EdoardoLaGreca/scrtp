@@ -8,6 +8,7 @@
 	#include <netdb.h>
 	#include <unistd.h>
 	#include <sys/poll.h>
+	#include <pthread.h>
 #elif _WIN32
 	#include <winsock2.h>
 	#include <ws2tcpip.h>
@@ -364,6 +365,41 @@ poll_socket(int timeout)
 	return poll(fds, 1, timeout);
 }
 
+static void*
+sender_thread(void* args)
+{
+	int exit_loop = 0;
+
+	/* DO NOT READ GLOBAL VARIABLES INSIDE THE LOOP, UNLESS STRICTLY NECESSARY */
+	while (!exit_loop) {
+
+	}
+}
+
+static void*
+receiver_thread(void* args)
+{
+	int exit_loop = 0;
+	packet *pkt;
+
+	pkt = malloc(sizeof(packet));
+
+	/* DO NOT READ GLOBAL VARIABLES INSIDE THE LOOP, UNLESS STRICTLY NECESSARY */
+	while (!exit_loop) {
+		if (!net_receive_packet(&pkt, TIMEOUT_MSECS)) {
+			print_err("could not receive packets");
+			exit_loop = 1;
+		}
+
+		if (strcmp(pkt->key, "error") == 0) {
+			print_err("error packet received:");
+			printf("%s", pkt->key);
+		} else if (strcmp(pkt->key, "") == 0) {
+
+		}
+	}
+}
+
 packetmd
 net_get_metadata(char* hostname, char* port, int use_ipv6)
 {
@@ -653,6 +689,49 @@ net_do_handshake()
 	net_free_packet(&p);
 
 	return 1;
+}
+
+int
+net_update_loop()
+{
+	int sender_status, receiver_status;
+	pthread_t sender, receiver;
+
+	/* spawn sender thread */
+	sender_status = pthread_create(&sender, NULL, sender_thread, NULL);
+	print_verb("sender thread spawned");
+
+	/* spawn receiver thread*/
+	receiver_status = pthread_create(&receiver, NULL, receiver_thread, NULL);
+	print_verb("receiver thread spawned");
+
+	if (sender_status != 0) {
+		print_err("could not create the sender thread");
+	}
+	if (receiver_status != 0) {
+		print_err("could not create the receiver thread");
+	}
+
+	if (sender_status != 0 || receiver_status != 0) {
+		return 0;
+	}
+
+	/* join threads */
+	sender_status = pthread_join(sender, NULL);
+	print_verb("sender thread joined");
+	receiver_status = pthread_join(receiver, NULL);
+	print_verb("receiver thread joined");
+
+	if (sender_status != 0) {
+		print_err("could not join the sender thread");
+	}
+	if (receiver_status != 0) {
+		print_err("could not join the receiver thread");
+	}
+
+	if (sender_status != 0 || receiver_status != 0) {
+		return 0;
+	}
 }
 
 int
