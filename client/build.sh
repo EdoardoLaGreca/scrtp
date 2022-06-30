@@ -6,7 +6,7 @@ cflags_dbg="-std=c90 -Wall -Wpedantic -Og -g"
 check_libs="../script/check_libs.sh"
 
 # libraries to link with, without prefixes or suffixes (like "-l", "lib" or ".so")
-libs="glfw GL"
+libs="glfw GL pthread"
 
 # command to add "-l" to each library
 gen_ld_args=`echo $libs | sed "s/^/-l/g" | sed "s/ / -l/g"`
