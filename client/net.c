@@ -88,7 +88,7 @@ get_addrinfo(char* hostname, char* port, int use_ipv6)
 	return tmp;
 }
 
-/* queue an ack after sending a request */
+/* queue a packet ack after sending it */
 static void
 queue_ack(packet* p)
 {
@@ -117,7 +117,7 @@ queue_ack(packet* p)
 	tmp->next = ar;
 }
 
-/* complete an ack after receiving the response */
+/* complete a queued packet ack after receiving the response */
 /* if the key is not present in the list, it does nothing */
 static void
 complete_ack(char* key)
@@ -502,7 +502,7 @@ net_send_packet(packet* p)
 		return 0;
 	}
 
-	/* if packet has ack flag, wait for ack */
+	/* if packet has ack flag, queue the packet */
 	if (p->flags & ACK_FLAG) {
 		queue_ack(p);
 	}
@@ -575,6 +575,7 @@ net_receive_packet(packet* p, int timeout)
 	return 1;
 }
 
+/* TODO: refactor to use more this function (especially in net_do_handshake) */
 int
 net_receive_and_check(char* packet_key, char* response_key, int timeout)
 {
@@ -582,7 +583,7 @@ net_receive_and_check(char* packet_key, char* response_key, int timeout)
 	int got_ack = 0, got_response = 0;
 
 	while (!got_ack || !got_response) {
-		if (!net_receive_packet(&p, TIMEOUT_MSECS)) {
+		if (!net_receive_packet(&p, timeout)) {
 			print_err("call to net_receive_packet returned 0");
 		}
 
