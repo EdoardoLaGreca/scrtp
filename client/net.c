@@ -47,6 +47,7 @@ get_addrinfo(char* hostname, char* port, int use_ipv6)
 	struct addrinfo hints;
 	struct addrinfo* res;
 	struct addrinfo* tmp; /* used to go through the linked list */
+	struct addrinfo* final_ai; /* chosen addrinfo */
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
@@ -73,19 +74,19 @@ get_addrinfo(char* hostname, char* port, int use_ipv6)
 		}
 	}
 
-	/* free the rest of the results */
-	for (; res != NULL; res = res->ai_next) {
-		if (res != tmp) {
-			freeaddrinfo(res);
-		}
-	}
-
 	if (tmp == NULL) {
 		/* no result was chosen */
 		print_err("no suitable address found");
+		final_ai = NULL;
+	} else {
+		final_ai = malloc(sizeof(struct addrinfo));
+		memcpy(final_ai, tmp, sizeof(struct addrinfo));
 	}
 
-	return tmp;
+	/* free the list of results */
+	freeaddrinfo(res);
+
+	return final_ai;
 }
 
 /* queue a packet ack after sending it */
@@ -437,6 +438,8 @@ net_get_metadata(char* hostname, char* port, int use_ipv6)
 	pmd.addr = ai;
 	pmd.sockfd = sockfd;
 	pmd.flags = 0x0;
+
+	free(ai);
 
 	return pmd;
 }
