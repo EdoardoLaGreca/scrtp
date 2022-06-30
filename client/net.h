@@ -68,6 +68,7 @@ int net_send_packet(packet* p);
  * Receive a packet through the argument p.
  * The timeout argument is expressed in milliseconds and is considered only if
  * greater than 0.
+ * If the received packet requires an ack, it is sent.
  * Returns 1 on success, 0 on failure.
  */
 int net_receive_packet(packet* p, int timeout);

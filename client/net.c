@@ -528,6 +528,11 @@ net_receive_packet(packet* p, int timeout)
 		}
 	} while (recvbytes == chunk_length);
 
+	/* send ack */
+	if (!opt_reply_ack(&p)) {
+		print_err("could not send ack");
+	}
+
 	/* deserialize the packet */
 	*p = deserialize_packet(buffer, buffer_length);
 
@@ -560,11 +565,6 @@ net_receive_and_check(char* packet_key, char* response_key, int timeout)
 			got_response = 1;
 		} else {
 			print_err("received an unexpected packet");
-		}
-
-		if (opt_reply_ack(&p)) {
-			print_verb("sending ack for packet:");
-			print_verb(p.key);
 		}
 	}
 }
@@ -601,8 +601,6 @@ net_do_handshake()
 		} else {
 			print_err("received an unexpected packet");
 		}
-
-		opt_reply_ack(&p);
 	}
 
 	got_ack = 0;
@@ -635,8 +633,6 @@ net_do_handshake()
 		} else {
 			print_err("received an unexpected packet");
 		}
-
-		opt_reply_ack(&p);
 	}
 
 	/* extract window size */
