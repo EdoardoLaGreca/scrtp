@@ -4,6 +4,7 @@
 #include "window.h"
 #include "args.h"
 #include "net.h"
+#include "print.h"
 
 int
 main(int argc, char** argv)

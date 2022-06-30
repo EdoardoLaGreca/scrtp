@@ -355,8 +355,6 @@ decrypt_packet(unsigned char* bytes, int length, packet* p)
 static int
 poll_socket(int timeout)
 {
-	int poll_result;
-
 	/* create pollfd */
 	struct pollfd fds[1];
 	fds[0].fd = METADATA.sockfd;
@@ -374,6 +372,8 @@ sender_thread(void* args)
 	while (!exit_loop) {
 
 	}
+
+	return NULL;
 }
 
 static void*
@@ -386,7 +386,7 @@ receiver_thread(void* args)
 
 	/* DO NOT READ GLOBAL VARIABLES INSIDE THE LOOP, UNLESS STRICTLY NECESSARY */
 	while (!exit_loop) {
-		if (!net_receive_packet(&pkt, TIMEOUT_MSECS)) {
+		if (!net_receive_packet(pkt, TIMEOUT_MSECS)) {
 			print_err("could not receive packets");
 			exit_loop = 1;
 		}
@@ -398,6 +398,8 @@ receiver_thread(void* args)
 
 		}
 	}
+
+	return NULL;
 }
 
 packetmd
@@ -564,17 +566,18 @@ net_receive_packet(packet* p, int timeout)
 		}
 	} while (recvbytes == chunk_length);
 
-	/* send ack */
-	if (!opt_reply_ack(&p)) {
-		print_err("could not send ack");
-	}
-
 	/* deserialize the packet */
 	*p = deserialize_packet(buffer, buffer_length);
+
+	/* send ack */
+	if (!opt_reply_ack(p)) {
+		print_err("could not send ack");
+	}
 
 	return 1;
 }
 
+/* TODO: test this function or delete it */
 /* TODO: refactor to use more this function (especially in net_do_handshake) */
 int
 net_receive_and_check(char* packet_key, char* response_key, int timeout)
@@ -604,6 +607,8 @@ net_receive_and_check(char* packet_key, char* response_key, int timeout)
 			print_err("received an unexpected packet");
 		}
 	}
+
+	return 1;
 }
 
 int
@@ -733,6 +738,8 @@ net_update_loop()
 	if (sender_status != 0 || receiver_status != 0) {
 		return 0;
 	}
+
+	return 1;
 }
 
 int
