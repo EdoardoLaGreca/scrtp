@@ -2,7 +2,7 @@
 
 cc=gcc
 cflags="-std=c90 -Wall -Wpedantic -O3"
-cflags_dbg="-std=c90 -Wall -Wpedantic -Og -g"
+cflags_dbg="-std=c90 -Wall -Wpedantic -g"
 check_libs="../script/check_libs.sh"
 
 # libraries to link with, without prefixes or suffixes (like "-l", "lib" or ".so")
@@ -31,7 +31,7 @@ compile_dbg() {
 
 link() {
 	name=$1
-	echo "Linking scrtp..."
+	echo "Linking $name..."
 	mkdir -p bin
 	$cc -o bin/$name obj/*.o $gen_ld_args
 }
