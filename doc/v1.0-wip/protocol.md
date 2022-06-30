@@ -212,7 +212,7 @@ All the strings use the UTF-8 encoding.
    <tr>
       <th> name </th>
       <th> data type </th>
-      <th> requires confirmation </th>
+      <th> requires ack </th>
       <th> description </th>
    </tr>
    <tr>
@@ -229,12 +229,6 @@ All the strings use the UTF-8 encoding.
          the acknowledgement of the previous packet (see
          <a href="#acknowledgement">Acknowledgement</a>)
       </td>
-   </tr>
-   <tr>
-      <td> pubkey </td>
-      <td> string </td>
-      <td> yes </td>
-      <td> the client's public key </td>
    </tr>
    <tr>
       <td> error </td>
