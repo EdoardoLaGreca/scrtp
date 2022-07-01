@@ -18,6 +18,7 @@ main(int argc, char** argv)
 	/* set METADATA global variable for future packets */
 	METADATA = net_get_metadata(HOSTNAME, PORT, 0);
 
+	/* do the handshake, in which the host says the window width and height */
 	if (!net_do_handshake()) {
 		print_err("handshake failed");
 	}
