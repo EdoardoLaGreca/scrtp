@@ -47,7 +47,7 @@ get_addrinfo(char* hostname, char* port, int use_ipv6)
 	struct addrinfo hints;
 	struct addrinfo* res;
 	struct addrinfo* tmp; /* used to go through the linked list */
-	struct addrinfo* final_ai; /* chosen addrinfo */
+	struct addrinfo* final_ai = NULL; /* chosen addrinfo */
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
@@ -58,26 +58,22 @@ get_addrinfo(char* hostname, char* port, int use_ipv6)
 		return NULL;
 	}
 
-	if (res->ai_next == NULL) {
-		/* only one result, no need to go through the list */
-		return res;
-	}
-
 	/* choose a result based on whether we want ipv4 or ipv6 */
 	for (tmp = res; tmp != NULL; tmp = tmp->ai_next) {
-		if (use_ipv6 && tmp->ai_family == AF_INET6) {
-			/* we want ipv6, and tmp points to an ipv6 address */
-			break;
-		} else if (!use_ipv6 && tmp->ai_family == AF_INET) {
-			/* we want ipv4, and tmp points to an ipv4 address */
+		/* we want ipv4, and tmp points to an ipv4 address */
+		int cond_ipv4 = !use_ipv6 && tmp->ai_family == AF_INET;
+		/* we want ipv6, and tmp points to an ipv6 address */
+		int cond_ipv6 = use_ipv6 && tmp->ai_family == AF_INET6;
+
+		if (cond_ipv4 || cond_ipv6) {
+			final_ai = tmp;
 			break;
 		}
 	}
 
-	if (tmp == NULL) {
+	if (final_ai == NULL) {
 		/* no result was chosen */
 		print_err("no suitable address found");
-		final_ai = NULL;
 	} else {
 		final_ai = malloc(sizeof(struct addrinfo));
 		memcpy(final_ai, tmp, sizeof(struct addrinfo));
