@@ -73,43 +73,7 @@ reason, every client must have a different key.
 
 ## Compression
 
-Scrtp uses [H.264](https://en.wikipedia.org/wiki/Advanced_Video_Coding) for
-video compression with `zerolatency` tune. See
-[here](https://trac.ffmpeg.org/wiki/Encode/H.264#Preset)
-for a complete list of available H.264 presets.
-
-<table>
-   <tr>
-      <th> value of quality </th>
-      <th> quality </th>
-      <th> H.264 preset </th>
-   </tr>
-   <tr>
-      <td> 1 </td>
-      <td> lowest </td>
-      <td> ultrafast </td>
-   </tr>
-   <tr>
-      <td> 2 </td>
-      <td> low </td>
-      <td> veryfast </td>
-   </tr>
-   <tr>
-      <td> 3 </td>
-      <td> medium </td>
-      <td> medium </td>
-   </tr>
-   <tr>
-      <td> 4 </td>
-      <td> high </td>
-      <td> slower </td>
-   </tr>
-   <tr>
-      <td> 5 </td>
-      <td> highest </td>
-      <td> veryslow </td>
-   </tr>
-</table>
+Scrtp uses [AV1](https://en.wikipedia.org/wiki/AV1) for video coding.
 
 ## Structure of packets
 
