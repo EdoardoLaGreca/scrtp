@@ -2,6 +2,8 @@
 
 Screen teleport - low latency remote screen control.
 
+⚠ The development is at a standstill due to missing documentation on the SVT-AV1 library, more info [here](https://gitlab.com/AOMediaCodec/SVT-AV1/-/issues/1941).
+
 ⚠ This repo is still under heavy development. A release will be available in the
 Releases section on GitHub when both the client and the server will be fully
 functioning.
