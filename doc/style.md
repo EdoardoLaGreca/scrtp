@@ -5,8 +5,13 @@ repository.
 
 The C standard used in the source code of this repo is ANSI C (a.k.a. C89/C90).
 
-It is generally preferred not to exceed the 80 characters limit on a single
-line, but it is not strictly required.
+## Indentation
+
+It is hereby strictly prohibited not to use tabs for indentation. In other words, the tab character is the only accepted character for indentation.
+
+Below, a quote from the Linux kernel style guide.
+
+> Now, some people will claim that having 8-character indentations makes the code move too far to the right, and makes it hard to read on a 80-character terminal screen. The answer to that is that if you need more than 3 levels of indentation, you’re screwed anyway, and should fix your program.
 
 ## Comments
 
@@ -239,3 +244,7 @@ to read and write.
 
 A header file and its respective source file should have the same content order
 for better organization, but it is not mandatory.
+
+## Commits
+
+[Conventional Commits](https://www.conventionalcommits.org) must be used for commit messages.
