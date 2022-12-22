@@ -70,11 +70,7 @@ Runtime dependencies:
 ## Development
 
 If you'd like to contribute, please make sure to carefully read the
-[doc/style.md](doc/style.md) file before. Also, start commit messages with a
-lowercase letter.
-
-Using [Conventional Commits](https://www.conventionalcommits.org) for commit
-messages is preferable but not strictly required.
+[doc/style.md](doc/style.md) file before.
 
 ### Roadmap
 
@@ -85,11 +81,11 @@ During the development, this roadmap may be subject to changes.
 
 #### Client
 
- - [x] Window creation
- - [x] Keyboard handling
- - [x] Mouse click handling
- - [x] Mouse position handling
- - [x] Mouse scroll handling
+ - [ ] Window creation
+ - [ ] Keyboard handling
+ - [ ] Mouse click handling
+ - [ ] Mouse position handling
+ - [ ] Mouse scroll handling
  - [ ] Networking
  - [ ] Video decoding
  - [ ] Cryptography
