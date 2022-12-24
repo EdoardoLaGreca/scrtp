@@ -12,32 +12,33 @@ functioning.
 
 ## Usage
 
-The default values, if any, used by the client and the server can be found in
-the repo's [etc](etc/) directory as config files.
+### Default values for options
+
+The default values can be set through environment variables.
+
+ - `SCRTP_IPVER` can be set to either `"4"` or `"6"`, it represents the default IP version.
+
+Option values specified as command arguments override default values, but their effect will last for the entire program execution only.
 
 ### Client
 
-```
-scrtp [OPTIONS]... HOST PORT
+Usage: `scrtp [options ...] host port`
 
-OPTIONS:
-    -v       Print verbose output (useful during debugging).
-    -6       Use IPv6 if possible.
-```
+where:
+
+ - `host` and `port` refer to the server's host and port, respectively
+ - `options` can be one or more of:
+   - `--ipv N` Prefer one IP version over the other. `N` can either be 4 or 6. Setting this option to 4 or 6 means that the `host` field should follow that IP version syntax.
 
 ### Server
 
-```
-scrtpd [OPTIONS]...
+Usage: `scrtpd [options ...] host port`
 
-OPTIONS:
-    -v       Print verbose output (useful during debugging).
-    --4and6  Use IPv4 and IPv6 (default is only IPv4).
-    --only6  Use only IPv6 (default is only IPv4).
-    -c FILE  Use FILE as configuration file instead of the default file located
-             in /etc/scrtp/config_server. If the default file cannot be found,
-             use default values.
-```
+where:
+
+ - `host` and `port` refer to the host and port to listen to for new connections
+ - `options` can be one or more of:
+   - `--ipv N` Prefer one IP version over the other. `N` can either be 4 or 6. Setting this option to 4 or 6 means that the `host` field should follow that IP version syntax.
 
 ## Requirements
 
