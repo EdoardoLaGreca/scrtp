@@ -1,8 +1,0 @@
-# /etc/config_server
-
-# This is a configuration file for the server
-# Lines that start with '#' will be ignored
-
-# Listen on this ip and port for new connections
-listen_on_ip = 127.0.0.1
-listen_on_port = 9988
