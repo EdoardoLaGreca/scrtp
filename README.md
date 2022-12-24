@@ -2,9 +2,7 @@
 
 Screen teleport - low latency remote screen control.
 
-⚠ The development is at a standstill due to missing documentation on the SVT-AV1 library, more info [here](https://gitlab.com/AOMediaCodec/SVT-AV1/-/issues/1941).
-
-⚠ This repo is still under heavy development. A release will be available in the
+⚠ This repo is still under heavy development. A 1.0 release will be available in the
 Releases section on GitHub when both the client and the server will be fully
 functioning.
 
@@ -52,14 +50,6 @@ Please keep in mind that I'm a human being and I may forget to update written
 things such as compilation requirements.
 
 ### Client
-
-![](https://img.shields.io/github/workflow/status/EdoardoLaGreca/scrtp/client-scrtp)
-
-Compile-time dependencies:
- - `libglfw3-dev` (a.k.a. `glfw-devel`)
-
-Runtime dependencies:
- - `libglfw3` (a.k.a. `glfw`)
 
 [TODO]
 
@@ -109,8 +99,6 @@ During the development, this roadmap may be subject to changes.
  - [ ] Remove runtime dependencies (see [Ermine](http://www.magicermine.com/))
  - [ ] Audio handling (encoding and decoding, see
        [Opus](https://opus-codec.org/))
- - [ ] Add a GitHub Action workflow for memory checks using
-       [Valgrind](https://valgrind.org/)
 
 ## License
 
