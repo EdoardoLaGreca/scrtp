@@ -1,40 +1,26 @@
 # protocol
 
-This file defines the protocol that is being used to exchange messages between
-the two endpoints.
+This file defines the protocol that is being used to exchange messages between the two endpoints.
 
 ## Overview
 
-Scrtp uses a client-server model. The computer which sends its own screen
-frames and replicates user input represents the server, while external
-computers which receive the screen frames and send peripheral signals (like a
-mouse click or a key press on the keyboard) act as clients.
+Scrtp uses a client-server model. The computer which sends its own screen frames and replicates user input represents the server, while external computers which receive the screen frames and send peripheral signals (like a mouse click or a key press on the keyboard) act as clients.
 
 ## Steps
 
-Keep in mind that, whenever a fatal error occurs on either side, the side where
-the error occurred must send an `error` packet with a brief description of what
-happened.
+Keep in mind that, whenever a fatal error occurs on either side, the side where the error occurred must send an `error` packet with a brief description of what happened.
 
-At any moment, if the window size changes in the server, the server must send
-the updated size to the client using the appropriate message before sending the
-next window frame data.
+At any moment, if the window size changes in the server, the server must send the updated size to the client using the appropriate message before sending the next window frame data.
 
-The diagram below has a graphical representation of the entire connection
-process.
+The diagram below has a graphical representation of the entire connection process.
 
 ![connection diagram](img/conn_seq.jpg)
 
 ## Concurrency
 
-A sequential approach would be ideal if the window did not update (unless on
-user input) and had no animations. In a modern world, it is not conceivable to
-use a sequential approach hoping that the final user will not need window
-updates in-between input signals.
+A sequential approach would be ideal if the window did not update (unless on user input) and had no animations. In a modern world, it is not conceivable to use a sequential approach hoping that the final user will not need window updates in-between input signals.
 
-To deal with this issue, Scrtp takes advantage of concurrency. The frames sent
-by the server are concurrently independent of the input signals sent by the
-client, as if they were sent in two different channels.
+To deal with this issue, Scrtp takes advantage of concurrency. The frames sent by the server are concurrently independent of the input signals sent by the client, as if they were sent in two different channels.
 
 ```
 frames:         S->->->->->->-C
@@ -43,9 +29,7 @@ input signals:  S-<-<-<-<-<-<-C
 
 ## Authentication and encryption
 
-All the packets between the two endpoints are encripted using
-[TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security). Make sure to
-have a certificate in your server.
+All the packets between the two endpoints are encripted using [TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security). Make sure to have a certificate in your server.
 
 ## Compression
 
@@ -75,14 +59,11 @@ where:
 
 The data type of the `value` field depends on the `key` value.
 
-The `key` field (and the `value` field, if it is a string) must be
-null-terminated. The respective length fields (`n` and `m`) must also consider
-the null-terminator in the bytes count.
+The `key` field (and the `value` field, if it is a string) must be null-terminated. The respective length fields (`n` and `m`) must also consider the null-terminator in the bytes count.
 
 ## Flags
 
-As a reference, the representation below describes the bit positions in the
-`flags` field.
+As a reference, the representation below describes the bit positions in the `flags` field.
 
 ```
 +---+---+---+---+---+---+---+---+
@@ -125,9 +106,7 @@ As a reference, the representation below describes the bit positions in the
    </tr>
    <tr>
       <td> 8 </td>
-      <td>
-         acknowledgement required (1 = yes, 0 = no)
-      </td>
+      <td> acknowledgement required (1 = yes, 0 = no) </td>
    </tr>
 </table>
 
@@ -137,8 +116,7 @@ If the acknowledgement is required, the receiver must send a packet in which:
 
  - the acknowledgement flag is set to 0
  - the key is `ack`
- - the value is made of the key and the index of the packet to acknowledge,
-   separated by a space character.
+ - the value is made of the key and the index of the packet to acknowledge, separated by a space character.
 
 ## Keys
 
@@ -161,10 +139,7 @@ All the strings use the [UTF-8](https://en.wikipedia.org/wiki/UTF-8) encoding.
       <td> ack </td>
       <td> string </td>
       <td> no </td>
-      <td>
-         the acknowledgement of the previous packet (see
-         <a href="#acknowledgement">Acknowledgement</a>)
-      </td>
+      <td> the acknowledgement of the previous packet (see <a href="#acknowledgement">Acknowledgement</a>) </td>
    </tr>
    <tr>
       <td> error </td>
@@ -176,10 +151,7 @@ All the strings use the [UTF-8](https://en.wikipedia.org/wiki/UTF-8) encoding.
       <td> wins </td>
       <td> string </td>
       <td> yes </td>
-      <td>
-         the server's available windows, the window names are separated by
-         newlines
-      </td>
+      <td> the server's available windows, the window names are separated by newlines </td>
    </tr>
    <tr>
       <td> winid </td>
@@ -203,9 +175,7 @@ All the strings use the [UTF-8](https://en.wikipedia.org/wiki/UTF-8) encoding.
       <td> quality </td>
       <td> integer </td>
       <td> yes </td>
-      <td>
-         the quality of the server's frames, from 1 (lowest) to 5 (highest)
-      </td>
+      <td> the quality of the server's frames, from 1 (lowest) to 5 (highest) </td>
    </tr>
    <tr>
       <td> frame </td>
@@ -220,10 +190,7 @@ All the strings use the [UTF-8](https://en.wikipedia.org/wiki/UTF-8) encoding.
       <td>
          a keyboard input event represented as 2 integers of 8 bits:
          <ul>
-            <li>
-               the first for the state of the key (1 for "pressed" and 0 for
-               "released")
-            </li>
+            <li> the first for the state of the key (1 for "pressed" and 0 for "released") </li>
             <li> the second for the key code </li>
          </ul>
       </td>
@@ -235,14 +202,8 @@ All the strings use the [UTF-8](https://en.wikipedia.org/wiki/UTF-8) encoding.
       <td>
          a mouse click event represented as 2 integers of 8 bits:
          <ul>
-            <li>
-               the first for the state of the button (1 for "pressed" and 0 for
-               "released")
-            </li>
-            <li>
-               the second for the button code (0 for "left", 1 for "right" and 2
-               for "middle")
-            </li>
+            <li> the first for the state of the button (1 for "pressed" and 0 for "released") </li>
+            <li> the second for the button code (0 for "left", 1 for "right" and 2 for "middle") </li>
          </ul>
       </td>
    </tr>
