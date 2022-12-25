@@ -1,3 +1,0 @@
-# client implementation
-
-[TODO]
