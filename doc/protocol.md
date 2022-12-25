@@ -23,7 +23,7 @@ next window frame data.
 The diagram below has a graphical representation of the entire connection
 process.
 
-![connection diagram](../img/conn_seq.jpg)
+![connection diagram](img/conn_seq.jpg)
 
 ## Concurrency
 
