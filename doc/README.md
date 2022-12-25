@@ -1,8 +1,8 @@
 # doc
 
-This directory contains documentation about the repo.
+This directory contains all the documentation.
 
-Like a wiki, sorta.
-
-If a version's name ends with `-wip`, it means that there is still some work to
-be done for it to be fully functional.
+ - `doc/blog/` contains updates and announcements about the project
+ - `doc/img/` contains images used in documentation
+ - `doc/protocol.md` explains in detail the protocol used for communication between the client and the server
+ - `doc/style.md` is the code style guide
