@@ -48,6 +48,9 @@ mergelns() {
 	l2=$(pln $file $next) # next line
 	merge="$l1 $l2" # merge lines
 
+	# edit merge to escape slashes '/' so that it does not mess up with the sed syntax
+	merge=$(echo "$merge" | sed 's/\//\\\//g')
+
 	# replace $l1 and $l2 in $file with $merge
 	# use a temporary variable so that the file does not end up empty (because of reading and writing on the same file I suppose)
 	tmp=$(sed "${line}s/.*/$merge/" $file) # replace line with merge
@@ -60,6 +63,8 @@ mergelns() {
 ask() {
 	file=$1
 	line=$2 # line number
+
+	printf "\n"
 
 	# print lines
 	(showlns $file $line 2)
@@ -81,11 +86,13 @@ cond() {
 	line=$2 # line number
 
 	text=$(pln $file $line)
+	ntext=$(pln $file $(expr $line + 1))
 
 	length=$(echo $text | wc -m)
+	nlength=$(echo $ntext | wc -m)
 
 	# conditions
-	[ $length -gt 1 ] && [ $length -le 80 ] && [ "$(echo "$text" | grep "$regex")" = "$text" ] && return 0
+	[ $length -gt 1 ] && [ $nlength -gt 1 ] && [ $nlength -le 81 ] && [ "$(echo "$text" | grep "$regex")" = "$text" ] && return 0
 
 	return 1
 }
@@ -117,6 +124,6 @@ askall() {
 
 for f in $@
 do
-	echo "entering file $f" >&2
+	echo "-- entering file $f --" >&2
 	(askall $f)
 done
