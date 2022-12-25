@@ -1,51 +1,29 @@
 # protocol
 
 This file defines the protocol that is being used to exchange messages between
-the client and the server.
+the two endpoints.
 
 ## Overview
 
 Scrtp uses a client-server model. The computer which sends its own screen
-frames represents the server, while external computers which receive the screen
-frames and send peripheral signals (like a mouse click or a key press on the
-keyboard) act as clients.
+frames and replicates user input represents the server, while external
+computers which receive the screen frames and send peripheral signals (like a
+mouse click or a key press on the keyboard) act as clients.
 
 ## Steps
 
-Keep in mind that, whenever an error occur, either on the client side or the
-server side, and that error is so bad that the communication cannot continue,
-the side where the error occurred should send an `error` packet with a brief
-description of what happened.
-
-Every message of the following steps is encrypted (see
-[Authentication and encryption](#authentication-and-encryption)).
-
- 1. To start a connection, the client sends its own protocol version.
- 2. The server first verifies that the message containing the protocol version
-    can be decrypted correctly. This is necessary to verify that the key used
-    for encryption is the same as the one used for decryption. Then, it also
-    verifies that the protocol version matches. If something goes wrong during
-    these operations, the server sends back an error. Otherwise, it sends a list
-    of open windows in the following form:
-    ```
-    window name something\n
-    window something else\n
-    another window\n
-    ```
-    where `\n` represents a newline character. The "entire desktop" must not be
-    in the list.
- 3. The client chooses a window by its line number (the first has line number 1
-    while the "entire desktop" has number 0). If that line number does not exist
-    (it is negative or too high), the server sends back an error.
- 4. The server sends the window size.
- 5. The client sends the desired [video quality](#compression). If it is below 1
-    or above 5, the server sends back an error.
- 6. Now the client and the server are ready to go: the server can begin to send
-    the window frames while the client can begin to send the input signals.
+Keep in mind that, whenever a fatal error occurs on either side, the side where
+the error occurred must send an `error` packet with a brief description of what
+happened.
 
 At any moment, if the window size changes in the server, the server must send
 the updated size to the client using the appropriate message before sending the
 next window frame data.
+
+The diagram below has a graphical representation of the entire connection
+process.
+
+![connection diagram](../img/conn_seq.jpg)
 
 ## Concurrency
 
@@ -65,15 +43,13 @@ input signals:  S-<-<-<-<-<-<-C
 
 ## Authentication and encryption
 
-The protocol makes use of a pre-shared AES-256 key. That key is used to encrypt
-and decrypt every message sent back and forth between the client and the server.
-
-The same key used for encryption is also used for authentication. For this
-reason, every client must have a different key.
+All the packets between the two endpoints are encripted using
+[TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security). Make sure to
+have a certificate in your server.
 
 ## Compression
 
-Scrtp uses [AV1](https://en.wikipedia.org/wiki/AV1) for video coding.
+[TODO]
 
 ## Structure of packets
 
@@ -97,8 +73,7 @@ where:
  - `value` is the value associated with the key
  - `m` is the length of the value in bytes
 
-The data type of the `value` field is implicit, which means that it must be
-known to both the client and the server so that is not misinterpreted.
+The data type of the `value` field depends on the `key` value.
 
 The `key` field (and the `value` field, if it is a string) must be
 null-terminated. The respective length fields (`n` and `m`) must also consider
@@ -162,15 +137,12 @@ If the acknowledgement is required, the receiver must send a packet in which:
 
  - the acknowledgement flag is set to 0
  - the key is `ack`
- - the value is the key of the packet to acknowledge
-
-If two packets with the same key must be acknowledged, it is recommended for the
-second packet to wait the acknowledgement of the first one to avoid an
-acknowledgement mess.
+ - the value is made of the key and the index of the packet to acknowledge,
+   separated by a space character.
 
 ## Keys
 
-All the strings use the UTF-8 encoding.
+All the strings use the [UTF-8](https://en.wikipedia.org/wiki/UTF-8) encoding.
 
 <table>
    <tr>
@@ -236,7 +208,7 @@ All the strings use the UTF-8 encoding.
       </td>
    </tr>
    <tr>
-      <td> compfr </td>
+      <td> frame </td>
       <td> array of bytes (variable size) </td>
       <td> no </td>
       <td> the compressed window frame </td>
