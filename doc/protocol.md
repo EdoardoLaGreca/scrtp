@@ -27,9 +27,9 @@ frames:         S->->->->->->-C
 input signals:  S-<-<-<-<-<-<-C
 ```
 
-## Authentication and encryption
+## Security
 
-All the packets between the two endpoints are encripted using [TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security). Make sure to have a certificate in your server.
+All the packets between the two endpoints are encripted using [IPsec](https://en.wikipedia.org/wiki/IPsec).
 
 ## Compression
 
