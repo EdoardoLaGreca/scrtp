@@ -1,18 +1,13 @@
-MAKE_CLIENT = cd client && ./build.sh
-MAKE_SERVER = cd server # add build.sh
+.POSIX:
 
 all: client server
 
 client:
-	$(MAKE_CLIENT) all
+	(cd client && make all)
 
-#server:
-# todo
+server:
+	# (cd server && make all)
 
 clean:
-	- rm -r obj/
-	- rm -r bin/
-	$(MAKE_CLIENT) clean
-	$(MAKE_SERVER) clean
-
-.PHONY: all client server clean
+	rm -r client/bin
+	# rm -r server/bin
