@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# insert required binaries here
+# insert required external tools here
 reqbins="nc"
 
 # log in stderr
@@ -9,5 +9,5 @@ eecho() {
 	echo $text >&2
 }
 
-../script/chkbins.sh $reqbins || { eecho "$0: missing dependencies"; exit 1; }
+../script/chkbins.sh $reqbins || { eecho "$0: missing tools"; exit 1; }
 
