@@ -50,7 +50,9 @@ printpkt(packet p)
 	printf("\n");
 }
 
-int main(int argc, char** argv) {
+int
+main(int argc, char** argv)
+{
 	FILE* f;
 
 	if (argc > 1) {
