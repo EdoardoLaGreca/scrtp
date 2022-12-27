@@ -1,6 +1,6 @@
 # scrtp
 
-Screen teleport - low latency remote screen control.
+Screen teleport - low latency remote desktop control.
 
 ⚠ This repo is still under heavy development. A 1.0 release will be available in the Releases section on GitHub when both the client and the server will be fully functioning.
 
