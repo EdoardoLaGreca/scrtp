@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # insert required external tools here
-reqbins="nc"
+reqbins=""
 
 # log in stderr
 eecho() {
