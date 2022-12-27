@@ -64,7 +64,7 @@ main(int argc, char** argv)
 
 	if (argc > 1) {
 		if (argc > 2) {
-			fprintf(stderr, "%s: too many arguments provided", argv[0]);
+			fprintf(stderr, "%s: too many arguments provided\n", argv[0]);
 			exit(EXIT_FAILURE);
 		}
 
@@ -72,7 +72,8 @@ main(int argc, char** argv)
 		f = fopen(argv[1], "r");
 
 		if (f == NULL) {
-			fprintf(stderr, "%s: unable to open file %s", argv[0], argv[1]);
+			fprintf(stderr, "%s: unable to open file %s\n", argv[0], argv[1]);
+			exit(EXIT_FAILURE);
 		}
 	} else {
 		/* read from stdin */
