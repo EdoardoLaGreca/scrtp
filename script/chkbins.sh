@@ -15,11 +15,14 @@ check() {
 	return 1
 }
 
+iserr="no"
 
 for arg in $@
 do
 	check $arg
-	[ $? -gt 0 ] && exit 1
+	[ $? -gt 0 ] && { iserr="yes" ; echo "$0: $arg: binary not found in PATH"; }
 done
+
+[ iserr = "yes" ] && exit 1
 
 exit 0
