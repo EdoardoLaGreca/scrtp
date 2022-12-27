@@ -57,6 +57,8 @@ where:
  - `n` is the length of the key in bytes
  - `m` is the length of the value in bytes
 
+The [endianness](https://en.wikipedia.org/wiki/Endianness) of the `idx`, `n`, and `m` fields follows the [network byte order](https://en.wikipedia.org/wiki/Endianness#Networking) (big-endian).
+
 The data type of the `value` field depends on the `key` value.
 
 The `key` field (and the `value` field, if it is a string) must be null-terminated. The respective length fields (`n` and `m`) must also consider the null-terminator in the bytes count.
