@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <arpa/inet.h>
 
 typedef struct {
 	unsigned char flags;
@@ -22,11 +23,17 @@ topkt(FILE* f)
 	fread(&p.idx, sizeof(unsigned short), 1, f);
 	fread(&p.n, sizeof(unsigned short), 1, f);
 	fread(&p.m, sizeof(unsigned short), 1, f);
+
+	/* switch endianness */
+	p.idx = ntohs(p.idx);
+	p.n = ntohs(p.n);
+	p.m = ntohs(p.m);
+
 	p.key = calloc(p.n, 1);
 	fread(p.key, 1, p.n, f);
 	p.value = malloc(p.m);
 	fread(p.value, p.m, 1, f);
-	
+
 	return p;
 }
 
@@ -44,7 +51,7 @@ printpkt(packet p)
 
 	printf(" value ");
 	for (i = 0; i < p.m; i++) {
-		printf("%X", ((unsigned char*) p.value)[i]);
+		printf("%02X", ((unsigned char*) p.value)[i]);
 	}
 
 	printf("\n");
