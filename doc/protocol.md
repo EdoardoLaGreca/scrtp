@@ -114,7 +114,7 @@ As a reference, the representation below describes the bit positions in the `fla
 
 ### Acknowledgement
 
-If the acknowledgement is required, the receiver must send a packet in which:
+If the sender requires an acknowledgement, the receiver must send a packet in which:
 
  - the acknowledgement flag is set to 0
  - the key is `ack`
