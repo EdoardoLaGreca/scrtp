@@ -7,8 +7,8 @@ typedef struct {
 	unsigned char flags;
 	unsigned short idx;
 	unsigned short n;
-	char* key;
 	unsigned short m;
+	char* key;
 	void* value;
 } packet;
 
@@ -21,9 +21,9 @@ topkt(FILE* f)
 	fread(&p.flags, sizeof(unsigned char), 1, f);
 	fread(&p.idx, sizeof(unsigned short), 1, f);
 	fread(&p.n, sizeof(unsigned short), 1, f);
+	fread(&p.m, sizeof(unsigned short), 1, f);
 	p.key = calloc(p.n, 1);
 	fread(p.key, 1, p.n, f);
-	fread(&p.m, sizeof(unsigned short), 1, f);
 	p.value = malloc(p.m);
 	fread(p.value, p.m, 1, f);
 	
@@ -39,8 +39,8 @@ printpkt(packet p)
 	printf("flags %04X", p.flags);
 	printf(" idx %d", p.idx);
 	printf(" n %d", p.n);
-	printf(" key %s", p.key);
 	printf(" m %d", p.m);
+	printf(" key %s", p.key);
 
 	printf(" value ");
 	for (i = 0; i < p.m; i++) {
