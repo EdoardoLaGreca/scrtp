@@ -14,7 +14,7 @@ Screen teleport - low latency remote desktop control.
 
 The default values can be set through environment variables.
 
- - `SCRTP_IPVER` can be set to either `"4"` or `"6"`, it represents the default IP version.
+ - `SCRTP_IPVER` can be set to either `4` or `6`, it represents the default IP version.
 
 Option values specified as command arguments override default values, but their effect will last for the entire program execution only.
 
