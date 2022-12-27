@@ -42,19 +42,19 @@ All packets use UDP for both ease of use and speed.
 The packets have the following structure:
 
 ```
-0       1     3   5    n+5 n+7    n+m+7 (bytes)
-+-------+-----+---+-----+---+-------+
-| flags | idx | n | key | m | value |
-+-------+-----+---+-----+---+-------+
+0       1     3   5   7    n+7    n+m+7 (bytes)
++-------+-----+---+---+-----+-------+
+| flags | idx | n | m | key | value |
++-------+-----+---+---+-----+-------+
 ```
 
 where:
 
  - `flags` is a byte in which every bit is a flag
  - `idx` is the packet index (starting from 0)
- - `key` is a string representing the meaning of the value
- - `n` is the length of the key in bytes
+ - `key` is a string for the key
  - `value` is the value associated with the key
+ - `n` is the length of the key in bytes
  - `m` is the length of the value in bytes
 
 The data type of the `value` field depends on the `key` value.
