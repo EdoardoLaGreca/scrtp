@@ -1,4 +1,8 @@
-/* Read packet. */
+/*
+Read packet.
+Usage (with file): readpkt /path/to/file
+Usage (with stdin): printf "mypayload" | readpkt
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
