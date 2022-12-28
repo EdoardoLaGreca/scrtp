@@ -18,7 +18,7 @@ ipheader()
  /*TODO*/
 }
 
-/* send the payload p of length plen, return 0 on success and 1 or exit on failure */
+/* send the payload p of length plen, return 0 on success or 1 or exit on failure */
 int
 sendpkt(char* progname, int isipv4, void* p, int plen)
 {
