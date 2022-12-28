@@ -18,6 +18,23 @@ eecho() {
 
 [ "$reqbins" ] && ../script/chkbins.sh $reqbins || exit 1
 
+# parse arguments
+[ $# -lt 2 ] && { eecho "$0: not enough arguments" ; exit 1 ; }
+ipv="4"
+host=
+port=
+while [ $# -gt 0 ]
+do
+	[ $# -eq "2" ] && host=$1 && port=$2 && break
+	[ "$1" = "--ipv" ] && [ "$2" = "6" ] && ipv="6" && shift 2 && continue
+	[ "$1" = "--ipv" ] && [ "$2" = "4" ] && shift 2 && continue
+	[ "$1" = "--ipv" ] && eecho "$0: unknown IP version $1" && exit 1
+	eecho "$0: unknown argument $1"
+done
+
+[ -z "$host" ] && eecho "$0: no host" && exit 1
+[ -z "$port" ] && eecho "$0: no port" && exit 1
+
 # generate keys if missing
 if [ ! -r $prkey ]
 then
