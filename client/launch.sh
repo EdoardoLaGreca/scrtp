@@ -9,5 +9,5 @@ eecho() {
 	echo $text >&2
 }
 
-../script/chkbins.sh $reqbins || { eecho "$0: missing tools"; exit 1; }
+[ "$reqbins" ] && ../script/chkbins.sh $reqbins || exit 1
 
