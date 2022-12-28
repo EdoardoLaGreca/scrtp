@@ -31,6 +31,8 @@ input signals:  S-<-<-<-<-<-<-C
 
 All the payloads between the two endpoints are encrypted using [RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem)). Make sure to have a pair of public and private keys.
 
+This protocol does not provide a key exchange mechanism. The user is supposed to manually copy the server's public key into the client PC.
+
 ## Compression
 
 [TODO]
