@@ -61,21 +61,25 @@ sendpkt(char* progname, int isipv4, void* p, int plen)
 	freeaddrinfo(res);
 }
 
-/* fill buffer with error handling, return 0 on success and 1 or exit on failure */
+/* fill buffer with error handling, return the number of bytes read on success or -1 on failure */
 int
 fillbuf(FILE* f, char* buf, int buflen)
 {
-	if (fgets(buf, buflen, f) == NULL) {
-		if (ferror(f)) {
-			fprintf(stderr, "%s: ferror set\n", argv[0]);
-			exit(EXIT_FAILURE);
-		} else if (feof(f)) {
-			fprintf(stderr, "%s: eof reached\n", argv[0]);
-		}
-		return 1;
+	/* bytes read */
+	int bread = 0;
+
+	while (!feof(f) && bread < buflen) {
+		char c = (char)fgetc(f);
+
+		buf[bread] = c;
+		bread++;
 	}
 
-	return 0
+	if (ferror(f)) {
+		return -1;
+	}
+
+	return bread;
 }
 
 int
@@ -83,7 +87,7 @@ main(int argc, char** argv)
 {
 	int isipv4;
 	FILE* f;
-	void payload[MAX_PL_LEN + 1];
+	void payload[MAX_PL_LEN];
 	char* res;
 
 	if (argc < 2) {
@@ -117,12 +121,14 @@ main(int argc, char** argv)
 	}
 
 	while (1) {
-		/* fill payload */
-		if (fillbuf(f, payload, MAX_PL_LEN + 1)) {
+		/* fill payload, bread = bytes read */
+		int bread = fillbuf(f, payload, MAX_PL_LEN);
+		if (bread == -1) {
+			fprintf(stderr, "%s: stream error", argv[0]);
 			break;
 		}
 
-		sendpkt(argv[0], isipv4, payload, MAX_PL_LEN);
+		sendpkt(argv[0], isipv4, payload, bread);
 	}
 
 	return 0;
