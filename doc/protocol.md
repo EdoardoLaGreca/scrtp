@@ -29,7 +29,7 @@ input signals:  S-<-<-<-<-<-<-C
 
 ## Security
 
-All the payloads use [ESP](https://en.wikipedia.org/wiki/IPsec#Encapsulating_Security_Payload) in [transport mode](https://en.wikipedia.org/wiki/IPsec#Transport_mode) from the [IPsec](https://en.wikipedia.org/wiki/IPsec) suite.
+All the payloads between the two endpoints are encrypted using [RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem)). Make sure to have a pair of public and private keys.
 
 ## Compression
 
