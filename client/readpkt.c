@@ -65,11 +65,10 @@ main(int argc, char** argv)
 {
 	FILE* f;
 
-	if (argc > 1) {
-		if (argc > 2) {
-			fprintf(stderr, "%s: too many arguments provided\n", argv[0]);
-			exit(EXIT_FAILURE);
-		}
+	if (argc > 2) {
+		fprintf(stderr, "%s: too many arguments provided\n", argv[0]);
+		exit(EXIT_FAILURE);
+	} else if (argc == 2) {
 
 		/* read from file */
 		f = fopen(argv[1], "r");
