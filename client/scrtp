@@ -16,6 +16,17 @@ eecho() {
 	echo $text >&2
 }
 
+# send through udp
+udpsend() {
+	payload=$1
+	echo "$payload" | nc -u -q 0 $host $port
+}
+
+# receive through udp
+udprecv() {
+	nc -lu -W 1 $host $port
+}
+
 [ "$reqbins" ] && ../script/chkbins.sh $reqbins || exit 1
 
 # parse arguments
