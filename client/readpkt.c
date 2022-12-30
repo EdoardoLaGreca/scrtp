@@ -47,13 +47,8 @@ printpkt(packet p)
 {
 	int i;
 
-	printf("flags %04X", p.flags);
-	printf(" idx %d", p.idx);
-	printf(" n %d", p.n);
-	printf(" m %d", p.m);
-	printf(" key %s", p.key);
+	printf("%04X %d %d %d %s ", p.flags, p.idx, p.n, p.m, p.key);
 
-	printf(" value ");
 	for (i = 0; i < p.m; i++) {
 		printf("%02X", ((unsigned char*) p.value)[i]);
 	}
@@ -82,6 +77,8 @@ main(int argc, char** argv)
 		/* read from stdin */
 		f = stdin;
 	}
+
+	fputs("flags idx n m key value", stderr);
 
 	printpkt(topkt(f));
 
