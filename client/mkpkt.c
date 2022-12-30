@@ -8,12 +8,27 @@ The value field must also be written in caps hex;
 */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-/* encode packet and put it into buffer of buflen size, return 0 on success or 1 on error */
-int
-encode(unsigned char* buffer, int buflen, char flags, unsigned short idx, unsigned short n, unsigned short m, char* key, unsigned char* value)
+/* encode packet and put it into buffer of buflen size, may crash if buffer is not big enough */
+void
+encode(unsigned char* buffer, char flags, unsigned short idx, unsigned short n, unsigned short m, char* key, unsigned char* value)
 {
-	/* TODO */
+	unsigned char* ptr = buffer;
+
+	memcpy(ptr, &flags, sizeof(flags));
+	ptr += sizeof(flags);
+	memcpy(ptr, &idx, sizeof(idx));
+	ptr += sizeof(idx);
+	memcpy(ptr, &n, sizeof(n));
+	ptr += sizeof(n);
+	memcpy(ptr, &m, sizeof(m));
+	ptr += sizeof(m);
+	memcpy(ptr, key, n);
+	ptr += n;
+	memcpy(ptr, value, m);
+	ptr += m;
 }
 
 int
@@ -21,7 +36,7 @@ main(int argc, char** argv)
 {
 	FILE* f;
 	int i, buflen;
-	char* buf;
+	unsigned char* buf;
 
 	char flags;
 	unsigned short idx, n, m, tmp;
@@ -48,7 +63,7 @@ main(int argc, char** argv)
 
 	/* get flags (tmp), idx, n, and m */
 	/* use h for flags because it's the smallest integer readable value in C89's scanf */
-	if (sscanf(f, "%Xh %uh %uh %uh ", tmp, idx, n, m) != 4) {
+	if (fscanf(f, "%hX %hu %hu %hu ", &tmp, &idx, &n, &m) != 4) {
 		fprintf(stderr, "%s: missing packet params\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
@@ -62,8 +77,8 @@ main(int argc, char** argv)
 
 	flags = tmp;
 	buflen = sizeof(flags) + sizeof(idx) + sizeof(n) + sizeof(m) + n + m;
-	key = calloc(n);
-	value = calloc(m);
+	key = calloc(n, 1);
+	value = calloc(m, 1);
 
 	/* read key, space and value */
 	for (i = 0; i < n+1+m; i++) {
@@ -77,7 +92,7 @@ main(int argc, char** argv)
 			exit(EXIT_FAILURE);
 		}
 
-		char c = fgetc(f)
+		char c = fgetc(f);
 
 		/* assign the character to the right array, note how the space is skipped by excluding the value i = n */
 		if (i < n) {
@@ -89,12 +104,10 @@ main(int argc, char** argv)
 
 	buf = malloc(buflen);
 
-	if (encode(buf, buflen, flags, idx, n, m, key, value)) {
-		fprintf(stderr, "%s: encoding gone bad", argv[0]);
-	}
+	encode(buf, flags, idx, n, m, key, value);
 
 	for (i = 0; i < buflen; i++) {
-		fputc(stdout, buflen[i]);
+		fputc(buf[i], stdout);
 	}
 
 	return 0;
