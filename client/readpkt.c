@@ -6,6 +6,7 @@ Usage (with stdin): printf "mypayload" | readpkt
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <netinet/in.h>
 
 typedef struct {
 	unsigned char flags;
