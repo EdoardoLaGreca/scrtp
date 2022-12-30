@@ -82,6 +82,8 @@ main(int argc, char** argv)
 
 	/* read key, space and value */
 	for (i = 0; i < n+1+m; i++) {
+		char c;
+
 		if (feof(f)) {
 			fprintf(stderr, "%s: eof reached\n", argv[0]);
 			exit(EXIT_FAILURE);
@@ -92,7 +94,7 @@ main(int argc, char** argv)
 			exit(EXIT_FAILURE);
 		}
 
-		char c = fgetc(f);
+		c = fgetc(f);
 
 		/* assign the character to the right array, note how the space is skipped by excluding the value i = n */
 		if (i < n) {
