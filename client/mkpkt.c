@@ -71,38 +71,19 @@ encode(char flags, unsigned short idx, unsigned short n, unsigned short m, char*
 {
 	int i;
 	unsigned short netidx, netn, netm;
-	/* these are the idx, n, and m variables but their value is split in higher and lower halves */
-	char idxh, idxl, nh, nl, mh, ml;
 
 	/* convert to network endianness */
 	netidx = htons(idx);
 	netn = htons(n);
 	netm = htons(m);
 
-	/* initialize higher and lower halves */
-	idxh = netidx >> 8;
-	idxl = netidx & 0x00FF;
-	nh = netn >> 8;
-	nl = netn & 0x00FF;
-	mh = netm >> 8;
-	ml = netm & 0x00FF;
-
 	/* print everything to stdout */
-	fputc(flags, stdout);
-	fputc(idxh, stdout);
-	fputc(idxl, stdout);
-	fputc(nh, stdout);
-	fputc(nl, stdout);
-	fputc(mh, stdout);
-	fputc(ml, stdout);
-
-	for (i = 0; i < n; i++) {
-		fputc(key[i], stdout);
-	}
-
-	for (i = 0; i < m; i++) {
-		fputc(value[i], stdout);
-	}
+	fwrite(&flags, sizeof(flags), 1, stdout);
+	fwrite(&idx, sizeof(idx), 1, stdout);
+	fwrite(&n, sizeof(n), 1, stdout);
+	fwrite(&m, sizeof(m), 1, stdout);
+	fwrite(&key, 1, n, stdout);
+	fwrite(&value, 1, m, stdout);
 }
 
 int
