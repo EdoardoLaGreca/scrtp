@@ -1,7 +1,10 @@
 /*
 Make packet.
-Usage (with file): mkpkt /path/to/file
-Usage (with stdin): printf "my data" | mkpkt
+
+Usage (with file): mkpkt [option] /path/to/file
+Usage (with stdin): printf "my data" | mkpkt [option]
+where option can only be "-c" for "continuous mode", in which the program continues its functionality after the first line of input.
+
 Values for flags, idx, n, m, key, value are given respectively, separated by space.
 The flags field must be written in caps hex value of 2 digits.
 The value field must also be written in caps hex;
@@ -9,39 +12,101 @@ The value field must also be written in caps hex;
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <getopt.h>
 
-/* encode packet and put it into buffer of buflen size, may crash if buffer is not big enough */
+/* read values from stdout and place them in the fields */
 void
-encode(unsigned char* buffer, char flags, unsigned short idx, unsigned short n, unsigned short m, char* key, unsigned char* value)
+readvals(char* progname, FILE* f, char* flags, unsigned short* idx, unsigned short* n, unsigned short* m, char** key, unsigned char** value)
 {
-	unsigned char* ptr = buffer;
+	int i;
+	unsigned short tmp;
 
-	memcpy(ptr, &flags, sizeof(flags));
-	ptr += sizeof(flags);
-	memcpy(ptr, &idx, sizeof(idx));
-	ptr += sizeof(idx);
-	memcpy(ptr, &n, sizeof(n));
-	ptr += sizeof(n);
-	memcpy(ptr, &m, sizeof(m));
-	ptr += sizeof(m);
-	memcpy(ptr, key, n);
-	ptr += n;
-	memcpy(ptr, value, m);
-	ptr += m;
+	/* get flags (tmp), idx, n, and m */
+	/* use h for flags because it's the smallest integer readable value in C89's scanf */
+	if (fscanf(f, "%hX %hu %hu %hu ", &tmp, idx, n, m) != 4) {
+		fprintf(stderr, "%s: missing packet params\n", progname);
+		exit(EXIT_FAILURE);
+	}
+
+	/* check if there are 1 bits in the other half */
+	if ((tmp & 0x00FF) != tmp) {
+		/* it doesn't fit */
+		fprintf(stderr, "%s: flags field too big\n", progname);
+		exit(EXIT_FAILURE);
+	}
+
+	*flags = tmp;
+	*key = calloc(*n, 1);
+	*value = calloc(*m, 1);
+
+	/* read key, space and value */
+	for (i = 0; i < *n+1+*m; i++) {
+		char c;
+
+		if (feof(f)) {
+			fprintf(stderr, "%s: eof reached\n", progname);
+			exit(EXIT_FAILURE);
+		}
+
+		if (ferror(f)) {
+			fprintf(stderr, "%s: ferror set\n", progname);
+			exit(EXIT_FAILURE);
+		}
+
+		c = fgetc(f);
+
+		/* assign the character to the right array, note how the space is skipped by excluding the value i = n */
+		if (i < *n) {
+			*key[i] = c;
+		} else if (i > *n && i < *n+*m+1) {
+			*value[i-*n-1] = c;
+		}
+	}
+}
+
+/* encode packet and print it to stdout, do not check for feof and ferror */
+void
+encode(char flags, unsigned short idx, unsigned short n, unsigned short m, char* key, unsigned char* value)
+{
+	int i;
+
+	fputc(flags, stdout);
+	fputc(idx, stdout);
+	fputc(n, stdout);
+	fputc(m, stdout);
+
+	for (i = 0; i < n; i++) {
+		fputc(key[i], stdout);
+	}
+
+	for (i = 0; i < m; i++) {
+		fputc(value[i], stdout);
+	}
 }
 
 int
 main(int argc, char** argv)
 {
 	FILE* f;
-	int i, buflen;
-	unsigned char* buf;
+	int o = 0, cont = 0;
 
 	char flags;
-	unsigned short idx, n, m, tmp;
+	unsigned short idx, n, m;
 	char* key;
 	unsigned char* value;
+
+	while (o != -1) {
+		o = getopt(argc, argv, "c");
+
+		switch (o) {
+		case 'c':
+			cont = 1;
+			break;
+		case '?':
+			fprintf(stderr, "%s: invalid option -%c", argv[0], o);
+			break;
+		}
+	}
 
 	/* check args */
 	if (argc > 2) {
@@ -61,56 +126,11 @@ main(int argc, char** argv)
 		f = stdin;
 	}
 
-	/* get flags (tmp), idx, n, and m */
-	/* use h for flags because it's the smallest integer readable value in C89's scanf */
-	if (fscanf(f, "%hX %hu %hu %hu ", &tmp, &idx, &n, &m) != 4) {
-		fprintf(stderr, "%s: missing packet params\n", argv[0]);
-		exit(EXIT_FAILURE);
-	}
-
-	/* check if there are 1 bits in the other half */
-	if (tmp & 0x00FF != tmp) {
-		/* it doesn't fit */
-		fprintf(stderr, "%s: flags field too big\n", argv[0]);
-		exit(EXIT_FAILURE);
-	}
-
-	flags = tmp;
-	buflen = sizeof(flags) + sizeof(idx) + sizeof(n) + sizeof(m) + n + m;
-	key = calloc(n, 1);
-	value = calloc(m, 1);
-
-	/* read key, space and value */
-	for (i = 0; i < n+1+m; i++) {
-		char c;
-
-		if (feof(f)) {
-			fprintf(stderr, "%s: eof reached\n", argv[0]);
-			exit(EXIT_FAILURE);
-		}
-
-		if (ferror(f)) {
-			fprintf(stderr, "%s: ferror set\n", argv[0]);
-			exit(EXIT_FAILURE);
-		}
-
-		c = fgetc(f);
-
-		/* assign the character to the right array, note how the space is skipped by excluding the value i = n */
-		if (i < n) {
-			key[i] = c;
-		} else if (i > n && i < n+m+1) {
-			value[i-n-1] = c;
-		}
-	}
-
-	buf = malloc(buflen);
-
-	encode(buf, flags, idx, n, m, key, value);
-
-	for (i = 0; i < buflen; i++) {
-		fputc(buf[i], stdout);
-	}
+	/* read input and produce output */
+	do {
+		readvals(argv[0], f, &flags, &idx, &n, &m, &key, &value);
+		encode(flags, idx, n, m, key, value);
+	} while (cont != 1 && !feof(f));
 
 	return 0;
 }
