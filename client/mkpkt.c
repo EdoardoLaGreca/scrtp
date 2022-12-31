@@ -13,6 +13,7 @@ The value field must also be written in caps hex;
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include <netinet/in.h>
 
 /* read values from stdout and place them in the fields */
 void
@@ -69,11 +70,31 @@ void
 encode(char flags, unsigned short idx, unsigned short n, unsigned short m, char* key, unsigned char* value)
 {
 	int i;
+	unsigned short netidx, netn, netm;
+	/* these are the idx, n, and m variables but their value is split in higher and lower halves */
+	char idxh, idxl, nh, nl, mh, ml;
 
+	/* convert to network endianness */
+	netidx = htons(idx);
+	netn = htons(n);
+	netm = htons(m);
+
+	/* initialize higher and lower halves */
+	idxh = netidx >> 8;
+	idxl = netidx & 0x00FF;
+	nh = netn >> 8;
+	nl = netn & 0x00FF;
+	mh = netm >> 8;
+	ml = netm & 0x00FF;
+
+	/* print everything to stdout */
 	fputc(flags, stdout);
-	fputc(idx, stdout);
-	fputc(n, stdout);
-	fputc(m, stdout);
+	fputc(idxh, stdout);
+	fputc(idxl, stdout);
+	fputc(nh, stdout);
+	fputc(nl, stdout);
+	fputc(mh, stdout);
+	fputc(ml, stdout);
 
 	for (i = 0; i < n; i++) {
 		fputc(key[i], stdout);
@@ -103,7 +124,7 @@ main(int argc, char** argv)
 			cont = 1;
 			break;
 		case '?':
-			fprintf(stderr, "%s: invalid option -%c", argv[0], o);
+			fprintf(stderr, "%s: invalid option -%c\n", argv[0], o);
 			break;
 		}
 	}
@@ -130,6 +151,7 @@ main(int argc, char** argv)
 	do {
 		readvals(argv[0], f, &flags, &idx, &n, &m, &key, &value);
 		encode(flags, idx, n, m, key, value);
+		fflush(stdout);
 	} while (cont != 1 && !feof(f));
 
 	return 0;
