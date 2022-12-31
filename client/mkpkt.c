@@ -133,7 +133,7 @@ main(int argc, char** argv)
 		readvals(argv[0], f, &flags, &idx, &n, &m, &key, &value);
 		encode(flags, idx, n, m, key, value);
 		fflush(stdout);
-	} while (cont != 1 && !feof(f));
+	} while (cont == 1 && !feof(f));
 
 	return 0;
 }
