@@ -1,9 +1,8 @@
 /*
 Make packet.
 
-Usage (with file): mkpkt [option] /path/to/file
-Usage (with stdin): printf "my data" | mkpkt [option]
-where option can only be "-c" for "continuous mode", in which the program continues its functionality after the first line of input.
+Usage (with file): mkpkt /path/to/file
+Usage (with stdin): printf "my data" | mkpkt
 
 Values for flags, idx, n, m, key, value are given respectively, separated by space.
 The flags field must be written in caps hex value of 2 digits.
@@ -89,52 +88,36 @@ int
 main(int argc, char** argv)
 {
 	FILE* f;
-	int o = 0, cont = 0;
-	extern int optind;
-	extern char* optarg;
 
 	char flags;
 	unsigned short idx, n, m;
 	char* key;
 	unsigned char* value;
 
-	while (o != -1) {
-		o = getopt(argc, argv, "c");
-
-		switch ((char)o) {
-		case 'c':
-			cont = 1;
-			break;
-		case '?':
-			fprintf(stderr, "%s: invalid option -%c\n", argv[0], o);
-			break;
-		}
-	}
-
-	/* get non-option arguments */
-	if (optind == argc - 1) {
-		/* one non-option argument, read from file */
+	/* read argument */
+	if (argc == 2) {
+		/* read from file */
 		f = fopen(argv[1], "r");
 
 		if (f == NULL) {
 			fprintf(stderr, "%s: unable to open file %s\n", argv[0], argv[1]);
 			exit(EXIT_FAILURE);
 		}
-	} else if (optind < argc - 1) {
+	} else if (argc > 2) {
 		/* too many non-option arguments */
-		fprintf(stderr, "%s: too many non-option arguments (%d > 1)", argv[0], optind - argc);
+		fprintf(stderr, "%s: too many arguments (%d > 2)", argv[0], argc);
 		exit(EXIT_FAILURE);
 	} else {
 		/* no file, read from stdin */
 		f = stdin;
 	}
 
-	/* read input and produce output */
-	do {
+	while (!feof(f)) {
+		/* read input and produce output */
 		readvals(argv[0], f, &flags, &idx, &n, &m, &key, &value);
 		encode(flags, idx, n, m, key, value);
 		fflush(stdout);
-	} while (cont == 1 && !feof(f));
+	}
 
 	return 0;
 }
