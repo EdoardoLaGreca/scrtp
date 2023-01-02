@@ -69,7 +69,6 @@ readvals(char* progname, FILE* f, char* flags, unsigned short* idx, unsigned sho
 void
 encode(char flags, unsigned short idx, unsigned short n, unsigned short m, char* key, unsigned char* value)
 {
-	int i;
 	unsigned short netidx, netn, netm;
 
 	/* convert to network endianness */
@@ -79,9 +78,9 @@ encode(char flags, unsigned short idx, unsigned short n, unsigned short m, char*
 
 	/* print everything to stdout */
 	fwrite(&flags, sizeof(flags), 1, stdout);
-	fwrite(&idx, sizeof(idx), 1, stdout);
-	fwrite(&n, sizeof(n), 1, stdout);
-	fwrite(&m, sizeof(m), 1, stdout);
+	fwrite(&netidx, sizeof(idx), 1, stdout);
+	fwrite(&netn, sizeof(n), 1, stdout);
+	fwrite(&netm, sizeof(m), 1, stdout);
 	fwrite(&key, 1, n, stdout);
 	fwrite(&value, 1, m, stdout);
 }
