@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # insert required external tools here
-reqbins="nc openssl"
+reqbins=$(cat reqbins)
 
 # private and public key paths
 prkey="id_rsa"
