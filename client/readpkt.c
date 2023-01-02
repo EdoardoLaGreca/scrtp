@@ -77,7 +77,7 @@ main(int argc, char** argv)
 		f = stdin;
 	}
 
-	fputs("flags idx n m key value", stderr);
+	fputs("flags idx n m key value\n", stderr);
 
 	while (!feof(f)) {
 		printpkt(topkt(f));
