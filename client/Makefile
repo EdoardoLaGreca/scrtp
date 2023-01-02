@@ -4,7 +4,13 @@ CC = gcc
 CFLAGS = -std=c89 -Wall -Wpedantic -O3
 OUTDIR = bin
 
-all: readpkt mkpkt
+# insert required external tools here
+REQBINS = nc openssl
+
+all: checkbins readpkt mkpkt
+
+checkbins:
+	../script/chkbins.sh $(REQBINS)
 
 readpkt: readpkt.c
 	mkdir -p $(OUTDIR)
