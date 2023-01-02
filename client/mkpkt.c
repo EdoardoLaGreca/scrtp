@@ -90,6 +90,8 @@ main(int argc, char** argv)
 {
 	FILE* f;
 	int o = 0, cont = 0;
+	extern int optind;
+	extern char* optarg;
 
 	char flags;
 	unsigned short idx, n, m;
@@ -99,7 +101,7 @@ main(int argc, char** argv)
 	while (o != -1) {
 		o = getopt(argc, argv, "c");
 
-		switch (o) {
+		switch ((char)o) {
 		case 'c':
 			cont = 1;
 			break;
@@ -109,21 +111,21 @@ main(int argc, char** argv)
 		}
 	}
 
-	/* check args */
-	if (argc > 2) {
-		fprintf(stderr, "%s: too many arguments provided\n", argv[0]);
-		exit(EXIT_FAILURE);
-	} else if (argc == 2) {
-
-		/* read from file */
+	/* get non-option arguments */
+	if (optind == argc - 1) {
+		/* one non-option argument, read from file */
 		f = fopen(argv[1], "r");
 
 		if (f == NULL) {
 			fprintf(stderr, "%s: unable to open file %s\n", argv[0], argv[1]);
 			exit(EXIT_FAILURE);
 		}
+	} else if (optind < argc - 1) {
+		/* too many non-option arguments */
+		fprintf(stderr, "%s: too many non-option arguments (%d > 1)", argv[0], optind - argc);
+		exit(EXIT_FAILURE);
 	} else {
-		/* read from stdin */
+		/* no file, read from stdin */
 		f = stdin;
 	}
 
