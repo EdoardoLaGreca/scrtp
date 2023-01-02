@@ -80,7 +80,9 @@ main(int argc, char** argv)
 
 	fputs("flags idx n m key value", stderr);
 
-	printpkt(topkt(f));
+	while (!feof(f)) {
+		printpkt(topkt(f));
+	}
 
 	return 0;
 }
