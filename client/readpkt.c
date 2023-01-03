@@ -8,52 +8,53 @@ Usage (with stdin): printf "mypayload" | readpkt
 #include <stdlib.h>
 #include <netinet/in.h>
 
-typedef struct {
-	unsigned char flags;
-	unsigned short idx;
-	unsigned short n;
-	unsigned short m;
-	char* key;
-	void* value;
-} packet;
-
-/* format packet */
-packet
-topkt(FILE* f)
-{
-	packet p;
-
-	fread(&p.flags, sizeof(unsigned char), 1, f);
-	fread(&p.idx, sizeof(unsigned short), 1, f);
-	fread(&p.n, sizeof(unsigned short), 1, f);
-	fread(&p.m, sizeof(unsigned short), 1, f);
-
-	/* switch endianness */
-	p.idx = ntohs(p.idx);
-	p.n = ntohs(p.n);
-	p.m = ntohs(p.m);
-
-	p.key = calloc(p.n, 1);
-	fread(p.key, 1, p.n, f);
-	p.value = malloc(p.m);
-	fread(p.value, p.m, 1, f);
-
-	return p;
-}
-
-/* print packet */
-void
-printpkt(packet p)
+/* return 0 on success, 1 on failure */
+int
+decode(char* progname, FILE* f)
 {
 	int i;
+	unsigned char flags;
+	unsigned short idx, n, m;
+	char* key;
+	unsigned char* value;
 
-	printf("%04X %d %d %d %s ", p.flags, p.idx, p.n, p.m, p.key);
+	if (fread(&flags, sizeof(unsigned char), 1, f) < 1) {
+		/* eof reached (probably), exit normally */
+		return 1;
+	}
 
-	for (i = 0; i < p.m; i++) {
-		printf("%02X", ((unsigned char*) p.value)[i]);
+	if (fread(&idx, sizeof(unsigned short), 1, f) < 1
+		|| fread(&n, sizeof(unsigned short), 1, f) < 1
+		|| fread(&m, sizeof(unsigned short), 1, f) < 1) {
+
+		fprintf(stderr, "%s: unfinished packet\n", progname);
+		return 1;
+	}
+
+	/* switch endianness */
+	idx = ntohs(idx);
+	n = ntohs(n);
+	m = ntohs(m);
+
+	key = calloc(n, 1);
+	value = malloc(m);
+
+	if (fread(key, 1, n, f) < n
+		|| fread(value, m, 1, f) < 1) {
+
+		fprintf(stderr, "%s: unfinished packet\n", progname);
+		return 1;
+	}
+
+	printf("%04X %d %d %d %s ", flags, idx, n, m, key);
+
+	for (i = 0; i < m; i++) {
+		printf("%02X", ((unsigned char*) value)[i]);
 	}
 
 	printf("\n");
+
+	return 0;
 }
 
 int
@@ -77,10 +78,23 @@ main(int argc, char** argv)
 		f = stdin;
 	}
 
-	fputs("flags idx n m key value\n", stderr);
+	/*fputs("flags idx n m key value\n", stderr);*/
 
-	while (!feof(f)) {
-		printpkt(topkt(f));
+	/* although the use of `feof` to control a loop is discouraged (see ref), in this
+	   case it is acceptable because it is used together with `!ferror` and the `decode`
+	   function which also detects some possible EOF by reading the return value of
+	   the read functions
+	   (ref: http://faq.cprogramming.com/cgi-bin/smartfaq.cgi?id=1043284351&answer=1046476070)
+	*/
+	while (!feof(f) && !ferror(f)) {
+		if (decode(argv[0], f)) {
+			break;
+		}
+	}
+
+	if (ferror(f)) {
+		fprintf(stderr, "%s: ferror set\n", argv[0]);
+		exit(EXIT_FAILURE);
 	}
 
 	return 0;
