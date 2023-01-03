@@ -11,7 +11,6 @@ The value field must also be written in caps hex;
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <getopt.h>
 #include <netinet/in.h>
 
 /* read values from stdout and place them in the fields */
@@ -19,6 +18,7 @@ void
 readvals(char* progname, FILE* f, char* flags, unsigned short* idx, unsigned short* n, unsigned short* m, char** key, unsigned char** value)
 {
 	int i;
+	char c;
 	unsigned short tmp;
 
 	/* get flags (tmp), idx, n, and m */
@@ -41,18 +41,6 @@ readvals(char* progname, FILE* f, char* flags, unsigned short* idx, unsigned sho
 
 	/* read key, space and value */
 	for (i = 0; i < *n+1+*m; i++) {
-		char c;
-
-		if (feof(f)) {
-			fprintf(stderr, "%s: eof reached\n", progname);
-			exit(EXIT_FAILURE);
-		}
-
-		if (ferror(f)) {
-			fprintf(stderr, "%s: ferror set\n", progname);
-			exit(EXIT_FAILURE);
-		}
-
 		c = fgetc(f);
 
 		/* assign the character to the right array, note how the space is skipped by excluding the value i = n */
@@ -112,11 +100,16 @@ main(int argc, char** argv)
 		f = stdin;
 	}
 
-	while (!feof(f)) {
+	while (!feof(f) && !ferror(f)) {
 		/* read input and produce output */
 		readvals(argv[0], f, &flags, &idx, &n, &m, &key, &value);
 		encode(flags, idx, n, m, key, value);
 		fflush(stdout);
+	}
+
+	if (ferror(f)) {
+		fprintf(stderr, "%s: ferror set\n", argv[0]);
+		exit(EXIT_FAILURE);
 	}
 
 	return 0;
