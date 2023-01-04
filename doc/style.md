@@ -97,6 +97,18 @@ do {
 } while (condition);
 ```
 
+If the condition in `if`, `while`, or `do-while` is made of more than two smaller conditions chained together (i.e. comparison operations separated by logical operators), each condition, starting from the second, is written on its own line, which begins with the logical operator and is indented in the same way as the code following the condition. For clarity, you must leave a blank line between the last condition and the code following it. An example is provided below. If you need to use such a number of comparison operations in a `for` condition, use a `while` instead.
+
+```C
+/* example */
+if (op1 > op2
+	|| op3 < op2
+	|| op3 > op1) {
+
+	code;
+}
+```
+
 The `switch...case` statement is a bit different as `case`s are vertically aligned to the switch keyword.
 
 ```C
