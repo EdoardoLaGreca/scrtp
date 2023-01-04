@@ -36,7 +36,7 @@ decode(char* progname, FILE* f)
 	n = ntohs(n);
 	m = ntohs(m);
 
-	key = calloc(n, 1);
+	key = calloc(n+1, 1);
 	value = malloc(m);
 
 	if (fread(key, 1, n, f) < n
@@ -46,7 +46,7 @@ decode(char* progname, FILE* f)
 		return 1;
 	}
 
-	printf("%04X %d %d %d %s ", flags, idx, n, m, key);
+	printf("%02X %d %d %d %s ", flags, idx, n, m, key);
 
 	for (i = 0; i < m; i++) {
 		printf("%02X", ((unsigned char*) value)[i]);
