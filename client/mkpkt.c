@@ -18,24 +18,19 @@ void
 readvals(char* progname, FILE* f, char* flags, unsigned short* idx, unsigned short* n, unsigned short* m, char** key, unsigned char** value)
 {
 	int i, j;
-	fpos_t fpos;
 	char c;
 	unsigned short tmp;
 
-	if (fgetpos(f, &fpos)) {
-		fprintf(stderr, "%s: unable to get stream position\n", progname);
-		exit(EXIT_FAILURE);
-	}
-
 	/* check for EOF */
-	if (fgetc(f) == EOF) {
+	c = fgetc(f);
+	if (c == EOF) {
 		/* EOF reached */
 		exit(EXIT_SUCCESS);
 	}
 
 	/* reset position to before checking the EOF */
-	if (fsetpos(f, &fpos)) {
-		fprintf(stderr, "%s: unable to set stream position\n", progname);
+	if (ungetc(c, f) == EOF) {
+		fprintf(stderr, "%s: could not perform ungetc\n", progname);
 		exit(EXIT_FAILURE);
 	}
 
