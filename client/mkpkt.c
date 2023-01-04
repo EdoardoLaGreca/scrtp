@@ -21,6 +21,9 @@ readvals(char* progname, FILE* f, char* flags, unsigned short* idx, unsigned sho
 	char c;
 	unsigned short tmp;
 
+	/* skip whitespace */
+	fscanf(f, " ");
+
 	/* check for EOF */
 	c = fgetc(f);
 	if (c == EOF) {
@@ -37,7 +40,7 @@ readvals(char* progname, FILE* f, char* flags, unsigned short* idx, unsigned sho
 	/* get flags (tmp), idx, n, and m */
 	/* use h for flags because it's the smallest integer readable value in C89's scanf */
 	if (fscanf(f, "%hX %hu %hu %hu ", &tmp, idx, n, m) != 4) {
-		fprintf(stderr, "%s: missing packet params\n", progname);
+		fprintf(stderr, "%s: bad input (flags, idx, n, or m)\n", progname);
 		exit(EXIT_FAILURE);
 	}
 
@@ -49,20 +52,17 @@ readvals(char* progname, FILE* f, char* flags, unsigned short* idx, unsigned sho
 	}
 
 	*flags = tmp;
-	*key = calloc(*n, 1);
-	*value = calloc(*m, 1);
+	*key = calloc(*n+1, 1);
+	*value = malloc(*m);
 
 	/* read key */
-	for (i = 0; i < *n; i++) {
-		c = fgetc(f);
-		(*key)[i] = c;
+	if (fscanf(f, " %s ", *key) != 1) {
+		fprintf(stderr, "%s: bad input (key)\n", progname);
+		exit(EXIT_FAILURE);
 	}
 
-	/* read space */
-	fgetc(f);
-
 	/* read value */
-	for (i = 0; i < *m; i += 2) {
+	for (i = 0; i < *m*2; i += 2) {
 		/* pointer to value */
 		unsigned char* vptr = &((*value)[i/2]);
 
@@ -104,8 +104,8 @@ encode(char flags, unsigned short idx, unsigned short n, unsigned short m, char*
 	fwrite(&netidx, sizeof(idx), 1, stdout);
 	fwrite(&netn, sizeof(n), 1, stdout);
 	fwrite(&netm, sizeof(m), 1, stdout);
-	fwrite(&key, 1, n, stdout);
-	fwrite(&value, 1, m, stdout);
+	fwrite(key, 1, n, stdout);
+	fwrite(value, 1, m, stdout);
 }
 
 int
