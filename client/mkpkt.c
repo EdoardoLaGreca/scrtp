@@ -22,7 +22,7 @@ readvals(char* progname, FILE* f, char* flags, unsigned short* idx, unsigned sho
 	char c;
 	unsigned short tmp;
 
-	if (fgetpos(f, &fpos) != 0) {
+	if (fgetpos(f, &fpos)) {
 		fprintf(stderr, "%s: unable to get stream position\n", progname);
 		exit(EXIT_FAILURE);
 	}
@@ -34,7 +34,7 @@ readvals(char* progname, FILE* f, char* flags, unsigned short* idx, unsigned sho
 	}
 
 	/* reset position to before checking the EOF */
-	if (fsetpos(f, &fpos) != 0) {
+	if (fsetpos(f, &fpos)) {
 		fprintf(stderr, "%s: unable to set stream position\n", progname);
 		exit(EXIT_FAILURE);
 	}
