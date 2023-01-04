@@ -83,6 +83,7 @@ readvals(char* progname, FILE* f, char* flags, unsigned short* idx, unsigned sho
 				*vptr += (c - 0x61 + 10) << ((1-j)*4);
 			} else {
 				fprintf(stderr, "%s: invalid hex character in value (\'%c\')\n", progname, c);
+				exit(EXIT_FAILURE);
 			}
 		}
 	}
