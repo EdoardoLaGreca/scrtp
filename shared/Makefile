@@ -2,20 +2,19 @@
 
 CC = gcc
 CFLAGS = -std=c89 -Wall -Wpedantic -O3
-OUTDIR = bin
 
-all: checkbins readpkt mkpkt
+post: checkbins
 
 checkbins:
-	../script/chkbins.sh $$(cat reqbins)
+	./chkbins.sh $$(cat reqbins)
 
-readpkt: readpkt.c
-	mkdir -p $(OUTDIR)
-	$(CC) $(CFLAGS) -o $(OUTDIR)/readpkt readpkt.c
+bin/readpkt: readpkt.c
+	mkdir -p bin
+	$(CC) $(CFLAGS) -o bin/readpkt readpkt.c
 
-mkpkt: mkpkt.c
-	mkdir -p $(OUTDIR)
-	$(CC) $(CFLAGS) -o $(OUTDIR)/mkpkt mkpkt.c
+bin/mkpkt: mkpkt.c
+	mkdir -p bin
+	$(CC) $(CFLAGS) -o bin/mkpkt mkpkt.c
 
 clean:
-	rm -r $(OUTDIR)
+	rm -r bin
