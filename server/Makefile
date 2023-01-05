@@ -10,7 +10,7 @@ checkbins:
 	./chkbins.sh $$(cat reqbins)
 
 shared:
-	(cd ../shared && make all)
+	(cd ../shared && make)
 	mkdir -p bin
 	cp ../shared/bin/* bin
 	cp ../shared/common.sh bin
