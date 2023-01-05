@@ -1,33 +1,9 @@
 #!/bin/sh
 
-# insert required external tools here
-reqbins=$(cat reqbins)
-
-# private and public key paths
-prkey="id_rsa"
-pubkey="id_rsa.pub"
+. common.sh || exit 1
 
 # remote public key path
 rpubkey="rid_rsa.pub"
-
-# log in stderr
-eecho() {
-	text=$1
-	echo $text >&2
-}
-
-# send through udp
-udpsend() {
-	payload=$1
-	echo "$payload" | nc -u -q 0 $host $port
-}
-
-# receive through udp
-udprecv() {
-	nc -lu -W 1 $host $port
-}
-
-[ "$reqbins" ] && ../script/chkbins.sh $reqbins || exit 1
 
 # parse arguments
 [ $# -lt 2 ] && { eecho "$0: not enough arguments" ; exit 1 ; }
@@ -45,21 +21,4 @@ done
 
 [ -z "$host" ] && eecho "$0: no host" && exit 1
 [ -z "$port" ] && eecho "$0: no port" && exit 1
-
-# generate keys if missing
-if [ ! -r $prkey ]
-then
-	# write private key
-	openssl genpkey -algorithm RSA -out $prkey
-
-	# write public key
-	openssl rsa -in $prkey -pubout >$pubkey
-fi
-
-# check if remote public key is present
-if [ ! -r $rpubkey ]
-then
-	eecho "$0: missing remote public key $rpubkey"
-	exit 1
-fi
 
