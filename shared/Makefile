@@ -3,8 +3,6 @@
 CC = gcc
 CFLAGS = -std=c89 -Wall -Wpedantic -O3
 
-post: checkbins
-
 checkbins:
 	./chkbins.sh $$(cat reqbins)
 
