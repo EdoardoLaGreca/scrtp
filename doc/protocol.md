@@ -134,10 +134,10 @@ All the strings use the [UTF-8](https://en.wikipedia.org/wiki/UTF-8) encoding.
       <th> description </th>
    </tr>
    <tr>
-      <td> version </td>
+      <td> hshake </td>
       <td> string </td>
       <td> yes </td>
-      <td> the protocol version used by the client </td>
+      <td> the handshake (client's public key + protocol version as text, separated by a space) </td>
    </tr>
    <tr>
       <td> ack </td>
