@@ -38,19 +38,49 @@ where:
  - `options` can be one or more of:
    - `--ipv N` Prefer one IP version over the other. `N` can either be 4 or 6. Setting this option to 4 or 6 means that the `host` field should follow that IP version syntax.
 
-## Requirements
+## Compiling source files
 
-The client and the server do not have a strict dependency on each other, you can build one or the other independently. However, since they use a client-server architecture, you need a client to connect to the server and you need a server to let other clients connect.
+All commands and relative paths below presume that your current working directory is the repo root directory.
+
+Before proceeding, install `make` (any POSIX-compliant `make`, in case you have multiple choices), which is the build system in use in this repo.
+
+### Requirements
 
 Please keep in mind that I'm a human being and I may forget to update written things such as compilation requirements.
 
-### Client
+Before compiling, make sure you have all the required dependencies (both compile-time and runtime) and `make` installed in your system. Otherwise, it will probably fail.
 
-[TODO]
+#### Client
 
-### Server
+**Compile-time dependencies**: (none)
 
-[TODO]
+**Runtime dependencies**: (see shared/reqbins and client/reqbins)
+
+To compile, run:
+
+```
+make client
+```
+
+#### Server
+
+**Compile-time dependencies**: (none)
+
+**Runtime dependencies**: (see shared/reqbins and server/reqbins)
+
+To compile, run:
+
+```
+make server
+```
+
+#### Both
+
+To compile both the client *and* the server, run:
+
+```
+make all
+```
 
 ## Development
 
