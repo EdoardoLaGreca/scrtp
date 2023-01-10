@@ -23,11 +23,14 @@ printstr(char* s)
 	}
 }
 
-/* print number as hex, where size is the total width in bytes of the number */
+/* print number as hex, where size is the total width in bytes of the type */
 void
-printnum(unsigned long num, int size)
+printnum(unsigned long num, int tsize)
 {
-	/* TODO */
+	/* "%0sX" (s = tsize) */
+	char format[5];
+	sprintf(format, "%%0%dX", tsize);
+	printf(format, num);
 }
 
 void
