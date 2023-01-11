@@ -19,7 +19,7 @@ printstr(char* s)
 {
 	int i;
 	for (i = 0; s[i] != '\0'; i++) {
-		printf("%X", s[i]);
+		printf("%02X", s[i]);
 	}
 }
 
