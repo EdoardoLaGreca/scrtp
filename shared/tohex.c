@@ -43,25 +43,29 @@ printhex(char* progname, char type, char* data)
 		goto end;
 	}
 
-	switch (type) {
-	case 'S':
+	if (type == 'S') {
 		printstr(data);
 		goto end;
-		break;
+	}
+
+	switch (type) {
 	case 's':
-		sscanf(data, "%hu", (unsigned short*) (&num));
 		size = sizeof(unsigned short);
 		break;
 	case 'i':
-		sscanf(data, "%u", (unsigned int*) (&num));
 		size = sizeof(unsigned int);
 		break;
 	case 'l':
-		sscanf(data, "%lu", (unsigned long*) (&num));
 		size = sizeof(unsigned long);
 		break;
 	default:
-		fprintf(stderr, "%s: unknown type %c", progname, type);
+		fprintf(stderr, "%s: unknown type %c\n", progname, type);
+		return;
+	}
+
+	/* even if the format specifier is %u (unsigned integer), it can still reads signed integers. I'm going to ignore this. */
+	if (sscanf(data, "%lu", &num) < 1) {
+		fprintf(stderr, "%s: invalid data\n", progname);
 		return;
 	}
 
