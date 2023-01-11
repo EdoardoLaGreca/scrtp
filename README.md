@@ -42,15 +42,9 @@ where:
 
 All commands and relative paths below presume that your current working directory is the repo root directory.
 
-Before proceeding, install `make` (any POSIX-compliant `make`, in case you have multiple choices), which is the build system in use in this repo.
+Before proceeding, install `make` (any POSIX-compliant `make`) and all the required dependencies (both compile-time and runtime).
 
-### Requirements
-
-Please keep in mind that I'm a human being and I may forget to update written things such as compilation requirements.
-
-Before compiling, make sure you have all the required dependencies (both compile-time and runtime) and `make` installed in your system. Otherwise, it will probably fail.
-
-#### Client
+### Client
 
 **Compile-time dependencies**: (none)
 
@@ -62,7 +56,7 @@ To compile, run:
 make client
 ```
 
-#### Server
+### Server
 
 **Compile-time dependencies**: (none)
 
@@ -74,7 +68,7 @@ To compile, run:
 make server
 ```
 
-#### Both
+### Both
 
 To compile both the client *and* the server, run:
 
