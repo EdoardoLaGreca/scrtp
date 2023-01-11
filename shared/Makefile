@@ -6,7 +6,7 @@ CFLAGS = -std=c89 -Wall -Wpedantic -O3
 checkbins:
 	./chkbins.sh $$(cat reqbins)
 
-all: bin/readpkt bin/mkpkt bin/str2h
+all: bin/readpkt bin/mkpkt bin/tohex
 
 bin/readpkt: readpkt.c
 	mkdir -p bin
@@ -16,9 +16,9 @@ bin/mkpkt: mkpkt.c
 	mkdir -p bin
 	$(CC) $(CFLAGS) -o bin/mkpkt mkpkt.c
 
-bin/str2h: str2h.c
+bin/tohex: tohex.c
 	mkdir -p bin
-	$(CC) $(CFLAGS) -o bin/str2h str2h.c
+	$(CC) $(CFLAGS) -o bin/tohex tohex.c
 
 clean:
 	rm -r bin
