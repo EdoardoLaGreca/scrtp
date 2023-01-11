@@ -23,14 +23,14 @@ printstr(char* s)
 	}
 }
 
-/* print number as hex, where size is the total width in bytes of the type */
+/* print number as big-endian hex, where size is the total width in bytes of the type */
 void
 printnum(unsigned long num, int tsize)
 {
-	/* "%0sX" (s = tsize) */
-	char format[5];
-	sprintf(format, "%%0%dX", tsize);
-	printf(format, num);
+	int i;
+	for (i = tsize - 1; i >= 0; i--) {
+		printf("%02X", ((unsigned char*) &num)[i]);
+	}
 }
 
 void
