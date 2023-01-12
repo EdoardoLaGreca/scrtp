@@ -16,24 +16,60 @@ The diagram below has a graphical representation of the entire connection proces
 
 ![connection diagram](img/conn_seq.jpg)
 
-## Concurrency
+## Features
+
+### Connection-less connection
+
+[TODO]
+
+### Concurrency
 
 A sequential approach would be ideal if the window did not update (unless on user input) and had no animations. In a modern world, it is not conceivable to use a sequential approach hoping that the final user will not need window updates in-between input signals.
 
 To deal with this issue, Scrtp takes advantage of concurrency. The frames sent by the server are concurrently independent of the input signals sent by the client, as if they were sent in two different channels.
 
-```
-frames:         S->->->->->->-C
-input signals:  S-<-<-<-<-<-<-C
-```
-
-## Security
+### Security
 
 All the payloads between the two endpoints are encrypted using [RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem)). Make sure to have a pair of public and private keys.
 
-This protocol does not provide a key exchange mechanism. The user is supposed to manually copy the server's public key into the client PC.
+This protocol does not provide a key exchange mechanism. The user is supposed to manually copy the server's public key into the client PC in a (presumably) secure way.
 
-## Compression
+### Compression
+
+Scrtp can send a lot of images during short periods of time, especially during the frame update phase (see [Steps](#steps)). However, doing so without compression generates a very high throughput which may not even fit some of today's network bandwidths. For example, if we wanted to send a 1080p RGB video at 30fps, it would require
+
+```
+width = 1920 pixels
+height = 1080 pixels
+color channels = 3 bytes (8 bit depth)
+frames per second = 30
+
+1920 * 1080 * 3 * 30 = 186,624,000 bytes per second ~= 177.9 MiB/s ~= 1493 Mbps
+```
+
+In order to mitigate this issue, the protocol takes advantage of both lossy compression and a binary [diff algorithm](https://en.wikipedia.org/wiki/Data_differencing).
+
+First, a lossy compression is applied to the image using [DCT](https://en.wikipedia.org/wiki/Discrete_cosine_transform). Then, a binary diff algorithm compares the previous image with the current one. The output of the diff algorithm is used as content of the packet. Some frames may be sent without passing through the diff algorithm (*DCT-only* seems like a good adjective for them); see below.
+
+The first frame must be sent in the DCT-only way.
+
+#### Resilience to packet loss
+
+If you are alert enough you may have noticed one flaw that involves packet loss. Consider the following:
+
+ - a *diff output* is an alias for the output of a diff algorithm applied to two frames
+ - each diff output is only valid between two *consecutive* frames
+ - many consecutive diff outputs make a *diff chain*; that is, given three consecutive diffs *d1*, *d2*, and *d3*, then *d3* depends on *d2* which depends on *d1*, so *d3* depends indirectly on *d1*
+ - the frame packets do not require an acknowledgement
+ - if a diff output gets lost for any possible reason, none of the two endpoints will know it and all the following diff outputs are not going to produce the desired outcome because the diff chain breaks
+
+![conceptual visualization of packet diffs](img/compflaw.jpg)
+
+To sum up, in order to provide a reliable video transmission, it is necessary to periodically send some DCT-only frames, without calculating diffs. The endpoint that receives the compressed frames does not need to know ahead of time when the DCT-only packet will occur, as a parameter at the beginning of packet's value indicates it exactly for the current frame.
+
+If the first frame does not arrive due to a packet loss, the client waits until the next DCT-only frame.
+
+## Behaviour on packets with invalid content
 
 [TODO]
 
@@ -44,9 +80,9 @@ All packets use UDP for both ease of use and speed.
 The packets have the following structure:
 
 ```
-0       1     3   5   7    n+7    n+m+7 (bytes)
+0       1     3   5   7    n+7    n+m+7   <- offset in bytes
 +-------+-----+---+---+-----+-------+
-| flags | idx | n | m | key | value |
+| flags | idx | n | m | key | value |     <- field names
 +-------+-----+---+---+-----+-------+
 ```
 
@@ -65,13 +101,14 @@ The data type of the `value` field depends on the `key` value.
 
 The `key` field (and the `value` field, if it is a string) must not end with a null terminator character.
 
-## Flags
+### Flags
 
 As a reference, the representation below describes the bit positions in the `flags` field.
 
 ```
+0                               1  <- offset in bytes
 +---+---+---+---+---+---+---+---+
-| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |  <- bit indexes
 +---+---+---+---+---+---+---+---+
 ```
 
@@ -114,7 +151,7 @@ As a reference, the representation below describes the bit positions in the `fla
    </tr>
 </table>
 
-### Acknowledgement
+#### Acknowledgement
 
 If the sender requires an acknowledgement, the receiver must send a packet in which:
 
@@ -122,7 +159,11 @@ If the sender requires an acknowledgement, the receiver must send a packet in wh
  - the key is `ack`
  - the value is made of the key and the index of the packet to acknowledge, separated by a space character.
 
-## Keys
+### Index
+
+[TODO]
+
+### Keys
 
 All the strings use the [UTF-8](https://en.wikipedia.org/wiki/UTF-8) encoding.
 
@@ -159,13 +200,13 @@ All the strings use the [UTF-8](https://en.wikipedia.org/wiki/UTF-8) encoding.
    </tr>
    <tr>
       <td> winid </td>
-      <td> integer </td>
+      <td> 32-bit unsigned integer </td>
       <td> yes </td>
       <td> the window ID chosen by the client, 0 for the whole desktop </td>
    </tr>
    <tr>
       <td> winsize </td>
-      <td> array of 2 integers </td>
+      <td> array of 2 16-bit unsigned integers </td>
       <td> yes </td>
       <td>
          the window size represented as 2 integers of 16 bits:
@@ -176,20 +217,36 @@ All the strings use the [UTF-8](https://en.wikipedia.org/wiki/UTF-8) encoding.
       </td>
    </tr>
    <tr>
-      <td> quality </td>
-      <td> integer </td>
+      <td> pref </td>
+      <td> [TODO] </td>
       <td> yes </td>
-      <td> the quality of the server's frames, from 1 (lowest) to 5 (highest) </td>
+      <td>
+         <ul>
+            <li> 1 unsigned 8-bit integer for the quality of the server's frames, from 1 (lowest) to 5 (highest) </li>
+            <li> [TODO] </li>
+         </ul>
+      </td>
    </tr>
    <tr>
       <td> frame </td>
-      <td> array of bytes (variable size) </td>
+      <td> 1 byte followed by an array of bytes (variable size) </td>
       <td> no </td>
-      <td> the compressed window frame </td>
+      <td>
+         a compressed window frame; the first byte can either be:
+         <ul>
+            <li> the value of the 't' character in UTF-8 (0x74) for a DCT-only compression </li>
+            <li> the value of the 'f' character in UTF-8 (0x66) for a DCT + diff compression </li>
+         </ul>
+         while the rest of the bytes contain the compressed image data <br/>
+         <br/>
+         the first packet of this kind must be compressed in the DCT-only way <br/>
+         <br/>
+         see <a href="#compression">Compression</a> for more details
+      </td>
    </tr>
    <tr>
       <td> kbdev </td>
-      <td> array of 2 integers </td>
+      <td> array of 2 8-bit unsigned integers </td>
       <td> no </td>
       <td>
          a keyboard input event represented as 2 integers of 8 bits:
@@ -201,7 +258,7 @@ All the strings use the [UTF-8](https://en.wikipedia.org/wiki/UTF-8) encoding.
    </tr>
    <tr>
       <td> msclk </td>
-      <td> array of 2 integers </td>
+      <td> array of 2 8-bit unsigned integers </td>
       <td> no </td>
       <td>
          a mouse click event represented as 2 integers of 8 bits:
@@ -213,7 +270,7 @@ All the strings use the [UTF-8](https://en.wikipedia.org/wiki/UTF-8) encoding.
    </tr>
    <tr>
       <td> msmv </td>
-      <td> array of 2 integers </td>
+      <td> array of 2 16-bit unsigned integers </td>
       <td> no </td>
       <td>
          a mouse move event represented as 2 integers of 16 bits:
@@ -234,6 +291,12 @@ All the strings use the [UTF-8](https://en.wikipedia.org/wiki/UTF-8) encoding.
             <li> the second for the scroll offset on the Y-axis </li>
          </ul>
       </td>
+   </tr>
+   <tr>
+      <td> keepal </td>
+      <td> 8-bit unsigned integer </td>
+      <td> yes </td>
+      <td> keep the connection alive for the time specified in the value (in seconds) </td>
    </tr>
    <tr>
       <td> end </td>
