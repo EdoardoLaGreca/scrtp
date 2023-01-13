@@ -18,13 +18,15 @@ The diagram below has a graphical representation of the entire connection proces
 
 ### Connection-less connection
 
-[TODO]
+The Scrtp protocol is built on top of UDP. This choice brings several advantages, such as reduced network throughput (and consequent increased speed) and reduced protocol complexity while providing checksums. However, UDP lacks some features such as:
 
-### Concurrency
+ - connection orientation ("is the other endpoint still online and ready to communicate with me?")
+ - packet acknowledgements ("has the other endpoint received my packet?")
+ - packet ordering ("has the other endpoint received my packets in order?")
 
-A sequential approach would be ideal if the window did not update (unless on user input) and had no animations. In a modern world, it is not conceivable to use a sequential approach hoping that the final user will not need window updates in-between input signals.
+The Scrtp protocol incorporates well these features without bringing all the TCP complexity with them; actually, without complexity at all.
 
-To deal with this issue, Scrtp takes advantage of concurrency. The frames sent by the server are concurrently independent of the input signals sent by the client, as if they were sent in two different channels.
+A special type of packet (`keepal`, see [Keys](#keys)) solves the lack of connection orientation by providing a keep-alive-like mechanism. An ACK flag in each packet (see [Flags](#flags)), together with the `ack` packet (see [Keys](#keys)), solves the lack of packet acknowledgement. A specialized field (`idx`, see [Structure of packets](#structure-of-packets)) in each packet solves the lack of packet ordering.
 
 ### Security
 
@@ -67,13 +69,13 @@ To sum up, in order to provide a reliable video transmission, it is necessary to
 
 If the first frame does not arrive due to a packet loss, the client waits until the next DCT-only frame.
 
-## Behaviour on packets with invalid content
+### Concurrency
 
-[TODO]
+A sequential approach would be ideal if the window did not update (unless on user input) and had no animations. In a modern world, it is not conceivable to use a sequential approach hoping that the final user will not need window updates in-between input signals.
+
+To deal with this issue, Scrtp takes advantage of concurrency. The frames sent by the server are concurrently independent of the input signals sent by the client, as if they were sent in two different channels.
 
 ## Structure of packets
-
-All packets use UDP for both ease of use and speed.
 
 The packets have the following structure:
 
@@ -93,11 +95,27 @@ where:
  - `n` is the length of the key in bytes
  - `m` is the length of the value in bytes
 
-The [endianness](https://en.wikipedia.org/wiki/Endianness) of the binary-encoded fields (such as `idx`, `n`, and `m`) follows the [network byte order](https://en.wikipedia.org/wiki/Endianness#Networking) (big-endian). If `value` is made of one or more multi-byte binary values, those also follow the network endianness.
+The packet fields must comply with these rules:
 
-The data type of the `value` field depends on the `key` value.
+ - The [endianness](https://en.wikipedia.org/wiki/Endianness) of the binary-encoded fields (such as `idx`, `n`, and `m`) must follow the [network byte order](https://en.wikipedia.org/wiki/Endianness#Networking) (big-endian). If `value` is made of one or more multi-byte binary values, those also follow the network endianness.
+ - The data type of the `value` field depends on the `key` value.
+ - The `key` field (and the `value` field, if it is a string) must not end with a null terminator character.
+ - the `key` field must only contain printable characters
 
-The `key` field (and the `value` field, if it is a string) must not end with a null terminator character.
+### Behaviour with invalid packets
+
+A packet is defined invalid whenever its content is not consistent. Some typical examples are:
+
+ - the sum of `n + m + 7` is not equal to the UDP payload length
+ - the value of `n` is greater than the longest known `key` field length
+ - the `key` field does not match any known `key`
+ - the `key` field contains control characters such as the null terminator or a line break
+ - the unused flags, if any, are set to 1 rather than 0 (see [Flags](#flags))
+ - the `value` field is not as long as expected
+
+If a packet does not pass validity checks, it is discarded; that is, the endpoint ignores it and acts as if that packet never arrived. Discarding packets does not cause any harm to the connection, as the packets perceived as important use the acknowledgement flag.
+
+Validity checks *do not* check whether or not the packet fields have the expected contents, but rather if the overall packet structure follows the rules decided upon.
 
 ### Flags
 
@@ -113,38 +131,47 @@ As a reference, the representation below describes the bit positions in the `fla
 <table>
    <tr>
       <th> position </th>
+      <th> name </th>
       <th> meaning </th>
    </tr>
    <tr>
       <td> 1 </td>
+      <td> (unnamed) </td>
       <td> (unused) </td>
    </tr>
    <tr>
       <td> 2 </td>
+      <td> (unnamed) </td>
       <td> (unused) </td>
    </tr>
    <tr>
       <td> 3 </td>
+      <td> (unnamed) </td>
       <td> (unused) </td>
    </tr>
    <tr>
       <td> 4 </td>
+      <td> (unnamed) </td>
       <td> (unused) </td>
    </tr>
    <tr>
       <td> 5 </td>
+      <td> (unnamed) </td>
       <td> (unused) </td>
    </tr>
    <tr>
       <td> 6 </td>
+      <td> (unnamed) </td>
       <td> (unused) </td>
    </tr>
    <tr>
       <td> 7 </td>
+      <td> (unnamed) </td>
       <td> (unused) </td>
    </tr>
    <tr>
       <td> 8 </td>
+      <td> ACK </td>
       <td> acknowledgement required (1 = yes, 0 = no) </td>
    </tr>
 </table>
@@ -156,6 +183,10 @@ If the sender requires an acknowledgement, the receiver must send a packet in wh
  - the acknowledgement flag is set to 0
  - the key is `ack`
  - the value is made of the key and the index of the packet to acknowledge, separated by a space character.
+
+[TODO how much time should pass before sending again the packet that requires an acknowledgement?]
+
+
 
 ### Index
 
