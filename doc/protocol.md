@@ -8,8 +8,6 @@ Scrtp uses a client-server model. The computer which sends its own screen frames
 
 ## Steps
 
-Keep in mind that, whenever a fatal error occurs on either side, the side where the error occurred must send an `error` packet with a brief description of what happened.
-
 At any moment, if the window size changes in the server, the server must send the updated size to the client using the appropriate message before sending the next window frame data.
 
 The diagram below has a graphical representation of the entire connection process.
@@ -95,7 +93,7 @@ where:
  - `n` is the length of the key in bytes
  - `m` is the length of the value in bytes
 
-The [endianness](https://en.wikipedia.org/wiki/Endianness) of the `idx`, `n`, and `m` fields follows the [network byte order](https://en.wikipedia.org/wiki/Endianness#Networking) (big-endian). If `value` is made of one or more binary integer numbers (2 bytes each or more), those binary numbers also follow the network endianness.
+The [endianness](https://en.wikipedia.org/wiki/Endianness) of the binary-encoded fields (such as `idx`, `n`, and `m`) follows the [network byte order](https://en.wikipedia.org/wiki/Endianness#Networking) (big-endian). If `value` is made of one or more multi-byte binary values, those also follow the network endianness.
 
 The data type of the `value` field depends on the `key` value.
 
@@ -190,7 +188,7 @@ All the strings use the [UTF-8](https://en.wikipedia.org/wiki/UTF-8) encoding.
       <td> error </td>
       <td> string </td>
       <td> yes </td>
-      <td> an error message explaining what went wrong </td>
+      <td> report an error to the other endpoint with a message explaining what went wrong </td>
    </tr>
    <tr>
       <td> wins </td>
