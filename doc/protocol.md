@@ -12,6 +12,8 @@ At any moment, if the window size changes in the server, the server must send th
 
 The diagram below has a graphical representation of the entire connection process.
 
+[TODO update image]
+
 ![connection diagram](img/conn_seq.jpg)
 
 ## Features
@@ -216,10 +218,10 @@ All the strings use the [UTF-8](https://en.wikipedia.org/wiki/UTF-8) encoding.
       <td> the acknowledgement of the previous packet (see <a href="#acknowledgement">Acknowledgement</a>) </td>
    </tr>
    <tr>
-      <td> error </td>
+      <td> abort </td>
       <td> string </td>
       <td> yes </td>
-      <td> report an error to the other endpoint with a message explaining what went wrong </td>
+      <td> report an error to the other endpoint with a message explaining what went wrong and close the connection </td>
    </tr>
    <tr>
       <td> wins </td>
@@ -325,12 +327,8 @@ All the strings use the [UTF-8](https://en.wikipedia.org/wiki/UTF-8) encoding.
       <td> keepal </td>
       <td> 8-bit unsigned integer </td>
       <td> yes </td>
-      <td> keep the connection alive for the time specified in the value (in seconds) </td>
-   </tr>
-   <tr>
-      <td> end </td>
-      <td> boolean </td>
-      <td> yes </td>
-      <td> a request to end connection </td>
+      <td>
+         keep the connection alive for the time specified in the value (in seconds) and expect another keep-alive packet during that time
+      </td>
    </tr>
 </table>
