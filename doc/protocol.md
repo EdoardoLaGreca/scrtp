@@ -178,7 +178,7 @@ As a reference, the representation below describes the bit positions in the `fla
    </tr>
 </table>
 
-#### Acknowledgement
+#### ACK
 
 If the sender requires an acknowledgement, the receiver must send a packet in which:
 
