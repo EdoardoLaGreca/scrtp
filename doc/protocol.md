@@ -192,7 +192,17 @@ If the sender requires an acknowledgement, the receiver must send a packet in wh
 
 ### Index
 
-[TODO]
+The index, sometimes referred to as `idx`, is a number that increases in each packet. The index of the first packet is always 0 and, as packets are sent, their index increases from time to time.
+
+Each endpoint has its own count of index, they don't mix or add up. This choice makes sense for three reasons:
+
+ - suppose that the index was shared between the two endpoints and it increased for each packet sent by *both* endpoints; it would not be realiable because packets that do not require an acknowledgement (see [Flags](#flags)) may be lost
+ - if the index was shared, the local counts kept by the two endpoints would fail to be synchronized while packets are asynchronous
+ - it is more reasonable for the problem it solves, because each index helps keeping track of the lost incoming packets
+
+Here is a practical example of connection flow with local and remote indexes.
+
+![index example 1](img/index_eg1.jpg)
 
 ### Keys
 
