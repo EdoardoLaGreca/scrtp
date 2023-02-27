@@ -20,7 +20,7 @@ The diagram below has a graphical representation of the entire connection proces
 
 ### Connection-less connection
 
-The Scrtp protocol is built on top of UDP. This choice brings several advantages, such as reduced network throughput (and consequent increased speed) and reduced protocol complexity while providing checksums. However, UDP lacks some features such as:
+The Scrtp protocol is built on top of UDP. This choice brings several advantages, such as lightness and reduced protocol complexity while providing checksums. However, UDP lacks some features such as:
 
  - connection orientation ("is the other endpoint still online and ready to communicate with me?")
  - packet acknowledgements ("has the other endpoint received my packet?")
@@ -71,11 +71,11 @@ To sum up, in order to provide a reliable video transmission, it is necessary to
 
 If the first frame does not arrive due to a packet loss, the client waits until the next DCT-only frame.
 
-### Concurrency
+### Asynchronous I/O
 
 A sequential approach would be ideal if the window did not update (unless on user input) and had no animations. In a modern world, it is not conceivable to use a sequential approach hoping that the final user will not need window updates in-between input signals.
 
-To deal with this issue, Scrtp takes advantage of concurrency. The frames sent by the server are concurrently independent of the input signals sent by the client, as if they were sent in two different channels.
+To deal with this issue, Scrtp takes advantage of asynchronous I/O. The frames sent by the server are concurrently independent of the input signals sent by the client, as if they were sent in two different channels.
 
 ## Structure of packets
 
@@ -192,17 +192,28 @@ If the sender requires an acknowledgement, the receiver must send a packet in wh
 
 ### Index
 
-The index, sometimes referred to as `idx`, is a number that increases in each packet. The index of the first packet is always 0 and, as packets are sent, their index increases from time to time.
+The index, sometimes referred to as `idx`, is a number that increases in each packet. Marking each packet with an index provides some of the benefits that UDP lacks. There are two main benefits:
 
-Each endpoint has its own count of index, they don't mix or add up. This choice makes sense for three reasons:
+ - it gives an order to the packets
+ - it lets the receiver know that a packet is late or lost
+
+The index of the first packet is always 0 and, as packets are sent, their index increases from time to time. Each endpoint has its own count of index, they don't mix or add up. This choice makes sense for three reasons:
 
  - suppose that the index was shared between the two endpoints and it increased for each packet sent by *both* endpoints; it would not be realiable because packets that do not require an acknowledgement (see [Flags](#flags)) may be lost
  - if the index was shared, the local counts kept by the two endpoints would fail to be synchronized while packets are asynchronous
  - it is more reasonable for the problem it solves, because each index helps keeping track of the lost incoming packets
 
-Here is a practical example of connection flow with local and remote indexes.
+Below a practical example of connection flow with local and remote indexes.
 
 ![index example 1](img/index_eg1.jpg)
+
+#### Late or lost?
+
+In an asynchronous modus operandi (see [Asynchronous I/O](#asynchronous-io)), the difference between two consecutively received packet indexes may be two, which means that a packet between them is missing (more than one if the difference is greater than two); hard to say whether it is lost or just late.
+
+One possible way would be waiting for the missing packet for a short period of time before processing the next one, but that would slow down the protocol. Instead, the solution that the Scrtp protocol opts for is to consider the packet as lost and continue with the others. In other words, it ignores all the packets with an index lower than the last received. If the packet arrives late, it is ignored and will be transmitted again if important.
+
+Although this solution does not [TODO]
 
 ### Keys
 
